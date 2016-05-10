@@ -27,20 +27,21 @@ from configuration.models import deployconfig
 from datetime import datetime
 from django.utils.timezone import utc
 from xml.sax.saxutils import escape
-from distutils.version import LooseVersion, StrictVersion
 import sys
 
 def compare_versions(version1, version2):
+    from distutils.version import LooseVersion, StrictVersion
+    v1 = version1.encode('ascii', 'ignore')
+    v2 = version2.encode('ascii', 'ignore')
     try:
-        return cmp(StrictVersion(version1), StrictVersion(version2))
-    # in case of abnormal version number, fall back to LooseVersion
+        return cmp(StrictVersion(v1), StrictVersion(v2))
     except ValueError:
-        pass
-    try:
-        return cmp(LooseVersion(version1), LooseVersion(version2))
-    # certain LooseVersion comparions raise due to unorderable types, fallback to string comparison
-    except TypeError:
-        return cmp([str(v) for v in LooseVersion(version1).version], [str(v) for v in LooseVersion(version2).version])
+        # in case of abnormal version number, fall back to LooseVersion
+        try:
+            return cmp(LooseVersion(v1), LooseVersion(v2))
+        except TypeError:
+            # certain LooseVersion comparions raise due to unorderable types, fallback to string comparison
+            return cmp([str(v) for v in LooseVersion(v1).version], [str(v) for v in LooseVersion(v2).version])
 
 def is_deploy_authorized(m,handling):
     """Function that define if deploy is authorized or not"""
@@ -197,12 +198,14 @@ def check_conditions(m,pack):
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) >= 0:
                             install = False
+                            break
             else:
                 if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
                     softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) >= 0:
                             install = False
+                            break
             if install == False:
                 status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
@@ -216,6 +219,7 @@ def check_conditions(m,pack):
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) <= 0:
                             install = False
+                            break
                 else:
                     install = False
             else:
@@ -224,6 +228,7 @@ def check_conditions(m,pack):
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) <= 0:
                             install = False
+                            break
                 else:
                     install = False
             if install == False:
