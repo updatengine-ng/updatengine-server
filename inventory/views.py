@@ -194,13 +194,15 @@ def check_conditions(m,pack):
                 nametab = condition.softwarename.split('*')
                 if software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
                     softtab = software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1])
-                    if compare_versions(softtab, condition.softwareversion) < 0:
-                        install = False
+                    for s in softtab:
+                        if compare_versions(s.version, condition.softwareversion) >= 0:
+                            install = False
             else:
                 if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
                     softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
-                    if compare_versions(softtab, condition.softwareversion) < 0:
-                        install = False
+                    for s in softtab:
+                        if compare_versions(s.version, condition.softwareversion) >= 0:
+                            install = False
             if install == False:
                 status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
@@ -211,15 +213,17 @@ def check_conditions(m,pack):
                 nametab = condition.softwarename.split('*')
                 if software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
                     softtab = software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1])
-                    if compare_versions(softtab, condition.softwareversion) > 0:
-                        install = False
+                    for s in softtab:
+                        if compare_versions(s.version, condition.softwareversion) <= 0:
+                            install = False
                 else:
                     install = False
             else:
                 if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
                     softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
-                    if compare_versions(softtab, condition.softwareversion) > 0:
-                        install = False
+                    for s in softtab:
+                        if compare_versions(s.version, condition.softwareversion) <= 0:
+                            install = False
                 else:
                     install = False
             if install == False:
