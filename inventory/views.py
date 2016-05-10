@@ -27,7 +27,20 @@ from configuration.models import deployconfig
 from datetime import datetime
 from django.utils.timezone import utc
 from xml.sax.saxutils import escape
+from distutils.version import LooseVersion, StrictVersion
 import sys
+
+def compare_versions(version1, version2):
+    try:
+        return cmp(StrictVersion(version1), StrictVersion(version2))
+    # in case of abnormal version number, fall back to LooseVersion
+    except ValueError:
+        pass
+    try:
+        return cmp(LooseVersion(version1), LooseVersion(version2))
+    # certain LooseVersion comparions raise due to unorderable types, fallback to string comparison
+    except TypeError:
+        return cmp([str(v) for v in LooseVersion(version1).version], [str(v) for v in LooseVersion(version2).version])
 
 def is_deploy_authorized(m,handling):
     """Function that define if deploy is authorized or not"""
@@ -181,58 +194,15 @@ def check_conditions(m,pack):
                 nametab = condition.softwarename.split('*')
                 if software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
                     softtab = software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1])
-                    condversiontab = condition.softwareversion.split('.')
-                    install = False
-                    for s in softtab:
-                        vclean = re.sub('[^.0-9]','',s.version)
-                        vtab = vclean.split('.')
-                        if len(condversiontab) > len(vtab):
-                            looplimit = len(vtab)
-                        else:
-                            looplimit = len(condversiontab)
-                        for i in range(0, looplimit):
-                            try:
-                                if int(condversiontab[i]) > int(vtab[i]):
-                                    install = True
-                                    break
-                                if int(condversiontab[i]) < int(vtab[i]):
-                                    break
-                            except ValueError:
-                                if condversiontab[i] > vtab[i]:
-                                    install = True
-                                    break
-                                if condversiontab[i] < vtab[i]:
-                                    break
-
-                    if install == False:
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                    if compare_versions(softtab, condition.softwareversion) < 0:
+                        install = False
             else:
                 if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
                     softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
-                    condversiontab = condition.softwareversion.split('.')
-                    install = False
-                    for s in softtab:
-                        vclean = re.sub('[^.0-9]','',s.version)
-                        vtab = vclean.split('.')
-                        if len(condversiontab) > len(vtab):
-                            looplimit = len(vtab)
-                        else:
-                            looplimit = len(condversiontab)
-                        for i in range(0, looplimit):
-                            try:
-                                if int(condversiontab[i]) > int(vtab[i]):
-                                    install = True
-                                    break
-                                if int(condversiontab[i]) < int(vtab[i]):
-                                    break
-                            except ValueError:
-                                if condversiontab[i] > vtab[i]:
-                                    install = True
-                                    break
-                                if condversiontab[i] < vtab[i]:
-                                    break
-                    if install == False:
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                    if compare_versions(softtab, condition.softwareversion) < 0:
+                        install = False
+            if install == False:
+                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
     # Software installed and version higher than
     if install == True:
@@ -241,63 +211,19 @@ def check_conditions(m,pack):
                 nametab = condition.softwarename.split('*')
                 if software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
                     softtab = software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1])
-                    condversiontab = condition.softwareversion.split('.')
-                    install = False
-                    for s in softtab:
-                        vclean = re.sub('[^.0-9]','',s.version)
-                        vtab = vclean.split('.')
-                        if len(condversiontab) > len(vtab):
-                            looplimit = len(vtab)
-                        else:
-                            looplimit = len(condversiontab)
-                        for i in range(0, looplimit):
-                            try:
-                                if int(condversiontab[i]) < int(vtab[i]):
-                                    install = True
-                                    break
-                                if int(condversiontab[i]) > int(vtab[i]):
-                                    break
-                            except ValueError:
-                                if condversiontab[i] < vtab[i]:
-                                    install = True
-                                    break
-                                if condversiontab[i] > vtab[i]:
-                                    break
-                    if install == False:
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                    if compare_versions(softtab, condition.softwareversion) > 0:
+                        install = False
                 else:
                     install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
             else:
                 if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
                     softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
-                    condversiontab = condition.softwareversion.split('.')
-                    install = False
-                    for s in softtab:
-                        vclean = re.sub('[^.0-9]','',s.version)
-                        vtab = vclean.split('.')
-                        if len(condversiontab) > len(vtab):
-                            looplimit = len(vtab)
-                        else:
-                            looplimit = len(condversiontab)
-                        for i in range(0, looplimit):
-                            try:
-                                if int(condversiontab[i]) < int(vtab[i]):
-                                    install = True
-                                    break
-                                if int(condversiontab[i]) > int(vtab[i]):
-                                    break
-                            except ValueError:
-                                if condversiontab[i] < vtab[i]:
-                                    install = True
-                                    break
-                                if condversiontab[i] > vtab[i]:
-                                    break
-                    if install == False:
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                    if compare_versions(softtab, condition.softwareversion) > 0:
+                        install = False
                 else:
                     install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+            if install == False:
+                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
     return install
 
