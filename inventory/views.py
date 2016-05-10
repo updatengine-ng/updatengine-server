@@ -198,6 +198,7 @@ def check_conditions(m,pack):
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) >= 0:
                             install = False
+                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
                             break
             else:
                 if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
@@ -205,9 +206,8 @@ def check_conditions(m,pack):
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) >= 0:
                             install = False
+                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
                             break
-            if install == False:
-                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
     # Software installed and version higher than
     if install == True:
@@ -219,20 +219,23 @@ def check_conditions(m,pack):
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) <= 0:
                             install = False
+                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
                             break
                 else:
                     install = False
+                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
             else:
                 if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
                     softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
                     for s in softtab:
                         if compare_versions(s.version, condition.softwareversion) <= 0:
                             install = False
+                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
                             break
                 else:
                     install = False
-            if install == False:
-                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                
 
     return install
 
