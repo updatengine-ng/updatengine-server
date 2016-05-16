@@ -30,7 +30,7 @@ from xml.sax.saxutils import escape
 import sys
 
 def compare_versions(version1, version2):
-    from distutils.version import LooseVersion, StrictVersion
+    from distutils.version import StrictVersion, LooseVersion
     v1 = version1.encode('ascii', 'ignore')
     v2 = version2.encode('ascii', 'ignore')
     try:
@@ -235,7 +235,6 @@ def check_conditions(m,pack):
                 else:
                     install = False
                     status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                
 
     return install
 
