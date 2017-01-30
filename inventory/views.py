@@ -31,7 +31,7 @@ import sys
 
 def compare_versions(version1, version2):
     from distutils.version import StrictVersion, LooseVersion
-    if v1 == "" or v2 == "":
+    if version1 == "" or version2 == "":
         return 0
     v1 = version1.encode('ascii', 'ignore')
     v2 = version2.encode('ascii', 'ignore')
