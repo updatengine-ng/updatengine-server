@@ -61,6 +61,8 @@
     {% endblock %}
     <!-- EXTRAHEAD -->
     {% block extrahead %}{% endblock %}
+    <link rel="shortcut icon" href="{{ STATIC_URL }}/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{ STATIC_URL }}/images/favicon.ico" type="image/x-icon">
 </head>
 <body class="{% if is_popup %}grp-popup {% endif %}{% block bodyclass %}{% endblock %}{% if LANGUAGE_BIDI %} rtl{% endif %}">
     <div id="grp-container">
