@@ -61,8 +61,7 @@
     {% endblock %}
     <!-- EXTRAHEAD -->
     {% block extrahead %}{% endblock %}
-    <link rel="shortcut icon" href="{{ STATIC_URL }}/images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="{{ STATIC_URL }}/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{ STATIC_URL }}images/favicon.ico">
 </head>
 <body class="{% if is_popup %}grp-popup {% endif %}{% block bodyclass %}{% endblock %}{% if LANGUAGE_BIDI %} rtl{% endif %}">
     <div id="grp-container">
@@ -75,7 +74,7 @@
 
 <div id="grp-navigation">
         {% load admin_urls %}
-	<h1 id="grp-admin-title"><img src="{{ STATIC_URL }}/images/logo-updatengine-2.1-server.png" height=50px alt="updatengine logo"></h1>
+	<h1 id="grp-admin-title"><img src="{{ STATIC_URL }}images/logo-updatengine-2.1-server.png" height=50px alt="updatengine logo"></h1>
     {% if user.is_authenticated and user.is_staff %}
         <ul id="grp-user-tools">
             <!-- inventory -->
