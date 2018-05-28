@@ -58,7 +58,7 @@ class statusFilter(SimpleListFilter):
              if 'status' in request.GET:
                  return queryset.filter(status__iexact=self.value())
          else:
-             return queryset
+             return queryset.exclude(status__startswith='Warning')
 
 class packageHistoryFilter(SimpleListFilter):
     # Human-readable title which will be displayed in the
