@@ -21,13 +21,14 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from lxml import etree
-from inventory.models import machine, typemachine, software, net, osdistribution
+from inventory.models import machine, typemachine, software, net, osdistribution, entity
 from deploy.models import package, packagehistory
 from configuration.models import deployconfig
 from datetime import datetime
 from django.utils.timezone import utc
 from xml.sax.saxutils import escape
 from django.db.models import Count, Max
+from netaddr import IPNetwork, IPAddress
 import sys
 
 def compare_versions(version1, version2):
@@ -397,6 +398,43 @@ def inventory(xml):
 
         # Delete duplicated machines
         remove_duplicates()
+
+        # Automatically set the entity
+        #
+        # IMPORTANT!
+        # 'ip_range' field must exist in database. It can be added with this commands :
+        #     /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py dbshell
+        #     ALTER TABLE inventory_entity ADD ip_range VARCHAR(200);
+        #
+        if m.entity_id is not None:
+            # get all ip addresses of the client
+            host_ip = net.objects.filter(host_id=m.id).values_list('ip', flat=True)
+            is_ip_matched = False # Test to stop search after an ip matching an entity
+            for host_ip_addr in host_ip:
+                if is_ip_matched:
+                    break
+                host_ip_addr = "".join(host_ip_addr)
+
+                # get only entities with an ip_range value
+                for entity_obj in entity.objects.exclude(ip_range__isnull=True).exclude(ip_range__exact=''):
+                    network = entity_obj.ip_range.split(',')
+                    # check client IP with all comma separated IP/CIDR networks (could be simple a IP Address)
+                    for network_range in network:
+                        try:
+                            if IPAddress(host_ip_addr) in IPNetwork(network_range):
+                               if m.entity_id != entity_obj.id:
+                                   host_previous_entity = entity.objects.filter(id = m.entity_id)[0]
+                                   handling.append("<info>Entity updated for %s from '%s' to '%s'</info>"% (m.name,host_previous_entity.name,entity_obj.name))
+                                   m.entity_id = entity_obj.id
+                                   m.entity.redistrib_url = entity_obj.redistrib_url
+                                   m.save()
+                               is_ip_matched = True
+                               break
+                        except:
+                            handling.append("<error>Invalid network in ip range for entity '%s' : '%s'</error>"% (entity_obj.name,network_range))
+                            pass
+                    if is_ip_matched:
+                        break
 
         # packages program
         # check if it's the time to deploy and if it's authorized

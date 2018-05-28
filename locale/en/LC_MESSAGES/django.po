@@ -948,6 +948,14 @@ msgstr "Force deployment period?"
 msgid "entity|redistrib_url"
 msgstr "Path to the redistribution server"
 
+#: inventory/models.py:41
+msgid "entity|ip_range"
+msgstr "Force auto assignment for IP networks"
+
+#: inventory/models.py:41
+msgid "entity|ip range help text"
+msgstr "List of comma separated IP addresses. Ex:192.168.1.0/24,192.168.2.1"
+
 #: inventory/models.py:47 updatengine/templates/admin/base.html:90
 msgid "entity|entities"
 msgstr "   Entities"

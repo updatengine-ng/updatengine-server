@@ -57,8 +57,8 @@ class softInline(admin.TabularInline):
     #            return False
 
 class entityAdmin(ueAdmin):
-    fields = ['name','description','parent','packageprofile','force_packageprofile','timeprofile','force_timeprofile','redistrib_url']
-    list_display = ('name','description','parent','packageprofile','force_packageprofile','timeprofile','force_timeprofile','redistrib_url')
+    fields = ['name','description','parent','packageprofile','force_packageprofile','timeprofile','force_timeprofile','redistrib_url','ip_range']
+    list_display = ('name','description','parent','packageprofile','force_packageprofile','timeprofile','force_timeprofile','redistrib_url','ip_range')
     list_editable = ('packageprofile','force_packageprofile','timeprofile','force_timeprofile')
     ordering =('name',)
 
