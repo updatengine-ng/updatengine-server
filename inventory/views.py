@@ -469,7 +469,7 @@ def post(request):
         if (action == 'inventory') and (request.POST.get('xml')):
             xml = request.POST.get('xml')
             handling = inventory(xml)
-            response = render_to_response("response_xml.html", {"list": handling}, mimetype="application/xhtml+xml")
+            response = render_to_response("response_xml.html", {"list": handling}, content_type="application/xhtml+xml")
         elif action == 'status':
             xml = request.POST.get('xml')
             handling = status(xml)
