@@ -187,6 +187,30 @@ def check_conditions(m,pack):
                         install = False
                         status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
+    # System name is not (one wildcard can be used)
+    if install == True:
+	for condition in pack.conditions.filter(depends='system_not'):
+            if condition.softwareversion != 'undefined':
+                if '*' in condition.softwarename:
+                    nametab = condition.softwarename.split('*')
+                    if osdistribution.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1], version__icontains=condition.softwareversion).exists():
+                        install = False
+                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                else:
+                    if osdistribution.objects.filter(host_id=m.id, name__icontains=condition.softwarename, version__icontains=condition.softwareversion).exists():
+                        install = False
+                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+            else:
+                if '*' in condition.softwarename:
+                    nametab = condition.softwarename.split('*')
+                    if osdistribution.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
+                        install = False
+                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                else:
+                    if osdistribution.objects.filter(host_id=m.id, name__icontains=condition.softwarename).exists():
+                        install = False
+                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+
     # Default system language is (ex: fr_FR)
     if install == True:
         for condition in pack.conditions.filter(depends='language_is'):

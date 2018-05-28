@@ -46,7 +46,7 @@ class packagecondition(models.Model):
             ('notinstalled',_('notinstalled')),
             ('lower',_('lower')),
             ('higher',_('higher')),
-            ('system_is',_('operating_system_is')),
+            ('system_is',_('operating_system_is')), ('system_not',_('operating_system_not')),
             ('is_W64_bits',_('is_W64_bits')),
             ('is_W32_bits',_('is_W32_bits')),
             ('language_is',_('language_is'))

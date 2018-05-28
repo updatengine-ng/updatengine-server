@@ -464,6 +464,10 @@ msgstr "Logiciel installé et version supérieure à :"
 msgid "operating_system_is"
 msgstr "Système d'exploitation est:"
 
+#: deploy/models.py:49
+msgid "operating_system_not"
+msgstr "Système d'exploitation n'est pas:"
+
 #: deploy/models.py:50
 msgid "is_W64_bits"
 msgstr "Poste Windows 64 bits"

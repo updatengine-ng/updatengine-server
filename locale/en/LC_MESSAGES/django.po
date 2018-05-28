@@ -454,6 +454,10 @@ msgstr "Software installed and version upper than :"
 msgid "operating_system_is"
 msgstr "Operating system is:"
 
+#: deploy/models.py:49
+msgid "operating_system_not"
+msgstr "Operating system is not:"
+
 #: deploy/models.py:50
 msgid "is_W64_bits"
 msgstr "Windows 64bits computer"
