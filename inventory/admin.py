@@ -131,8 +131,8 @@ class entityAdmin(ueAdmin):
 class machineAdmin(ueAdmin):
     select_related = True
     fields = ['name', 'comment', 'serial','uuid','domain','username','language', 'vendor','product','manualy_created','entity','typemachine','timeprofile','packageprofile','packages']
-    list_display = ('lastsave','entity','name','domain','username','vendor','product','typemachine','packageprofile','timeprofile','comment')
-    list_editable = ('entity','packageprofile','timeprofile','comment')
+    list_display = ('lastsave','entity','name','username','operatingsystem','vendor','product','typemachine','packageprofile','timeprofile')
+    list_editable = ('entity','packageprofile','timeprofile')
     list_filter = (('lastsave', DateFieldListFilter), entityFilter, domainFilter,usernameFilter,languageFilter,typemachineFilter,osarchFilter, osdistributionFilter, commentFilter, timeprofileFilter,packageprofileFilter, enableFilter, as_or_notFilter, softwareFilter, versionFilter)
     search_fields = ('name', 'serial','vendor','product','domain','username','language','comment')
     readonly_fields = ('typemachine', 'manualy_created',)
@@ -141,6 +141,15 @@ class machineAdmin(ueAdmin):
     date_hierarchy = 'lastsave'
     ordering =('-lastsave',)
     actions = ['force_contact', 'force_wakeup']
+
+    def operatingsystem(self, instance):
+        # Inspired from https://groups.google.com/forum/#!topic/updatengine-fr/gx5YaUOXEv8 (thx jerome)
+        os_name = osdistribution.objects.filter(host=instance.id).values_list('name', flat=True)
+        os_arch = osdistribution.objects.filter(host=instance.id).values_list('arch', flat=True)
+        result = "%s %s." % ("".join(os_name), "".join(os_arch))
+        return result
+    operatingsystem.admin_order_field = 'osdistribution__name'
+    operatingsystem.short_description = _('operatingsystem')
 
     def queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
