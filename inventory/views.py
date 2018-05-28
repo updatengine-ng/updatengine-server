@@ -27,6 +27,7 @@ from configuration.models import deployconfig
 from datetime import datetime
 from django.utils.timezone import utc
 from xml.sax.saxutils import escape
+from django.db.models import Count, Max
 import sys
 
 def compare_versions(version1, version2):
@@ -394,6 +395,9 @@ def inventory(xml):
         except:
             handling.append('<Error>can\'t save machine!</Import>')
 
+        # Delete duplicated machines
+        remove_duplicates()
+
         # packages program
         # check if it's the time to deploy and if it's authorized
         period_to_deploy = is_deploy_authorized(m, handling)
@@ -486,3 +490,22 @@ def post(request):
     else:
         response = render_to_response("post_template.html", context_instance=RequestContext(request))
     return response
+
+def remove_duplicates():
+    '''Remove all duplicated machines when an inventory is received (more recent entry is keeped)'''
+    '''order_by is useful to set the more recent packageprofile if there are many duplicates for one machine'''
+    duplicates = machine.objects.values('name').annotate(count=Count('id'),max_lastsave=Max('lastsave')).filter(count__gt=1).order_by('lastsave')
+
+    for duplicate in duplicates:
+        current_host_obj = machine.objects.filter(name = duplicate['name'], lastsave = duplicate['max_lastsave'])[0]
+        for host_obj in machine.objects.filter(name = duplicate['name']).exclude(lastsave = duplicate['max_lastsave']):
+            # Set packageprofile to newest machine
+            current_host_obj.packageprofile = host_obj.packageprofile
+            current_host_obj.timeprofile = host_obj.timeprofile
+            current_host_obj.save()
+            # Delete all entries
+            software.objects.filter(host_id=host_obj.id).delete()
+            osdistribution.objects.filter(host_id=host_obj.id).delete()
+            net.objects.filter(host_id=host_obj.id).delete()
+            packagehistory.objects.filter(machine_id=host_obj.id).delete()
+            machine.objects.filter(id=host_obj.id).delete()
