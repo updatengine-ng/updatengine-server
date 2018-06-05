@@ -1,6 +1,12 @@
-from django.db import models
+from __future__ import absolute_import, unicode_literals
+
+import six
+
+from django.db import connections, models, router
 from django.db.models.query import QuerySet
-from django.db import connections, router
+from django.utils.encoding import smart_text
+
+from adminactions.compat import get_all_field_names, get_field_by_name
 
 
 def clone_instance(instance, fieldnames=None):
@@ -20,8 +26,8 @@ def clone_instance(instance, fieldnames=None):
     return instance.__class__(**new_kwargs)
 
 
-def get_copy_of_instance(instance):
-    return instance.__class__.objects.get(pk=instance.pk)
+# def get_copy_of_instance(instance):
+# return instance.__class__.objects.get(pk=instance.pk)
 
 
 def get_attr(obj, attr, default=None):
@@ -51,12 +57,31 @@ def get_attr(obj, attr, default=None):
 
 
 def getattr_or_item(obj, name):
+    """
+    works indifferently on dict or objects, retrieving the
+    'name' attribute or item
+
+    :param obj:  dict or object
+    :param name: attribute or item name
+    :return:
+    >>> from django.contrib.auth.models import Permission
+    >>> p = Permission(name='perm')
+    >>> d ={'one': 1, 'two': 2}
+    >>> getattr_or_item(d, 'one')
+    1
+    >>> print(getattr_or_item(p, 'name'))
+    perm
+    >>> getattr_or_item(dict, "!!!")
+    Traceback (most recent call last):
+        ...
+    AttributeError: type object has no attribute/item '!!!'
+    """
     try:
         ret = get_attr(obj, name, AttributeError())
     except AttributeError:
         try:
             ret = obj[name]
-        except KeyError:
+        except (KeyError, TypeError):
             raise AttributeError("%s object has no attribute/item '%s'" % (obj.__class__.__name__, name))
     return ret
 
@@ -72,24 +97,39 @@ def get_field_value(obj, field, usedisplay=True, raw_callable=False):
 
     >>> from django.contrib.auth.models import Permission
     >>> p = Permission(name='perm')
-    >>> print get_field_value(p, 'name')
-    perm
-
+    >>> get_field_value(p, 'name') == 'perm'
+    True
+    >>> get_field_value(p, None) 
+    Traceback (most recent call last):
+        ...
+    ValueError: Invalid value for parameter `field`: Should be a field name or a Field instance
     """
-    if isinstance(field, basestring):
+    if isinstance(field, six.string_types):
         fieldname = field
     elif isinstance(field, models.Field):
         fieldname = field.name
     else:
-        raise ValueError('Invalid value for parameter `field`: Should be a field name or a Field instance ')
+        raise ValueError('Invalid value for parameter `field`: Should be a field name or a Field instance')
 
     if usedisplay and hasattr(obj, 'get_%s_display' % fieldname):
         value = getattr(obj, 'get_%s_display' % fieldname)()
     else:
         value = getattr_or_item(obj, fieldname)
 
+    if hasattr(value, 'all'):
+        value = ';'.join(smart_text(obj) for obj in value.all())
     if not raw_callable and callable(value):
-        return value()
+        value = value()
+
+    if isinstance(value, models.Model):
+        return smart_text(value)
+
+    # if isinstance(obj, Model):
+    #     field = get_field_by_path(obj, fieldname)
+    #     if isinstance(field, ForeignKey):
+    #         return unicode(value)
+    if isinstance(value, six.string_types):
+        value = smart_text(value)
 
     return value
 
@@ -106,20 +146,16 @@ def get_field_by_path(model, field_path):
     >>> from django.contrib.auth.models import Permission
 
     >>> p = Permission(name='perm')
-    >>> f = get_field_by_path(Permission, 'content_type')
-    >>> print f
-    <django.db.models.fields.related.ForeignKey: content_type>
-
+    >>> get_field_by_path(Permission, 'content_type').name
+    'content_type'
     >>> p = Permission(name='perm')
-    >>> f = get_field_by_path(p, 'content_type.app_label')
-    >>> print f
-    <django.db.models.fields.CharField: app_label>
-
+    >>> get_field_by_path(p, 'content_type.app_label').name
+    'app_label'
     """
     parts = field_path.split('.')
     target = parts[0]
-    if target in model._meta.get_all_field_names():
-        field_object, model, direct, m2m = model._meta.get_field_by_name(target)
+    if target in get_all_field_names(model):
+        field_object, model, direct, m2m = get_field_by_name(model, target)
         if isinstance(field_object, models.fields.related.ForeignKey):
             if parts[1:]:
                 return get_field_by_path(field_object.rel.to, '.'.join(parts[1:]))
@@ -150,22 +186,18 @@ def get_verbose_name(model_or_queryset, field):
     >>> from django.contrib.auth.models import User, Permission
     >>> user = User()
     >>> p = Permission()
-    >>> print unicode(get_verbose_name(user, 'username'))
-    username
-    >>> print unicode(get_verbose_name(User, 'username'))
-    username
-    >>> print unicode(get_verbose_name(User.objects.all(), 'username'))
-    username
-    >>> print unicode(get_verbose_name(User.objects, 'username'))
-    username
-    >>> print unicode(get_verbose_name(User.objects, user._meta.get_field_by_name('username')[0]))
-    username
-    >>> print unicode(get_verbose_name(p, 'content_type.model'))
-    python model class name
-    >>> get_verbose_name(object, 'aaa')
-    Traceback (most recent call last):
-    ...
-    ValueError: `get_verbose_name` expects Manager, Queryset or Model as first parameter (got <type 'type'>)
+    >>> get_verbose_name(user, 'username') == 'username'
+    True
+    >>> get_verbose_name(User, 'username') == 'username'
+    True
+    >>> get_verbose_name(User.objects.all(), 'username') == 'username'
+    True
+    >>> get_verbose_name(User.objects, 'username') == 'username'
+    True
+    >>> get_verbose_name(User.objects, user._meta.fields[0]) == 'ID'
+    True
+    >>> get_verbose_name(p, 'content_type.model') == 'python model class name' 
+    True
     """
 
     if isinstance(model_or_queryset, models.Manager):
@@ -180,7 +212,7 @@ def get_verbose_name(model_or_queryset, field):
         raise ValueError('`get_verbose_name` expects Manager, Queryset or Model as first parameter (got %s)' % type(
             model_or_queryset))
 
-    if isinstance(field, basestring):
+    if isinstance(field, six.string_types):
         field = get_field_by_path(model, field)
     elif isinstance(field, models.Field):
         field = field
@@ -212,13 +244,8 @@ def flatten(iterable):
 
     result = list()
     for el in iterable:
-        if hasattr(el, "__iter__") and not isinstance(el, basestring):
+        if hasattr(el, "__iter__") and not isinstance(el, six.string_types):
             result.extend(flatten(el))
         else:
             result.append(el)
     return list(result)
-
-
-def model_supports_transactions(instance):
-    alias = router.db_for_write(instance)
-    return connections[alias].features.supports_transactions

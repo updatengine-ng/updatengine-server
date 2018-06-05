@@ -324,7 +324,41 @@ msgstr "Deployment configurations"
 msgid "entity|entity"
 msgstr "entity"
 
-#: configuration/models.py:55 configuration/models.py:56
+#: configuration/models.py:55
+msgid "globalconfig|name"
+msgstr "Configuration name"
+
+#: configuration/models.py:56
+msgid "globalconfig|show_warning"
+msgstr "Show history warnings"
+
+#: configuration/models.py:56
+msgid "globalconfig|show_warning help text"
+msgstr ""
+"In deployment history, hide or show the warning messages "
+"('Warning...') indicating that a condition is not satisfied. "
+"These messages indicate that the software is already installed."
+
+#: configuration/models.py:57
+msgid "globalconfig|remove_duplicate"
+msgstr "Remove duplicated machines"
+
+#: configuration/models.py:57
+msgid "globalconfig|remove_duplicate help text"
+msgstr ""
+"The duplicate machine deletion process is performed at each inventory update. "
+"In case of a machine with the same name, the old configuration profile values "
+"and deployment period are retrieved."
+
+#: configuration/models.py:60
+msgid "globalconfig|globalconfig"
+msgstr "General configuration"
+
+#: configuration/models.py:61
+msgid "globalconfig|globalconfigs"
+msgstr "General configuration"
+
+#: configuration/models.py:72 configuration/models.py:73
 msgid "subuser|entity"
 msgstr ""
 
@@ -623,7 +657,7 @@ msgstr "deployment history"
 
 #: deploy/models.py:198 updatengine/templates/admin/base.html:114
 msgid "packagehistory|packages history"
-msgstr "    Deployment history"
+msgstr "Deployment history"
 
 #: deploy/models.py:210
 msgid "packageprofile|name"
@@ -807,6 +841,10 @@ msgstr "import/export"
 #: deploy/models.py:324
 msgid "impex|imports/exports"
 msgstr "Imports/Exports"
+
+#: inventory/admin.py:151
+msgid "operating_system"
+msgstr "Operating system"
 
 #: inventory/admin.py:155
 msgid "force_wakeup"

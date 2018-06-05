@@ -1,23 +1,32 @@
 # -*- coding: utf-8 -*-
-'''
-Created on 28/ott/2009
+from __future__ import absolute_import, unicode_literals
 
-@author: sax
-'''
+import json
+from six.moves import zip
+
+import django
+from django.contrib import messages
+from django.contrib.admin import helpers
 from django.db.models.aggregates import Count
 from django.db.models.fields.related import ForeignKey
-from django.forms.fields import CharField, BooleanField, ChoiceField
-from django.forms.forms import Form, DeclarativeFieldsMetaclass
+from django.forms.fields import BooleanField, CharField, ChoiceField
+from django.forms.forms import DeclarativeFieldsMetaclass, Form
 from django.forms.widgets import HiddenInput, MultipleHiddenInput
-import json
-from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.utils.encoding import force_unicode
-from django.contrib.admin import helpers
+from django.utils.encoding import smart_text
+from django.utils.translation import ugettext_lazy as _
 
-from adminactions.exceptions import ActionInterrupted
-from adminactions.signals import adminaction_requested, adminaction_start, adminaction_end
+from .compat import get_field_by_name
+from .exceptions import ActionInterrupted
+from .models import get_permission_codename
+from .signals import adminaction_end, adminaction_requested, adminaction_start
+
+if django.VERSION[:2] > (1, 8):
+    from django.shortcuts import render
+
+    def render_to_response(template_name, context):  # noqa
+        return render(context.request, template_name, context=context.flatten())
 
 
 def graph_form_factory(model):
@@ -39,7 +48,13 @@ def graph_form_factory(model):
     return DeclarativeFieldsMetaclass(str(class_name), (Form,), attrs)
 
 
-def graph_queryset(modeladmin, request, queryset):
+def graph_queryset(modeladmin, request, queryset):  # noqa
+    opts = modeladmin.model._meta
+    perm = "{0}.{1}".format(opts.app_label.lower(), get_permission_codename('adminactions_chart', opts))
+    if not request.user.has_perm(perm):
+        messages.error(request, _('Sorry you do not have rights to execute this action'))
+        return
+
     MForm = graph_form_factory(modeladmin.model)
 
     graph_type = table = None
@@ -69,10 +84,10 @@ def graph_queryset(modeladmin, request, queryset):
                 return
             try:
                 x = form.cleaned_data['axes_x']
-                #            y = form.cleaned_data['axes_y']
+                # y = form.cleaned_data['axes_y']
                 graph_type = form.cleaned_data['graph_type']
 
-                field, model, direct, m2m = modeladmin.model._meta.get_field_by_name(x)
+                field, model, direct, m2m = get_field_by_name(modeladmin.model, x)
                 cc = queryset.values_list(x).annotate(Count(x)).order_by()
                 if isinstance(field, ForeignKey):
                     data_labels = []
@@ -83,13 +98,13 @@ def graph_queryset(modeladmin, request, queryset):
                 elif hasattr(modeladmin.model, 'get_%s_display' % field.name):
                     data_labels = []
                     for value, cnt in cc:
-                        data_labels.append(force_unicode(dict(field.flatchoices).get(value, value), strings_only=True))
+                        data_labels.append(smart_text(dict(field.flatchoices).get(value, value), strings_only=True))
                 else:
                     data_labels = [str(l) for l, v in cc]
                 data = [v for l, v in cc]
 
                 if graph_type == 'BarChart':
-                    table = [[10, 20]]
+                    table = [data]
                     extra = """{seriesDefaults:{renderer:$.jqplot.BarRenderer,
                                                 rendererOptions: {fillToZero: true,
                                                                   barDirection: 'horizontal'},
@@ -103,7 +118,7 @@ def graph_queryset(modeladmin, request, queryset):
                                       }
                                 }""" % (json.dumps(data_labels), json.dumps(data_labels))
                 elif graph_type == 'PieChart':
-                    table = [zip(data_labels, data)]
+                    table = [list(zip(data_labels, data))]
                     extra = """{seriesDefaults: {renderer: jQuery.jqplot.PieRenderer,
                                                 rendererOptions: {fill: true,
                                                                     showDataLabels: true,
@@ -136,13 +151,18 @@ def graph_queryset(modeladmin, request, queryset):
     ctx = {'adminform': adminForm,
            'action': 'graph_queryset',
            'opts': modeladmin.model._meta,
-            'title': u"Graph %s" % force_unicode(modeladmin.opts.verbose_name_plural),
+           'action_short_description': graph_queryset.short_description,
+           'title': u"%s (%s)" % (
+               graph_queryset.short_description.capitalize(),
+               smart_text(modeladmin.opts.verbose_name_plural),
+           ),
            'app_label': queryset.model._meta.app_label,
            'media': media,
            'extra': extra,
            'as_json': json.dumps(table),
            'graph_type': graph_type}
+    ctx.update(modeladmin.admin_site.each_context(request))
     return render_to_response('adminactions/charts.html', RequestContext(request, ctx))
 
 
-graph_queryset.short_description = "Graph selected records"
+graph_queryset.short_description = _("Graph selected records")

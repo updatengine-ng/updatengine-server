@@ -4,7 +4,7 @@
  */
 
 (function($){
-    
+
     var methods = {
         init: function(options) {
             options = $.extend({}, $.fn.grp_related_m2m.defaults, options);
@@ -14,15 +14,17 @@
                 $this.parent().find('a.related-lookup').after(options.placeholder);
                 // change lookup class
                 $this.next().addClass("grp-m2m");
+                // add related class
+                $this.addClass('grp-has-related-lookup');
                 // lookup
                 lookup_id($this, options); // lookup when loading page
-                $this.bind("change focus keyup blur", function() { // id-handler
+                $this.bind("change focus keyup", function() { // id-handler
                     lookup_id($this, options);
                 });
             });
         }
     };
-    
+
     $.fn.grp_related_m2m = function(method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
@@ -33,27 +35,34 @@
         }
         return false;
     };
-    
+
     var lookup_id = function(elem, options) {
         $.getJSON(options.lookup_url, {
             object_id: elem.val(),
             app_label: grappelli.get_app_label(elem),
-            model_name: grappelli.get_model_name(elem)
+            model_name: grappelli.get_model_name(elem),
+            query_string: grappelli.get_query_string(elem)
         }, function(data) {
-            values = $.map(data, function (a) { return '<span class="grp-placeholder-label">' + a.label + '</span>'; });
-            if (values == "") {
+            values = $.map(data, function (a, i) {
+                if (data.length === i + 1) {
+                    return $('<span class="grp-placeholder-label"></span>').text(a.label + '\u200E');
+                } else {
+                    return $('<span class="grp-placeholder-label"></span>').text(a.label + '\u200E').append($('<span class="grp-separator"></span>'));
+                }
+            });
+            if (values === "") {
                 elem.parent().find('.grp-placeholder-related-m2m').hide();
             } else {
                 elem.parent().find('.grp-placeholder-related-m2m').show();
             }
-            elem.parent().find('.grp-placeholder-related-m2m').html(values.join('<span class="grp-separator"></span>'));
+            elem.parent().find('.grp-placeholder-related-m2m').html(values);
         });
     };
-    
+
     $.fn.grp_related_m2m.defaults = {
         placeholder: '<div class="grp-placeholder-related-m2m"></div>',
         repr_max_length: 30,
         lookup_url: ''
     };
-    
+
 })(grp.jQuery);

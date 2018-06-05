@@ -55,7 +55,7 @@ class packagecondition(models.Model):
     depends = models.CharField(max_length=12, choices=choice, default='installed', verbose_name = _('packagecondition|depends'))
     softwarename = models.CharField(max_length=100, null= True, blank=True, default="undefined", verbose_name = _('packagecondition|softwarename'), help_text= _('packagecondition|softwarename help text'))
     softwareversion = models.CharField(max_length=500, null= True, blank=True, default="undefined", verbose_name = _('packagecondition|softwareversion'), help_text= _('packagecondition|softwareversion help text'))
-    entity = models.ManyToManyField(entity,null=True, blank=True, verbose_name = _('packagecondition|entity'))
+    entity = models.ManyToManyField(entity, blank=True, verbose_name = _('packagecondition|entity'))
     editor = models.ForeignKey(User, null=True, verbose_name = _('packagecondition| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('packagecondition|exclusive editor'))
 
@@ -66,6 +66,9 @@ class packagecondition(models.Model):
 
     def __unicode__(self):
         return self.name
+        
+def content_file_name(self, name):
+    return random_directory(prefix='package-file/', suffix='/'+name)
 
 class package(models.Model):
     choice_yes_no = (
@@ -74,13 +77,13 @@ class package(models.Model):
         )
     name = models.CharField(max_length=100, verbose_name = _('package|name'))
     description = models.CharField(max_length=500, verbose_name = _('package|description'))
-    conditions = models.ManyToManyField('packagecondition',null = True, blank = True, verbose_name = _('package|conditions'))
+    conditions = models.ManyToManyField('packagecondition', blank = True, verbose_name = _('package|conditions'))
     command = models.TextField(max_length=1000, verbose_name = _('package|command'), help_text= _('package|command help text'))
     packagesum = models.CharField(max_length=40, null= True, blank=True, verbose_name = _('package|packagesum'))
-    filename  = models.FileField(upload_to=lambda self,name: random_directory(prefix='package-file/', suffix='/'+name), null=True, blank=True, verbose_name = _('package|filename'))
+    filename  = models.FileField(upload_to=content_file_name, null=True, blank=True, verbose_name = _('package|filename'))
     ignoreperiod = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('package|ignore deploy period'))
     public = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('package| public package'))
-    entity = models.ManyToManyField(entity,null=True, blank=True, verbose_name = _('package|entity'))
+    entity = models.ManyToManyField(entity, blank=True, verbose_name = _('package|entity'))
     editor = models.ForeignKey(User, null=True, verbose_name = _('package| package last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('package|exclusive editor'))
 
@@ -209,9 +212,9 @@ class packageprofile(models.Model):
         )
     name = models.CharField(max_length=100, verbose_name = _('packageprofile|name'))
     description = models.CharField(max_length=500, verbose_name = _('packageprofile|description'))
-    packages = models.ManyToManyField('package',null = True, blank = True, verbose_name = _('packageprofile|packages'))
+    packages = models.ManyToManyField('package', blank = True, verbose_name = _('packageprofile|packages'))
     parent = models.ForeignKey('self', null=True, blank=True, related_name='child', on_delete=models.SET_NULL,verbose_name = _('packageprofile|parent'))
-    entity = models.ManyToManyField(entity,null=True, blank=True,  related_name='package_profile_entity', verbose_name = _('packageprofile|entity'))
+    entity = models.ManyToManyField(entity, blank=True,  related_name='package_profile_entity', verbose_name = _('packageprofile|entity'))
     editor = models.ForeignKey(User, null=True, verbose_name = _('packageprofile| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('packageprofile|exclusive editor'))
     
@@ -260,10 +263,10 @@ class packagewakeonlan(models.Model):
         )
     name = models.CharField(max_length=100, unique=True, verbose_name = _('packagewakeonlan|name'), help_text= _('packagewakeonlan|packagewakeonlan help text'))
     description = models.CharField(max_length=500, verbose_name = _('packagewakeonlan|description'))
-    machines = models.ManyToManyField('inventory.machine',null = True, blank = True, verbose_name = _('packagewakeonlan|machines to start'))
+    machines = models.ManyToManyField('inventory.machine', blank = True, verbose_name = _('packagewakeonlan|machines to start'))
     date = models.DateTimeField(verbose_name = _('packagewakeonlan|start_time'))
     status = models.CharField(max_length=100, choices=choice, default='Programmed', verbose_name = _('packagewakeonlan|status'))
-    entity = models.ManyToManyField(entity,null=True, blank=True,  related_name='packagewakonelan_entity', verbose_name = _('packagewakonelan|entity'))
+    entity = models.ManyToManyField(entity, blank=True,  related_name='packagewakonelan_entity', verbose_name = _('packagewakonelan|entity'))
     editor = models.ForeignKey(User, null=True, verbose_name = _('packagewakonelan| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('packagewakonelan|exclusive editor'))
 
@@ -284,7 +287,7 @@ class timeprofile(models.Model):
     description = models.CharField(max_length=500,null= True, blank= True, verbose_name = _('timeprofile|description'))
     start_time = models.TimeField(verbose_name = _('timeprofile|start_time'))
     end_time = models.TimeField(verbose_name = _('timeprofile|end_time'))
-    entity = models.ManyToManyField(entity,null=True, blank=True,  related_name='time_profile_entity', verbose_name = _('timeprofile|entity'))
+    entity = models.ManyToManyField(entity, blank=True,  related_name='time_profile_entity', verbose_name = _('timeprofile|entity'))
     editor = models.ForeignKey(User, null=True, verbose_name = _('timeprofile| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('timeprofile|exclusive editor'))
 
@@ -304,10 +307,10 @@ class impex(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name = _('impex|name'))
     description = models.TextField(max_length=500, verbose_name = _('impex|description'))
     packagesum = models.CharField(max_length=40, null= True, blank=True, verbose_name = _('impex|packagesum'))
-    filename  = models.FileField(upload_to=lambda self,name:random_directory(prefix='package-file/', suffix='/'+name), null=True, blank=True, default=None, verbose_name = _('impex|filename'))
+    filename  = models.FileField(upload_to=content_file_name, null=True, blank=True, default=None, verbose_name = _('impex|filename'))
     package = models.ForeignKey(package, null=True, blank=True, default=None, on_delete=models.SET_NULL, verbose_name = _('impex|package'))
     date = models.DateTimeField(auto_now=True, verbose_name = _('impex|date'))
-    entity = models.ManyToManyField(entity,null=True, blank=True,  related_name='impex_entity', verbose_name = _('impex|entity'))
+    entity = models.ManyToManyField(entity, blank=True,  related_name='impex_entity', verbose_name = _('impex|entity'))
     editor = models.ForeignKey(User, null=True, verbose_name = _('impex| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name = _('impex|exclusive editor'))
     

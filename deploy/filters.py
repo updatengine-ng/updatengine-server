@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from inventory.models import entity
 from deploy.models import packagehistory, packagecondition
 from django.utils.encoding import force_unicode
+from configuration.models import globalconfig
 
 # Filter dedicate to packagehistory pages
 class entityFilter(SimpleListFilter):
@@ -54,11 +55,14 @@ class statusFilter(SimpleListFilter):
             return packagehistory.objects.filter(machine__entity__pk__in = request.user.subuser.id_entities_allowed).order_by('status').values_list('status','status').distinct()
     
     def queryset(self, request, queryset):
+         main_config = globalconfig.objects.get(pk=1)
          if self.value() is not None:
              if 'status' in request.GET:
                  return queryset.filter(status__iexact=self.value())
+         elif main_config.show_warning == 'no':
+             return queryset.exclude(status__startswith='Warning') 
          else:
-             return queryset.exclude(status__startswith='Warning')
+             return queryset
 
 class packageHistoryFilter(SimpleListFilter):
     # Human-readable title which will be displayed in the

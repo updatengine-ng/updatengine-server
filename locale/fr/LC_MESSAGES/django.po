@@ -314,7 +314,7 @@ msgstr "Profil horaire (nouvelles machines)"
 
 #: configuration/models.py:43
 msgid "deployconfig|deployconfig"
-msgstr "configuration des déploiements"
+msgstr "Configuration des déploiements"
 
 #: configuration/models.py:44 updatengine/templates/admin/base.html:150
 msgid "deployconfig|deployconfigs"
@@ -324,7 +324,41 @@ msgstr "Configuration des déploiements"
 msgid "entity|entity"
 msgstr "entité"
 
-#: configuration/models.py:55 configuration/models.py:56
+#: configuration/models.py:55
+msgid "globalconfig|name"
+msgstr "Nom de la configuration"
+
+#: configuration/models.py:56
+msgid "globalconfig|show_warning"
+msgstr "Afficher les avertissements dans l'historique"
+
+#: configuration/models.py:56
+msgid "globalconfig|show_warning help text"
+msgstr ""
+"Dans l'historique des déploiements, affiche ou masque les messages d'avertissements "
+"('Warning...') indiquants qu'une condition n'est pas remplie. "
+"Ces messages indiquent donc que le logiciel est déjà installé."
+
+#: configuration/models.py:57
+msgid "globalconfig|remove_duplicate"
+msgstr "Supprimer les machines en doublons"
+
+#: configuration/models.py:57
+msgid "globalconfig|remove_duplicate help text"
+msgstr ""
+"Le processus de suppression des machines en doublons est effectué lors de chaque "
+"remontée d'inventaire. En cas de machine portant le même nom, les anciennes valeurs "
+"de profil de configuration et période de déploiement sont réattribuées."
+
+#: configuration/models.py:60
+msgid "globalconfig|globalconfig"
+msgstr "Configuration générale"
+
+#: configuration/models.py:61
+msgid "globalconfig|globalconfigs"
+msgstr "Configuration générale"
+
+#: configuration/models.py:72 configuration/models.py:73
 msgid "subuser|entity"
 msgstr "Droits récurssifs sur les entités"
 
@@ -527,7 +561,7 @@ msgstr "condition d'installation de logiciel"
 
 #: deploy/models.py:64 updatengine/templates/admin/base.html:122
 msgid "packagecondition|packages conditions"
-msgstr "  Conditions d'installations"
+msgstr "Conditions d'installations"
 
 #: deploy/models.py:75
 msgid "package|name"
@@ -585,7 +619,7 @@ msgstr "paquet de déploiement"
 
 #: deploy/models.py:89 updatengine/templates/admin/base.html:118
 msgid "package|deployment packages"
-msgstr "   Paquets de déploiements"
+msgstr "Paquets de déploiements"
 
 #: deploy/models.py:95
 msgid "packageAdmin|get_conditions"
@@ -633,7 +667,7 @@ msgstr "historique de déploiement"
 
 #: deploy/models.py:198 updatengine/templates/admin/base.html:114
 msgid "packagehistory|packages history"
-msgstr "    Historique des déploiements"
+msgstr "Historique des déploiements"
 
 #: deploy/models.py:210
 msgid "packageprofile|name"
@@ -669,7 +703,7 @@ msgstr "profil de configuration logicielle"
 
 #: deploy/models.py:220 updatengine/templates/admin/base.html:126
 msgid "packageprofile|packages profiles"
-msgstr " Profils de configurations"
+msgstr "Profils de configurations"
 
 #: deploy/models.py:250
 msgid "packageAdmin|get_packages"
@@ -820,6 +854,10 @@ msgstr "import/export"
 #: deploy/models.py:324
 msgid "impex|imports/exports"
 msgstr "Imports/Exports"
+
+#: inventory/admin.py:151
+msgid "operating_system"
+msgstr "Système d'exploitation"
 
 #: inventory/admin.py:155
 msgid "force_wakeup"
@@ -975,7 +1013,7 @@ msgstr "Liste d'adresses IP séparées par une virgule. Ex:192.168.1.0/24,192.16
 
 #: inventory/models.py:47 updatengine/templates/admin/base.html:90
 msgid "entity|entities"
-msgstr "   Entités"
+msgstr "Entités"
 
 #: inventory/models.py:102
 msgid "typemachine|name"
@@ -1071,7 +1109,7 @@ msgstr "machine"
 
 #: inventory/models.py:136 updatengine/templates/admin/base.html:86
 msgid "machine|machines"
-msgstr "    Machines"
+msgstr "Machines"
 
 #: inventory/models.py:187
 msgid "osdistribution|name"
@@ -1131,7 +1169,7 @@ msgstr "réseau"
 
 #: inventory/models.py:219 updatengine/templates/admin/base.html:98
 msgid "net|networks"
-msgstr " Réseaux"
+msgstr "Réseaux"
 
 #: inventory/models.py:228
 msgid "software|name"
@@ -1159,7 +1197,7 @@ msgstr "logiciel"
 
 #: inventory/models.py:240 updatengine/templates/admin/base.html:94
 msgid "software|softwares"
-msgstr "  Logiciels"
+msgstr "Logiciels"
 
 #: updatengine/dashboard.py:70
 msgid "Recent Actions"
@@ -1211,7 +1249,7 @@ msgstr "utilisateurs"
 
 #: updatengine/templates/admin/base.html:183
 msgid "Change password"
-msgstr "changer le mot de passe"
+msgstr "Changer le mot de passe"
 
 #: updatengine/templates/admin/base.html:191
 msgid "Log out"
@@ -1260,8 +1298,8 @@ msgstr "UpdatEngine administration"
 #~ msgid "Mass update %s"
 #~ msgstr "Modifications massives: %s "
 
-#~ msgid "Mass update"
-#~ msgstr "Modifications massives"
+msgid "Mass update"
+msgstr "Modifications massives"
 
 #~ msgid "Search GenericForeignKeys"
 #~ msgstr "Recherche de clefs étrangères"

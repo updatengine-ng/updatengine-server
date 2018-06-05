@@ -1,0 +1,16 @@
+#grp-content {
+    top: 135px;
+}
+    
+#grp-user-tools > li.grp-user-options-container {
+    width: 150px;
+}    
+
+div.grp-readonly {
+    border: none;
+    font-weight: normal;
+}
+
+table.grp-table td a.add-another, table.grp-table th a.add-another {
+    top: 0;    
+}

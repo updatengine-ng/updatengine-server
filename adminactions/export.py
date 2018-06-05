@@ -1,33 +1,56 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
+
 from itertools import chain
+from six.moves import zip
+
+import django
+from django import forms
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.admin import helpers
+from django.core import serializers as ser
 from django.core.serializers import get_serializer_formats
 from django.db import router
-from django.db.models import ManyToManyField, ForeignKey
+from django.db.models import ForeignKey, ManyToManyField
 from django.db.models.deletion import Collector
-from django.utils.translation import ugettext_lazy as _
-from django import forms
-from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.safestring import mark_safe
-from django.contrib.admin import helpers
-from django.core import serializers as ser
-from adminactions.exceptions import ActionInterrupted
-from adminactions.forms import CSVOptions, XLSOptions
-from adminactions.models import get_permission_codename
-from adminactions.signals import adminaction_requested, adminaction_start, adminaction_end
-from adminactions.api import export_as_csv as _export_as_csv, export_as_xls as _export_as_xls
+from django.utils.translation import ugettext_lazy as _
+
+from .api import (export_as_csv as _export_as_csv,
+                  export_as_xls as _export_as_xls,)
+from .exceptions import ActionInterrupted
+from .forms import CSVOptions, XLSOptions
+from .models import get_permission_codename
+from .signals import adminaction_end, adminaction_requested, adminaction_start
+
+if django.VERSION[:2] > (1, 8):
+    from django.shortcuts import render
+
+    def render_to_response(template_name, context):  # noqa
+        return render(context.request, template_name, context=context.flatten())
 
 
-def base_export(modeladmin, request, queryset, title, impl, name, template, form_class, ):
+def get_action(request):
+    try:
+        action_index = int(request.POST.get('index', 0))
+    except ValueError:
+        action_index = 0
+    return request.POST.getlist('action')[action_index]
+
+
+def base_export(modeladmin, request, queryset, title, impl,  # noqa
+                name, action_short_description, template, form_class, ):
     """
         export a queryset to csv file
     """
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label.lower(), get_permission_codename('adminactions_export', opts))
+    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_export', opts))
     if not request.user.has_perm(perm):
-        messages.error(request, _('Sorry you do not have rights to execute this action (%s)' % perm))
+        messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
 
     try:
@@ -40,12 +63,15 @@ def base_export(modeladmin, request, queryset, title, impl, name, template, form
         messages.error(request, str(e))
         return
 
-    cols = [(f.name, f.verbose_name) for f in queryset.model._meta.fields]
+    cols = [(f.name, f.verbose_name) for f in queryset.model._meta.fields +
+            queryset.model._meta.many_to_many]
     initial = {'_selected_action': request.POST.getlist(helpers.ACTION_CHECKBOX_NAME),
                'select_across': request.POST.get('select_across') == '1',
-               'action': request.POST.get('action'),
+               'action': get_action(request),
                'columns': [x for x, v in cols]}
-    # initial.update(csv_options_default)
+    if initial["action"] == "export_as_csv":
+        initial.update(getattr(
+            settings, "ADMINACTIONS_CSV_OPTIONS_DEFAULT", {}))
 
     if 'apply' in request.POST:
         form = form_class(request.POST)
@@ -91,6 +117,7 @@ def base_export(modeladmin, request, queryset, title, impl, name, template, form
     # tpl = 'adminactions/export_csv.html'
     ctx = {'adminform': adminForm,
            'change': True,
+           'action_short_description': action_short_description,
            'title': title,
            'is_popup': False,
            'save_as': False,
@@ -101,6 +128,7 @@ def base_export(modeladmin, request, queryset, title, impl, name, template, form
            'opts': queryset.model._meta,
            'app_label': queryset.model._meta.app_label,
            'media': mark_safe(media)}
+    ctx.update(modeladmin.admin_site.each_context(request))
     return render_to_response(template, RequestContext(request, ctx))
 
 
@@ -108,7 +136,11 @@ def export_as_csv(modeladmin, request, queryset):
     return base_export(modeladmin, request, queryset,
                        impl=_export_as_csv,
                        name='export_as_csv',
-                       title=_('Export as CSV'),
+                       action_short_description=export_as_csv.short_description,
+                       title=u"%s (%s)" % (
+                           export_as_csv.short_description.capitalize(),
+                           modeladmin.opts.verbose_name_plural,
+                       ),
                        template='adminactions/export_csv.html',
                        form_class=CSVOptions)
 
@@ -120,7 +152,11 @@ def export_as_xls(modeladmin, request, queryset):
     return base_export(modeladmin, request, queryset,
                        impl=_export_as_xls,
                        name='export_as_xls',
-                       title=_('Export as XLS'),
+                       action_short_description=export_as_xls.short_description,
+                       title=u"%s (%s)" % (
+                           export_as_xls.short_description.capitalize(),
+                           modeladmin.opts.verbose_name_plural,
+                       ),
                        template='adminactions/export_xls.html',
                        form_class=XLSOptions)
 
@@ -182,20 +218,26 @@ class FixtureOptions(forms.Form):
     add_foreign_keys = forms.BooleanField(required=False)
 
     indent = forms.IntegerField(required=True, max_value=10, min_value=0)
-    serializer = forms.ChoiceField(choices=zip(get_serializer_formats(), get_serializer_formats()))
+    serializer = forms.ChoiceField(choices=list(zip(get_serializer_formats(), get_serializer_formats())))
 
 
 def _dump_qs(form, queryset, data, filename):
     fmt = form.cleaned_data.get('serializer')
 
     json = ser.get_serializer(fmt)()
-    ret = json.serialize(data, use_natural_keys=form.cleaned_data.get('use_natural_key', False),
-                         indent=form.cleaned_data.get('indent'))
+    if django.VERSION[:2] >= (1, 9):
+        ret = json.serialize(data,
+                             # use_natural_primary_keys=form.cleaned_data.get('use_natural_key', False),
+                             use_natural_foreign_keys=form.cleaned_data.get('use_natural_key', False),
+                             indent=form.cleaned_data.get('indent'))
+    else:
+        ret = json.serialize(data, use_natural_keys=form.cleaned_data.get('use_natural_key', False),
+                             indent=form.cleaned_data.get('indent'))
 
     response = HttpResponse(content_type='application/json')
     if not form.cleaned_data.get('on_screen', False):
         filename = filename or "%s.%s" % (queryset.model._meta.verbose_name_plural.lower().replace(" ", "_"), fmt)
-        response['Content-Disposition'] = 'attachment;filename="%s"' % filename.encode('us-ascii', 'replace')
+        response['Content-Disposition'] = ('attachment;filename="%s"' % filename).encode('us-ascii', 'replace')
     response.content = ret
     return response
 
@@ -203,13 +245,14 @@ def _dump_qs(form, queryset, data, filename):
 def export_as_fixture(modeladmin, request, queryset):
     initial = {'_selected_action': request.POST.getlist(helpers.ACTION_CHECKBOX_NAME),
                'select_across': request.POST.get('select_across') == '1',
-               'action': request.POST.get('action'),
+               'action': get_action(request),
+
                'serializer': 'json',
                'indent': 4}
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label.lower(), get_permission_codename('adminactions_export', opts))
+    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_export', opts))
     if not request.user.has_perm(perm):
-        messages.error(request, _('Sorry you do not have rights to execute this action (%s)' % perm))
+        messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
 
     try:
@@ -262,7 +305,11 @@ def export_as_fixture(modeladmin, request, queryset):
     tpl = 'adminactions/export_fixture.html'
     ctx = {'adminform': adminForm,
            'change': True,
-           'title': _('Export as Fixture'),
+           'action_short_description': export_as_fixture.short_description,
+           'title': "%s (%s)" % (
+               export_as_fixture.short_description.capitalize(),
+               modeladmin.opts.verbose_name_plural,
+           ),
            'is_popup': False,
            'save_as': False,
            'has_delete_permission': False,
@@ -272,21 +319,22 @@ def export_as_fixture(modeladmin, request, queryset):
            'opts': queryset.model._meta,
            'app_label': queryset.model._meta.app_label,
            'media': mark_safe(media)}
+    ctx.update(modeladmin.admin_site.each_context(request))
     return render_to_response(tpl, RequestContext(request, ctx))
 
 
 export_as_fixture.short_description = _("Export as fixture")
 
 
-def export_delete_tree(modeladmin, request, queryset):
+def export_delete_tree(modeladmin, request, queryset):  # noqa
     """
     Export as fixture selected queryset and all the records that belong to.
     That mean that dump what will be deleted if the queryset was deleted
     """
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label.lower(), get_permission_codename('adminactions_export', opts))
+    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_export', opts))
     if not request.user.has_perm(perm):
-        messages.error(request, _('Sorry you do not have rights to execute this action (%s)' % perm))
+        messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
     try:
         adminaction_requested.send(sender=modeladmin.model,
@@ -300,7 +348,8 @@ def export_delete_tree(modeladmin, request, queryset):
 
     initial = {'_selected_action': request.POST.getlist(helpers.ACTION_CHECKBOX_NAME),
                'select_across': request.POST.get('select_across') == '1',
-               'action': request.POST.get('action'),
+               'action': get_action(request),
+
                'serializer': 'json',
                'indent': 4}
 
@@ -324,7 +373,7 @@ def export_delete_tree(modeladmin, request, queryset):
                 c = Collector(using)
                 c.collect(queryset, collect_related=collect_related)
                 data = []
-                for model, instances in c.data.items():
+                for model, instances in list(c.data.items()):
                     data.extend(instances)
                 adminaction_end.send(sender=modeladmin.model,
                                      action='export_delete_tree',
@@ -348,7 +397,11 @@ def export_delete_tree(modeladmin, request, queryset):
     tpl = 'adminactions/export_fixture.html'
     ctx = {'adminform': adminForm,
            'change': True,
-           'title': _('Export Delete Tree'),
+           'action_short_description': export_delete_tree.short_description,
+           'title': u"%s (%s)" % (
+               export_delete_tree.short_description.capitalize(),
+               modeladmin.opts.verbose_name_plural,
+           ),
            'is_popup': False,
            'save_as': False,
            'has_delete_permission': False,
@@ -358,6 +411,7 @@ def export_delete_tree(modeladmin, request, queryset):
            'opts': queryset.model._meta,
            'app_label': queryset.model._meta.app_label,
            'media': mark_safe(media)}
+    ctx.update(modeladmin.admin_site.each_context(request))
     return render_to_response(tpl, RequestContext(request, ctx))
 
 

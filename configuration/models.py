@@ -29,7 +29,7 @@ class deployconfig(models.Model):
             ('yes', _('yes')),
             ('no', _('no'))
         )
-    name =  models.CharField(max_length='100', verbose_name = _('deployconfig|name'))
+    name =  models.CharField(max_length=100, verbose_name = _('deployconfig|name'))
     activate_deploy = models.CharField(max_length=3, choices=choice, default='yes', verbose_name = _('deployconfig|activate_deploy'))
     activate_time_deploy = models.CharField(max_length=3, choices=choice, default='no', verbose_name = _('deployconfig|activate_time_deploy'))
     start_time = models.TimeField(verbose_name = _('deployconfig|start_time'))
@@ -45,11 +45,28 @@ class deployconfig(models.Model):
 
     def __unicode__(self):
         return self.activate_deploy
+        
+class globalconfig(models.Model):
+    unique = True
+    choice = (
+            ('yes', _('yes')),
+            ('no', _('no'))
+        )
+    name =  models.CharField(max_length=100, default='default', verbose_name = _('globalconfig|name'))
+    show_warning = models.CharField(max_length=3, choices=choice, default='no', verbose_name = _('globalconfig|show_warning'), help_text= _('globalconfig|show_warning help text'))
+    remove_duplicate = models.CharField(max_length=3, choices=choice, default='no', verbose_name = _('globalconfig|remove_duplicate'), help_text= _('globalconfig|remove_duplicate help text'))
+
+    class Meta:
+        verbose_name = _('globalconfig|globalconfig')
+        verbose_name_plural = _('globalconfig|globalconfigs')
+    
+    def __unicode__(self):
+        return self.name             
 
 # Create subuser to extend default django user
 class subuser(models.Model):
     user = models.OneToOneField(User, related_name='subuser')
-    entity = models.ManyToManyField(entity,null=True, blank=True, default=None, verbose_name = _('entity|entity'))
+    entity = models.ManyToManyField(entity, blank=True, default=None, verbose_name = _('entity|entity'))
     
     class Meta:
         verbose_name = _('subuser|entity')

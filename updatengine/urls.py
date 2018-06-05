@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
 ###################################################################################
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 
@@ -34,15 +34,15 @@ import adminactions.actions as actions
 site.add_action(actions.mass_update)
 site.add_action(actions.export_as_csv)
 
-urlpatterns = patterns('',
-    url(r'^/machine/(?P<machine_id>\d+)/$', machineviews),
+urlpatterns = [ 
+    url(r'^machine/(?P<machine_id>\d+)/$', machineviews),
     url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/', include(admin.site.urls)),
     url(r'^post/', post),
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^$', include(admin.site.urls)),
-    )
+    url(r'^', include(admin.site.urls)),
+]
 # Use lines below only during development if you want django 
 # to server static files
 

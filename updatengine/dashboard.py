@@ -40,23 +40,24 @@ class CustomIndexDashboard(Dashboard):
     def init_with_context(self, context):
 
         # append an app list module for "Applications"
-        self.children.append(modules.AppList(
-		title='',
+        # ".AppList( title=''," replaced by ".ModelList( _(header|label)," to have homogeneous display on 'home' page
+        self.children.append(modules.ModelList(		
+		_('header|Inventory'),
 		collapsible=False,
 		column=1,
 		css_classes=('collapse closed',),
 		models=('inventory.*',)
 		))
-	self.children.append(modules.AppList(
-		title='',
+	self.children.append(modules.ModelList(
+		_('header|Deploy'),
 		title_url='',
 		collapsible=False,
 		column=1,
 		css_classes=('collapse closed',),
 		models=('deploy.*',)
 		))
-	self.children.append(modules.AppList(
-		title='',
+	self.children.append(modules.ModelList(
+		_('header|Configuration'),
 		title_url='',
 		collapsible=False,
 		column=2,
@@ -98,6 +99,9 @@ class CustomIndexDashboard(Dashboard):
             	collapsible=False,
 		children=(
 			['www.updatengine.com', 'http://www.updatengine.com', True],
-			['Rss updatengine.com', 'http://www.updatengine.com/?feed=rss2', True],
+			['Groupe discussion UpdatEngine FR', 'https://groups.google.com/forum/#!forum/updatengine-fr', True],
+			['UpdatEngine Client','https://github.com/dam09fr/updatengine-client/releases/', True],
+			['Github Damien GUILLEM', 'https://github.com/dam09fr', True],
+			['Github Noel MARTINON', 'https://github.com/noelmartinon', True],
 		)
 	))

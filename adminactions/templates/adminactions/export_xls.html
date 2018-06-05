@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_modify admin_urls %}{% load url from future %}
+{% load i18n admin_modify admin_urls %}{% load url from aa_compat %}
 {% block extrahead %}{{ block.super }}
     <style type="text/css">
         #form {
@@ -20,7 +20,7 @@
         <a href="{% url 'admin:index' %}{{ app_label}}">{{ app_label|capfirst }}</a> &rsaquo;
         {% if has_change_permission %}<a
                 href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
-        CSV Export Options
+	{{ action_short_description|capfirst }}
     </div>
 {% endif %}{% endblock %}
 

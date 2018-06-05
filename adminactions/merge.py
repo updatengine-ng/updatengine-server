@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
-# from django.db import transaction
-import django
+from __future__ import absolute_import
+
 from datetime import datetime
-from django.utils.encoding import force_unicode
-from adminactions import api
+
+import django
+from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
-from django import forms
-from django.forms import TextInput, HiddenInput, DateTimeField
 from django.db import models
+from django.forms import HiddenInput, TextInput
 from django.forms.formsets import formset_factory
-from django.forms.models import modelform_factory, model_to_dict
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.utils.safestring import mark_safe
+from django.forms.models import model_to_dict, modelform_factory
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response
+from django.template import RequestContext
+from django.utils.encoding import smart_text
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from adminactions.forms import GenericActionForm
-from adminactions.models import get_permission_codename
-from adminactions.utils import clone_instance, model_supports_transactions
-import adminactions.compat as transaction
+
+from . import api, compat as transaction
+from .forms import GenericActionForm
+from .models import get_permission_codename
+from .utils import clone_instance
 
 
 class MergeForm(GenericActionForm):
@@ -51,7 +53,10 @@ class MergeForm(GenericActionForm):
         return int(self.cleaned_data['dependencies'])
 
     def clean_field_names(self):
-        return self.cleaned_data['field_names'].split(',')
+        if self.cleaned_data['field_names']:
+            return self.cleaned_data['field_names'].split(',')
+        else:
+            return None
 
     def full_clean(self):
         super(MergeForm, self).full_clean()
@@ -67,33 +72,40 @@ class MergeForm(GenericActionForm):
         css = {'all': ['adminactions/css/adminactions.min.css']}
 
 
-def merge(modeladmin, request, queryset):
+def merge(modeladmin, request, queryset):  # noqa
     """
     Merge two model instances. Move all foreign keys.
 
     """
 
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label.lower(), get_permission_codename('adminactions_merge', opts))
+    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_merge', opts))
     if not request.user.has_perm(perm):
-        messages.error(request, _('Sorry you do not have rights to execute this action (%s)' % perm))
+        messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
 
     def raw_widget(field, **kwargs):
         """ force all fields as not required"""
         kwargs['widget'] = TextInput({'class': 'raw-value'})
+        if isinstance(field, models.FileField):
+            kwargs["form_class"] = forms.CharField
+
         return field.formfield(**kwargs)
 
     merge_form = getattr(modeladmin, 'merge_form', MergeForm)
-    MForm = modelform_factory(modeladmin.model, form=merge_form, formfield_callback=raw_widget)
-    OForm = modelform_factory(modeladmin.model, formfield_callback=raw_widget)
+    MForm = modelform_factory(modeladmin.model,
+                              form=merge_form,
+                              exclude=('pk',),
+                              formfield_callback=raw_widget)
+    OForm = modelform_factory(modeladmin.model,
+                              exclude=('pk',),
+                              formfield_callback=raw_widget)
 
     tpl = 'adminactions/merge.html'
-    transaction_supported = model_supports_transactions(modeladmin.model)
-    transaction_supported = True
+    # transaction_supported = model_supports_transactions(modeladmin.model)
     ctx = {
         '_selected_action': request.POST.getlist(helpers.ACTION_CHECKBOX_NAME),
-        'transaction_supported': transaction_supported,
+        'transaction_supported': 'Un',
         'select_across': request.POST.get('select_across') == '1',
         'action': request.POST.get('action'),
         'fields': [f for f in queryset.model._meta.fields if not f.primary_key and f.editable],
@@ -130,11 +142,13 @@ def merge(modeladmin, request, queryset):
         if ok:
             if form.cleaned_data['dependencies'] == MergeForm.DEP_MOVE:
                 related = api.ALL_FIELDS
+                m2m = api.ALL_FIELDS
             else:
                 related = None
+                m2m = None
             fields = form.cleaned_data['field_names']
-            api.merge(master, other, fields=fields, commit=True, related=related)
-            return HttpResponseRedirect(request.path)
+            api.merge(master, other, fields=fields, commit=True, m2m=m2m, related=related)
+            return HttpResponseRedirect(request.get_full_path())
         else:
             messages.error(request, form.errors)
     else:
@@ -145,9 +159,15 @@ def merge(modeladmin, request, queryset):
                 if isinstance(field, models.DateTimeField):
                     for target in (master, other):
                         raw_value = getattr(target, field.name)
-                        fixed_value = datetime(raw_value.year, raw_value.month, raw_value.day,
-                                               raw_value.hour, raw_value.minute, raw_value.second)
-                        setattr(target, field.name, fixed_value)
+                        if raw_value:
+                            fixed_value = datetime(
+                                raw_value.year,
+                                raw_value.month,
+                                raw_value.day,
+                                raw_value.hour,
+                                raw_value.minute,
+                                raw_value.second)
+                            setattr(target, field.name, fixed_value)
         except ValueError:
             messages.error(request, _('Please select exactly 2 records'))
             return
@@ -167,10 +187,18 @@ def merge(modeladmin, request, queryset):
     ctx.update({'adminform': adminForm,
                 'formset': formset,
                 'media': mark_safe(media),
-                'title': u"Merge %s" % force_unicode(modeladmin.opts.verbose_name_plural),
+                'action_short_description': merge.short_description,
+                'title': u"%s (%s)" % (
+                    merge.short_description.capitalize(),
+                    smart_text(modeladmin.opts.verbose_name_plural),
+                ),
                 'master': master,
                 'other': other})
-    return render_to_response(tpl, RequestContext(request, ctx))
+    ctx.update(modeladmin.admin_site.each_context(request))
+    if django.VERSION[:2] > (1, 8):
+        return render(request, tpl, context=ctx)
+    else:
+        return render_to_response(tpl, RequestContext(request, ctx))
 
 
 merge.short_description = _("Merge selected %(verbose_name_plural)s")

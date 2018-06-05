@@ -41,6 +41,7 @@ class ueAdmin(admin.ModelAdmin):
 class packageForm(ModelForm):
     class Meta:
         model = package
+        fields = '__all__'
 
     # Custom form to be able to use request in clean method
     # http://stackoverflow.com/questions/1057252/how-do-i-access-the-request-object-or-any-other-variable-in-a-forms-clean-met/1057640#1057640
@@ -137,7 +138,8 @@ class packagehistoryAdmin(ueAdmin):
 
     def __init__(self, *args, **kwargs):
         super(packagehistoryAdmin, self).__init__(*args, **kwargs)
-        self.list_display_links = (None, )
+        #self.list_display_links = (None, )
+        self.list_display_links = ()
     
     def queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
@@ -155,6 +157,7 @@ class packagehistoryAdmin(ueAdmin):
 class packageprofileForm(ModelForm):
     class Meta:
         model = packageprofile
+        fields = '__all__'
 
     # Custom form to be able to use request in clean method
     # http://stackoverflow.com/questions/1057252/how-do-i-access-the-request-object-or-any-other-variable-in-a-forms-clean-met/1057640#1057640
@@ -239,6 +242,7 @@ class packageprofileAdmin(ueAdmin):
 class timeprofileForm(ModelForm):
     class Meta:
         model = timeprofile
+        fields = '__all__'
 
     # Custom form to be able to use request in clean method
     # http://stackoverflow.com/questions/1057252/how-do-i-access-the-request-object-or-any-other-variable-in-a-forms-clean-met/1057640#1057640
@@ -321,6 +325,7 @@ class timeprofileAdmin(ueAdmin):
 class packagewakeonlanForm(ModelForm):
     class Meta:
         model = packagewakeonlan
+        fields = '__all__'
 
     # Custom form to be able to use request in clean method
     # http://stackoverflow.com/questions/1057252/how-do-i-access-the-request-object-or-any-other-variable-in-a-forms-clean-met/1057640#1057640
@@ -400,9 +405,12 @@ class packagewakeonlanAdmin(ueAdmin):
         else:
             return packagewakeonlan.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).distinct()
 
+
+
 class packageconditionForm(ModelForm):
     class Meta:
         model = packagecondition
+        fields = '__all__'
 
     # Custom form to be able to use request in clean method
     # http://stackoverflow.com/questions/1057252/how-do-i-access-the-request-object-or-any-other-variable-in-a-forms-clean-met/1057640#1057640
@@ -481,6 +489,7 @@ class packageconditionAdmin(ueAdmin):
 class impexForm(ModelForm):
     class Meta:
         model = impex
+        fields = '__all__'
 
     # Custom form to be able to use request in clean method
     # http://stackoverflow.com/questions/1057252/how-do-i-access-the-request-object-or-any-other-variable-in-a-forms-clean-met/1057640#1057640

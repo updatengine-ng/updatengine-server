@@ -18,12 +18,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
 ###################################################################################
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from lxml import etree
 from inventory.models import machine, typemachine, software, net, osdistribution, entity
 from deploy.models import package, packagehistory
-from configuration.models import deployconfig
+from configuration.models import deployconfig, globalconfig
 from datetime import datetime
 from django.utils.timezone import utc
 from xml.sax.saxutils import escape
@@ -397,7 +396,9 @@ def inventory(xml):
             handling.append('<Error>can\'t save machine!</Import>')
 
         # Delete duplicated machines
-        remove_duplicates()
+        main_config = globalconfig.objects.get(pk=1)
+        if main_config.remove_duplicate == 'yes':
+            remove_duplicates()
 
         # Automatically set the entity
         #
@@ -511,22 +512,22 @@ def post(request):
         if (action == 'inventory') and (request.POST.get('xml')):
             xml = request.POST.get('xml')
             handling = inventory(xml)
-            response = render_to_response("response_xml.html", {"list": handling}, content_type="application/xhtml+xml")
+            response = render(request, "response_xml.html", {"list": handling}, content_type="application/xhtml+xml")
         elif action == 'status':
             xml = request.POST.get('xml')
             handling = status(xml)
-            response = render_to_response("response_xml.html", {"list": handling})
+            response = render(request, "response_xml.html", {"list": handling})
         elif action == 'softlist':
             if request.POST.get('pack') is not None:
                 handling = public_soft_list(request.POST.get('pack'))
             else:
                 handling = public_soft_list()
-            response = render_to_response("response_xml.html", {"list": handling})
+            response = render(request, "response_xml.html", {"list": handling})
         else:
             handling.append('<Error>No action found in sent xml</Error>')
-            response = render_to_response("response_xml.html", {"list": handling})
+            response = render(request, "response_xml.html", {"list": handling})
     else:
-        response = render_to_response("post_template.html", context_instance=RequestContext(request))
+        response = render(request, "post_template.html")
     return response
 
 def remove_duplicates():

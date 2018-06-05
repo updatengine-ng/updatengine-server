@@ -149,7 +149,7 @@ class machineAdmin(ueAdmin):
         result = "%s %s." % ("".join(os_name), "".join(os_arch))
         return result
     operatingsystem.admin_order_field = 'osdistribution__name'
-    operatingsystem.short_description = _('operatingsystem')
+    operatingsystem.short_description = _('operating_system')
 
     def queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed

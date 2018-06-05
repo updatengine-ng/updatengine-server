@@ -1,10 +1,9 @@
-NAME = 'django-adminactions'
-VERSION = __version__ = (0, 4, 0, 'final', 0)
-__author__ = 'sax'
-
-import subprocess
 import datetime
 import os
+import subprocess
+
+VERSION = __version__ = (1, 5, 0, 'final', 0)
+NAME = 'django-adminactions'
 
 
 def get_version(version=None):
@@ -26,6 +25,8 @@ def get_version(version=None):
     elif version[3] != 'final':
         mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'c'}
         sub = mapping[version[3]] + str(version[4])
+    elif version[3] == 'final' and version[4] != 0:
+        sub = '-%s' % version[4]
 
     return main + sub
 
@@ -41,9 +42,9 @@ so it's sufficient for generating the development version numbers.
     git_log = subprocess.Popen('git log --pretty=format:%ct --quiet -1 HEAD',
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                shell=True, cwd=repo_dir, universal_newlines=True)
-    timestamp = git_log.communicate()[0]
+    value = git_log.communicate()[0]
     try:
-        timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))
+        timestamp = datetime.datetime.utcfromtimestamp(int(value))
     except ValueError:
         return None
     return timestamp.strftime('%Y%m%d%H%M%S')

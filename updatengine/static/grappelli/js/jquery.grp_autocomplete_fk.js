@@ -4,16 +4,19 @@
  */
 
 (function($){
-    
+
     var methods = {
         init: function(options) {
             options = $.extend({}, $.fn.grp_autocomplete_fk.defaults, options);
             return this.each(function() {
                 var $this = $(this);
-                // tabindex
-                $this.attr("tabindex", "-1");
+                // assign attributes
+                $this.attr({
+                    "tabindex": "-1",
+                    "readonly": "readonly"
+                }).addClass("grp-autocomplete-hidden-field");
                 // remove djangos object representation (if given)
-                if ($this.next().next() && $this.next().next().attr("class") != "errorlist") $this.next().next().remove();
+                if ($this.next().next() && $this.next().next().attr("class") != "errorlist" && $this.next().next().attr("class") != "grp-help") $this.next().next().remove();
                 // build autocomplete wrapper
                 $this.next().after(loader).after(remove_link($this.attr('id')));
                 $this.parent().wrapInner("<div class='grp-autocomplete-wrapper-fk'></div>");
@@ -28,7 +31,7 @@
                 // lookup
                 lookup_id($this, options); // lookup when loading page
                 lookup_autocomplete($this, options); // autocomplete-handler
-                $this.bind("change focus keyup blur", function() { // id-handler
+                $this.bind("change focus keyup", function() { // id-handler
                     lookup_id($this, options);
                 });
                 // labels
@@ -38,7 +41,7 @@
             });
         }
     };
-    
+
     $.fn.grp_autocomplete_fk = function(method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
@@ -49,12 +52,12 @@
         }
         return false;
     };
-    
+
     var loader = function() {
         var loader = $('<div class="grp-loader">loader</div>');
         return loader;
     };
-    
+
     var remove_link = function(id) {
         var removelink = $('<a class="grp-related-remove"></a>');
         removelink.attr('id', 'remove_'+id);
@@ -65,7 +68,7 @@
         });
         return removelink;
     };
-    
+
     var lookup_autocomplete = function(elem, options) {
         options.wrapper_autocomplete.find("input:first")
             .bind("focus", function() {
@@ -76,12 +79,13 @@
             })
             .autocomplete({
                 minLength: 1,
+                autoFocus: true,
                 delay: 1000,
                 source: function(request, response) {
                     $.ajax({
                         url: options.autocomplete_lookup_url,
                         dataType: 'json',
-                        data: "term=" + request.term + "&app_label=" + grappelli.get_app_label(elem) + "&model_name=" + grappelli.get_model_name(elem) + "&query_string=" + grappelli.get_query_string(elem),
+                        data: "term=" + encodeURIComponent(request.term) + "&app_label=" + grappelli.get_app_label(elem) + "&model_name=" + grappelli.get_model_name(elem) + "&query_string=" + grappelli.get_query_string(elem) + "&to_field=" + grappelli.get_to_field(elem),
                         beforeSend: function (XMLHttpRequest) {
                             options.loader.show();
                         },
@@ -101,23 +105,33 @@
                 select: function(event, ui) {
                     options.input_field.val(ui.item.label);
                     elem.val(ui.item.value);
+                    elem.trigger('change');
                     elem.val() ? $(options.remove_link).show() : $(options.remove_link).hide();
                     return false;
                 }
             })
-            .data("autocomplete")._renderItem = function(ul,item) {
-                return $("<li></li>")
-                    .data( "item.autocomplete", item )
-                    .append( "<a>" + item.label)
-                    .appendTo(ul);
+            .data("ui-autocomplete")._renderItem = function(ul,item) {
+                if (!item.value) {
+                    return $("<li class='ui-state-disabled'></li>")
+                        .data( "item.autocomplete", item )
+                        .append($("<span class='error'></span>").text(item.label))
+                        .appendTo(ul);
+                } else {
+                    return $("<li></li>")
+                        .data( "item.autocomplete", item )
+                        .append($("<a></a>").text(item.label))
+                        .appendTo(ul);
+                }
             };
     };
-    
+
     var lookup_id = function(elem, options) {
         $.getJSON(options.lookup_url, {
             object_id: elem.val(),
             app_label: grappelli.get_app_label(elem),
-            model_name: grappelli.get_model_name(elem)
+            model_name: grappelli.get_model_name(elem),
+            query_string: grappelli.get_query_string(elem),
+            to_field: grappelli.get_to_field(elem)
         }, function(data) {
             $.each(data, function(index) {
                 options.input_field.val(data[index].label);
@@ -125,10 +139,10 @@
             });
         });
     };
-    
+
     $.fn.grp_autocomplete_fk.defaults = {
         autocomplete_lookup_url: '',
         lookup_url: ''
     };
-    
+
 })(grp.jQuery);

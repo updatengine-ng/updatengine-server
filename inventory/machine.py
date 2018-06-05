@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
 ###################################################################################
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from inventory.models import machine
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
@@ -30,5 +30,5 @@ def machineviews(request,machine_id):
 	except machine.DoesNotExist:
 		raise Http404
 
-	response = render_to_response("machineviews_template.html", {"machine": m})
+	response = render(request, "machineviews_template.html", {"machine": m})
 	return response

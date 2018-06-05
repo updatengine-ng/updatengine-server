@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
 ###################################################################################
 
-from configuration.models import deployconfig, subuser
+from configuration.models import deployconfig, subuser, globalconfig
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -32,6 +32,18 @@ class deployconfigAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
 
     readonly_fields = ('name',)
+    def has_add_permission(self, request):
+        return False
+    def has_delete_permission(self, request, obj=None):
+        return False
+        
+class globalconfigAdmin(admin.ModelAdmin):
+    actions = None
+    list_display = ('name','show_warning','remove_duplicate')
+    list_editable = ('show_warning','remove_duplicate')
+    list_display_links = ('name',)
+    readonly_fields = ('name',)       
+
     def has_add_permission(self, request):
         return False
     def has_delete_permission(self, request, obj=None):
@@ -96,3 +108,4 @@ class UserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(deployconfig, deployconfigAdmin)
+admin.site.register(globalconfig, globalconfigAdmin)
