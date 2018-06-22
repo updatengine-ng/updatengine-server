@@ -2,6 +2,13 @@
 
 Version 2.1.2 RC1
 
+- [History](#history)
+- [What's new](#whats-new-)
+- [Install](#install)
+- [Upgrade from 2.1.1/Django 1.6.2](#upgrade-from-211django-162)
+- [Links](#links)
+- [License](#license)
+
 ## History
 UpdatEngine client and server was originally written by Yves Guimard.
 
@@ -21,19 +28,13 @@ UpdatEngine-server was upgraded :
 - 100% compatibility with [**UpdatEngine-client 2.4.9.4**](https://github.com/dam09fr/updatengine-client/releases)
 - Not tested with Ubuntu 18.04
 
-## Links
-- French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr
-- Old official site : https://updatengine.com/
-- Site archive : https://web.archive.org/web/20170318143615/http://www.updatengine.com:80/
-- Github Damien GUILLEM : https://github.com/dam09fr/
-
 ## Install
 See [**2.1.1 installation documentation**](https://updatengine.com/) for details
 
 Quickly (for debian/ubuntu):
   ```
-sudo apt-get install apache2 libapache2-mod-wsgi python-virtualenv python-pip libxml2-dev libxslt-dev python-dev libmysqlclient-dev git-core mysql-server
-sudo virtualenv --distribute --no-site-packages /var/www/UE-environment
+sudo apt-get install apache2 libapache2-mod-wsgi python2.7 python-virtualenv python-pip libxml2-dev libxslt-dev python-dev libmysqlclient-dev git-core mysql-server
+sudo virtualenv --distribute --no-site-packages -p /usr/bin/python2.7 /var/www/UE-environment
 cd /var/www/UE-environment/
 sudo git clone https://github.com/noelmartinon/updatengine-server
 
@@ -82,12 +83,11 @@ mysqldump -u root -p updatengine | gzip -9 > ~/updatengine.sql.gz
 sudo mv /var/www/UE-environment/ /var/www/UE-environment_1.6.2/
 
 # Install new version
-sudo virtualenv --distribute --no-site-packages /var/www/UE-environment
+sudo virtualenv --distribute --no-site-packages -p /usr/bin/python2.7 /var/www/UE-environment
 cd /var/www/UE-environment/
 sudo git clone https://github.com/noelmartinon/updatengine-server
 
-sudo /var/www/UE-environment/bin/pip install --upgrade distribute
-sudo /var/www/UE-environment/bin/pip install --upgrade setuptools
+sudo /var/www/UE-environment/bin/pip install --upgrade pip distribute setuptools
 sudo /var/www/UE-environment/bin/pip install -r /var/www/UE-environment/updatengine-server/requirements/pip-packages.txt
 
 sudo cp /var/www/UE-environment/updatengine-server/updatengine/settings.py.model /var/www/UE-environment/updatengine-server/updatengine/settings.py
@@ -98,8 +98,8 @@ sudo cp /var/www/UE-environment/updatengine-server/updatengine/settings.py.model
 
 ALTER TABLE inventory_entity ADD ip_range VARCHAR(200);
 CREATE TABLE `configuration_globalconfig` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `name` varchar(100) NOT NULL, `show_warning` varchar(3) NOT NULL, `remove_duplicate` varchar(3) NOT NULL);
-drop table south_migrationhistory;
-drop table if exists django_migrations;
+DROP TABLE IF EXISTS `south_migrationhistory`;
+DROP TABLE IF EXISTS `django_migrations`;
 quit
 
 sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py migrate --fake-initial
@@ -121,5 +121,11 @@ sudo service apache2 restart
 # sudo rm -rf /var/www/UE-environment_1.6.2
   ```
   
+## Links
+- French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr
+- Old official site : https://updatengine.com/
+- Site archive : https://web.archive.org/web/20170318143615/http://www.updatengine.com:80/
+- Github Damien GUILLEM : https://github.com/dam09fr/
+
 ## License
 GPL-2.0
