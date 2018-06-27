@@ -1,11 +1,12 @@
 # UpdatEngine-server
 
-Version 2.1.2 RC1
+Version 2.2-RC1
 
 - [History](#history)
 - [What's new](#whats-new-)
 - [Install](#install)
 - [Upgrade from 2.1.1/Django 1.6.2](#upgrade-from-211django-162)
+- [Update](#update)
 - [Links](#links)
 - [License](#license)
 
@@ -120,6 +121,15 @@ sudo service apache2 restart
 # If new site works perfectly then delete old UE site (DANGER impossible to go back):
 # sudo rm -rf /var/www/UE-environment_1.6.2
   ```
+
+## Update
+To update an existing version do :
+  ```
+cd /var/www/UE-environment/updatengine-server/
+sudo git pull
+sudo service apache2 restart
+  ```
+Currently, there is no change to the structure of the database so there is no need to update it with ```manage.py migrate```
   
 ## Links
 - French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr
