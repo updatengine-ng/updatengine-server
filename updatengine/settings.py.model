@@ -203,3 +203,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
+
+# Set uploaded files permissions to "-rw-r--r--"
+FILE_UPLOAD_PERMISSIONS = 0644
