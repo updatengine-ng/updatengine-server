@@ -76,7 +76,7 @@ class softwareFilter(SimpleListFilter):
         if 'enablefilter' in request.GET:
             if request.user.is_superuser:
                 return software.objects.all().order_by('name').values_list('name','name').distinct()
-            return software.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').values_list('name','name').distinct()
+            return software.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').values_list('name','name').distinct()
         else:
             return
         
@@ -156,7 +156,7 @@ class entityFilter(SimpleListFilter):
         if request.user.is_superuser:
             return entity.objects.all().order_by('name').values_list('name','name')
         else:
-            return entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed).order_by('name').values_list('name','name')
+            return entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed()).order_by('name').values_list('name','name')
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -178,7 +178,7 @@ class domainFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('domain').values_list('domain','domain').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('domain').values_list('domain','domain').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('domain').values_list('domain','domain').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -199,7 +199,7 @@ class usernameFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('username').values_list('username','username').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('username').values_list('username','username').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('username').values_list('username','username').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -220,7 +220,7 @@ class languageFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('language').values_list('language','language').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('language').values_list('language','language').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('language').values_list('language','language').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -241,7 +241,7 @@ class typemachineFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('typemachine__name').values_list('typemachine__name','typemachine__name').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('typemachine__name').values_list('typemachine__name','typemachine__name').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('typemachine__name').values_list('typemachine__name','typemachine__name').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -262,7 +262,7 @@ class osdistributionFilter(SimpleListFilter):
         if request.user.is_superuser:
             return osdistribution.objects.all().order_by('name').values_list('name','name').distinct()
         else:
-            return osdistribution.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').values_list('name','name').distinct()
+            return osdistribution.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').values_list('name','name').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -283,7 +283,7 @@ class timeprofileFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('timeprofile__name').values_list('timeprofile__name','timeprofile__name').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('timeprofile__name').values_list('timeprofile__name','timeprofile__name').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('timeprofile__name').values_list('timeprofile__name','timeprofile__name').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -304,7 +304,7 @@ class packageprofileFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('packageprofile__name').values_list('packageprofile__name','packageprofile__name').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('packageprofile__name').values_list('packageprofile__name','packageprofile__name').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('packageprofile__name').values_list('packageprofile__name','packageprofile__name').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -321,7 +321,7 @@ class osnameFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.filter().order_by('osdistribution__name').values_list('osdistribution__name','osdistribution__name').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('osdistribution__name').values_list('osdistribution__name','osdistribution__name').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('osdistribution__name').values_list('osdistribution__name','osdistribution__name').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -338,7 +338,7 @@ class osversionFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('osdistribution__version').values_list('osdistribution__version','osdistribution__version').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('osdistribution__version').values_list('osdistribution__version','osdistribution__version').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('osdistribution__version').values_list('osdistribution__version','osdistribution__version').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -355,7 +355,7 @@ class osarchFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('osdistribution__arch').values_list('osdistribution__arch','osdistribution__arch').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('osdistribution__arch').values_list('osdistribution__arch','osdistribution__arch').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('osdistribution__arch').values_list('osdistribution__arch','osdistribution__arch').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -376,7 +376,7 @@ class hostFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('name').values_list('name','name').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').values_list('name','name').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').values_list('name','name').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:
@@ -393,7 +393,7 @@ class commentFilter(SimpleListFilter):
         if request.user.is_superuser:
             return machine.objects.all().order_by('comment').values_list('comment','comment').distinct()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('comment').values_list('comment','comment').distinct()
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('comment').values_list('comment','comment').distinct()
     
     def queryset(self, request, queryset):
          if self.value() is not None:

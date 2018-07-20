@@ -53,10 +53,10 @@ class packageForm(ModelForm):
         self.fields['editor'].widget.can_add_related = False
         if not self.my_user.is_superuser and self.fields.has_key('entity') and self.fields.has_key('conditions'):
             #restrict entity choice
-            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed).order_by('name').distinct() 
+            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct() 
             self.fields["entity"].required = True
             # Restrict condition choice
-            self.fields['conditions'].queryset = packagecondition.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed).\
+            self.fields['conditions'].queryset = packagecondition.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed()).\
                     order_by('name').distinct() 
         if self.fields.has_key('entity'):
             self.fields['entity'].widget.can_add_related = False
@@ -117,12 +117,12 @@ class packageAdmin(ueAdmin):
 #            del actions['export_as_csv']
         return actions
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return package.objects.all()
         else:
-            return package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).distinct()
+            return package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
 
 
 class packagehistoryAdmin(ueAdmin):
@@ -141,12 +141,12 @@ class packagehistoryAdmin(ueAdmin):
         #self.list_display_links = (None, )
         self.list_display_links = ()
     
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return packagehistory.objects.all()
         else:
-            return packagehistory.objects.filter(machine__entity__pk__in = request.user.subuser.id_entities_allowed).distinct()
+            return packagehistory.objects.filter(machine__entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
     
     def get_actions(self, request):
         actions = super(packagehistoryAdmin, self).get_actions(request)
@@ -169,13 +169,13 @@ class packageprofileForm(ModelForm):
         self.fields['editor'].widget.can_add_related = False
         if not self.my_user.is_superuser and self.fields.has_key('entity'):
             #restrict entity choice
-            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed).order_by('name').distinct() 
+            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct() 
             self.fields["entity"].required = True
             # Restrict packages choice
-            self.fields['packages'].queryset = package.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed).\
+            self.fields['packages'].queryset = package.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed()).\
                     order_by('name').distinct() 
             # Restrict parent choice
-            self.fields['parent'].queryset = packageprofile.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed).\
+            self.fields['parent'].queryset = packageprofile.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed()).\
                     order_by('name').distinct() 
         if self.fields.has_key('entity'):
             self.fields['entity'].widget.can_add_related = False
@@ -232,12 +232,12 @@ class packageprofileAdmin(ueAdmin):
         #    del actions['export_as_csv']
         return actions
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return packageprofile.objects.all()
         else:
-            return packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).distinct()
+            return packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
 
 class timeprofileForm(ModelForm):
     class Meta:
@@ -254,7 +254,7 @@ class timeprofileForm(ModelForm):
         self.fields['editor'].widget.can_add_related = False
         if not self.my_user.is_superuser and self.fields.has_key('entity'):
             #restrict entity choice
-            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed).order_by('name').distinct() 
+            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct() 
             self.fields["entity"].required = True
         if self.fields.has_key('entity'):
             self.fields['entity'].widget.can_add_related = False
@@ -314,12 +314,12 @@ class timeprofileAdmin(ueAdmin):
         #    del actions['export_as_csv']
         return actions
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return timeprofile.objects.all()
         else:
-            return timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).distinct()
+            return timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
 
 
 class packagewakeonlanForm(ModelForm):
@@ -337,9 +337,9 @@ class packagewakeonlanForm(ModelForm):
         self.fields['editor'].widget.can_add_related = False
         if not self.my_user.is_superuser and self.fields.has_key('entity'):
             #restrict entity choice
-            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed).order_by('name').distinct() 
+            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct() 
             self.fields["entity"].required = True
-            self.fields["machines"].queryset = machine.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed).order_by('name').distinct() 
+            self.fields["machines"].queryset = machine.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct() 
         if self.fields.has_key('entity'):
             self.fields['entity'].widget.can_add_related = False
     
@@ -398,12 +398,12 @@ class packagewakeonlanAdmin(ueAdmin):
         #    del actions['export_as_csv']
         return actions
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return packagewakeonlan.objects.all()
         else:
-            return packagewakeonlan.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).distinct()
+            return packagewakeonlan.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
 
 
 
@@ -422,7 +422,7 @@ class packageconditionForm(ModelForm):
         self.fields['editor'].widget.can_add_related = False
         if not self.my_user.is_superuser and self.fields.has_key('entity'):
             #restrict entity choice
-            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed).order_by('name').distinct() 
+            self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct() 
             self.fields["entity"].required = True
         if self.fields.has_key('entity'):
             self.fields['entity'].widget.can_add_related = False
@@ -479,12 +479,12 @@ class packageconditionAdmin(ueAdmin):
         #    del actions['export_as_csv']
         return actions
     
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return packagecondition.objects.all()
         else:
-            return packagecondition.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).distinct()
+            return packagecondition.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
 
 class impexForm(ModelForm):
     class Meta:
@@ -502,7 +502,7 @@ class impexForm(ModelForm):
         # Prepare entity for the future
         #if not self.my_user.is_superuser and self.fields.has_key('entity'):
         #    #restrict entity choice
-        #    self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed).order_by('name').distinct() 
+        #    self.fields["entity"].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct() 
         #    self.fields["entity"].required = True
         #if self.fields.has_key('entity'):
         #    self.fields['entity'].widget.can_add_related = False

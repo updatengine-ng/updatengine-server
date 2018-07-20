@@ -71,7 +71,7 @@ class UserAdmin(UserAdmin):
         if not obj:
             defaults.update({
             'form': self.add_form,
-            'fields': admin.util.flatten_fieldsets(self.add_fieldsets),
+            'fields': admin.options.flatten_fieldsets(self.add_fieldsets),
             })
         else:
             self.inlines = (subuserInline,)

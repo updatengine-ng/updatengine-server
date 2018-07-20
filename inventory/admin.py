@@ -62,20 +62,20 @@ class entityAdmin(ueAdmin):
     list_editable = ('packageprofile','force_packageprofile','timeprofile','force_timeprofile')
     ordering =('name',)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return entity.objects.all()
         else:
-            return entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed)
+            return entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed())
     
     def get_changelist_formset(self, request, **kwargs):
         formset = super(entityAdmin, self).get_changelist_formset(request, **kwargs)
         if request.user.is_superuser:
             return formset
         else:
-            formset.form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
-            formset.form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+            formset.form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
+            formset.form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
             return formset
 
     def get_form(self, request, obj=None, **kwargs): 
@@ -84,31 +84,31 @@ class entityAdmin(ueAdmin):
             if request.user.is_superuser: 
                 form.base_fields["parent"].queryset = entity.objects.exclude(pk__in = obj.id_all_children()).exclude(pk = obj.id) 
             else: 
-                if obj.parent is not None and obj.parent not in entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed):
+                if obj.parent is not None and obj.parent not in entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed()):
                     form.base_fields["parent"].queryset = entity.objects.filter(pk = obj.parent.pk)
-                    form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
-                    form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+                    form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
+                    form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
                     form.base_fields["parent"].empty_label = None
                 else:
                     if obj.parent is None:
                         form.base_fields["parent"].queryset = entity.objects.none()
                     else:
-                        form.base_fields["parent"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed).\
+                        form.base_fields["parent"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed()).\
                                 exclude(pk__in = obj.id_all_children).\
                                 exclude(pk = obj.id).\
                                 order_by('name').distinct()
                         form.base_fields["parent"].empty_label = None
-                        form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
-                        form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+                        form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
+                        form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
         else:
             if request.user.is_superuser:
                 return form
             else:
-                form.base_fields["parent"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed).\
+                form.base_fields["parent"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed()).\
                         order_by('name').distinct() 
                 form.base_fields["parent"].empty_label = None
-                form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
-                form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+                form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
+                form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
 
         return form 
     # Prevent deletion of entity created by a superuser
@@ -117,7 +117,7 @@ class entityAdmin(ueAdmin):
             return True
         else:
             if obj is not None: 
-                return obj.parent in entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed)
+                return obj.parent in entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed())
 
     def get_actions(self, request):
         actions = super(entityAdmin, self).get_actions(request)
@@ -151,12 +151,12 @@ class machineAdmin(ueAdmin):
     operatingsystem.admin_order_field = 'osdistribution__name'
     operatingsystem.short_description = _('operating_system')
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
             return machine.objects.all()
         else:
-            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed)
+            return machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed())
    
     def force_wakeup(self, request, queryset):
         for machine in queryset:
@@ -173,10 +173,10 @@ class machineAdmin(ueAdmin):
         formset = super(machineAdmin, self).get_changelist_formset(request, **kwargs)
         if request.user.is_superuser:
             return formset
-        formset.form.base_fields["entity"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct()
+        formset.form.base_fields["entity"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct()
         formset.form.base_fields["entity"].empty_label = None
-        formset.form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
-        formset.form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+        formset.form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
+        formset.form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
         return formset
 
     def get_form(self, request, obj=None, **kwargs): 
@@ -185,13 +185,13 @@ class machineAdmin(ueAdmin):
             return form
         else: 
             # Show only entites allowed if not superuser
-            form.base_fields["entity"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+            form.base_fields["entity"].queryset = entity.objects.filter(pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
             form.base_fields["entity"].empty_label = None
             
             # Show only entites allowed if not superuser
-            form.base_fields["packages"].queryset = package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
-            form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
-            form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+            form.base_fields["packages"].queryset = package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
+            form.base_fields["packageprofile"].queryset = packageprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
+            form.base_fields["timeprofile"].queryset = timeprofile.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
         return form 
 
 class netAdmin(ueAdmin):
@@ -201,18 +201,18 @@ class netAdmin(ueAdmin):
     readonly_fields = ('manualy_created',)
     ordering =('ip',)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         if request.user.is_superuser:
             return net.objects.all()
         else:
-            return net.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed)
+            return net.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed())
     
     def get_form(self, request, obj=None, **kwargs): 
         form = super(netAdmin, self).get_form(request, object, **kwargs) 
         if request.user.is_superuser: 
             return form
         else: 
-            form.base_fields["host"].queryset = machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+            form.base_fields["host"].queryset = machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
             form.base_fields["host"].empty_label = None
         return form 
 
@@ -223,18 +223,18 @@ class osAdmin(ueAdmin):
     readonly_fields = ('manualy_created',)
     ordering =('name',)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         if request.user.is_superuser:
             return osdistribution.objects.all()
         else:
-            return osdistribution.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed)
+            return osdistribution.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed())
    
     def get_form(self, request, obj=None, **kwargs): 
         form = super(osAdmin, self).get_form(request, object, **kwargs) 
         if request.user.is_superuser: 
             return form
         else: 
-            form.base_fields["host"].queryset = machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+            form.base_fields["host"].queryset = machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
             form.base_fields["host"].empty_label = None
         return form 
 
@@ -245,18 +245,18 @@ class softwareAdmin(ueAdmin):
     readonly_fields = ('manualy_created',)
     ordering =('name',)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         if request.user.is_superuser:
             return software.objects.all()
         else:
-            return software.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed)
+            return software.objects.filter(host__entity__pk__in = request.user.subuser.id_entities_allowed())
     
     def get_form(self, request, obj=None, **kwargs): 
         form = super(softwareAdmin, self).get_form(request, object, **kwargs) 
         if request.user.is_superuser: 
             return form
         else: 
-            form.base_fields["host"].queryset = machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed).order_by('name').distinct() 
+            form.base_fields["host"].queryset = machine.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).order_by('name').distinct() 
             form.base_fields["host"].empty_label = None
         return form 
 
