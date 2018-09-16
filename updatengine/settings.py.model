@@ -206,3 +206,7 @@ STATICFILES_FINDERS = (
 
 # Set uploaded files permissions to "-rw-r--r--"
 FILE_UPLOAD_PERMISSIONS = 0644
+
+# Disable default limit of 1000 fields per request.
+# Necessary for bulk modification of objects - e.g., when saving on a linux machine
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
