@@ -124,148 +124,115 @@ def check_conditions(m,pack):
     install = True
     # All types of conditions are checked one by one
 
-    # Software not installed (one wildcard can be used for condition name)
+    # Software not installed (wildcards can be used for condition name)
     if install == True:
         for condition in pack.conditions.filter(depends='notinstalled'):
-            if '*' in condition.softwarename:
-                nametab = condition.softwarename.split('*')
-                if software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1], version=condition.softwareversion).exists():
-                    install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-            else:
-                if software.objects.filter(host_id=m.id, name=condition.softwarename, version=condition.softwareversion).exists():
-                    install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning Software already installed. Condition: '+escape(condition.name)+'</Status></Packagestatus>')
+            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
+            # Empty softwareversion is allowed
+            if condition.softwareversion == None:
+                condition.softwareversion = ''
+            # Check name exists
+            if software.objects.filter(host_id=m.id, name__iregex=nameregex, version=condition.softwareversion).exists():
+                install = False
 
-    # Software installed (one wildcard can be used for condition name)
+    # Software installed (wildcards can be used for condition name)
     if install == True:
         for condition in pack.conditions.filter(depends='installed'):
-            if '*' in condition.softwarename:
-                nametab = condition.softwarename.split('*')
-                if not software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1], version=condition.softwareversion).exists():
-                    install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-            else:
-                if not software.objects.filter(host_id=m.id, name=condition.softwarename, version=condition.softwareversion).exists():
-                    install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
+            # Empty softwareversion is allowed
+            if condition.softwareversion == None:
+                condition.softwareversion = ''
+            # Check name exists
+            if not software.objects.filter(host_id=m.id, name__iregex=nameregex, version=condition.softwareversion).exists():
+                install = False
 
     # OS architecture is Windows 64bits
     if install == True:
         for condition in pack.conditions.filter(depends='is_W64_bits'):
             if not osdistribution.objects.filter(host_id=m.id, name__icontains='Windows', arch__contains='64').exists():
                 install = False
-                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
     # OS architecture is Windows 32bits
     if install == True:
         for condition in pack.conditions.filter(depends='is_W32_bits'):
             if not (osdistribution.objects.filter(host_id=m.id, name__icontains='Windows', arch__contains='32').exists() or osdistribution.objects.filter(host_id=m.id, name__icontains='Windows', arch__contains='undefined').exists()):
                 install = False
-                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
-    # System name is (one wildcard can be used)
+    # System name is (wildcards can be used)
     if install == True:
         for condition in pack.conditions.filter(depends='system_is'):
+            nameregex = re.escape(condition.softwarename).replace('\*', '.*')
+            # Empty softwareversion is allowed to check an empty version
+            if condition.softwareversion == None:
+                condition.softwareversion = ''
+            # Check name + version
             if condition.softwareversion != 'undefined':
-                if '*' in condition.softwarename:
-                    nametab = condition.softwarename.split('*')
-                    if not osdistribution.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1], version__icontains=condition.softwareversion).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                else:
-                    if not osdistribution.objects.filter(host_id=m.id, name__icontains=condition.softwarename, version__icontains=condition.softwareversion).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex, version__icontains=condition.softwareversion).exists():
+                    install = False                
+            # Check name
             else:
-                if '*' in condition.softwarename:
-                    nametab = condition.softwarename.split('*')
-                    if not osdistribution.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                else:
-                    if not osdistribution.objects.filter(host_id=m.id, name__icontains=condition.softwarename).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                    install = False
 
-    # System name is not (one wildcard can be used)
+    # System name is not (wildcards can be used)
     if install == True:
-	for condition in pack.conditions.filter(depends='system_not'):
+        for condition in pack.conditions.filter(depends='system_not'):
+            nameregex = re.escape(condition.softwarename).replace('\*', '.*')
+            # Empty softwareversion is allowed to check an empty version
+            if condition.softwareversion == None:
+                condition.softwareversion = ''
+            # Check name + version
             if condition.softwareversion != 'undefined':
-                if '*' in condition.softwarename:
-                    nametab = condition.softwarename.split('*')
-                    if osdistribution.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1], version__icontains=condition.softwareversion).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                else:
-                    if osdistribution.objects.filter(host_id=m.id, name__icontains=condition.softwarename, version__icontains=condition.softwareversion).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex, version__icontains=condition.softwareversion).exists():
+                    install = False                
+            # Check name
             else:
-                if '*' in condition.softwarename:
-                    nametab = condition.softwarename.split('*')
-                    if osdistribution.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                else:
-                    if osdistribution.objects.filter(host_id=m.id, name__icontains=condition.softwarename).exists():
-                        install = False
-                        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                    install = False
 
     # Default system language is (ex: fr_FR)
     if install == True:
         for condition in pack.conditions.filter(depends='language_is'):
-            if m.language != condition.softwarename:
+            if m.language.upper() != condition.softwarename.upper():
                 install = False
-                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
-    # Software not installed or version lower than (one wildcard can be used for condition name)
+    # Software not installed or version lower than (wildcards can be used for condition name)
     if install == True:
         for condition in pack.conditions.filter(depends='lower'):
-            if '*' in condition.softwarename:
-                nametab = condition.softwarename.split('*')
-                if software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
-                    softtab = software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1])
-                    for s in softtab:
-                        if compare_versions(s.version, condition.softwareversion) >= 0:
-                            install = False
-                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                            break
-            else:
-                if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
-                    softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
-                    for s in softtab:
-                        if compare_versions(s.version, condition.softwareversion) >= 0:
-                            install = False
-                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                            break
+            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
+            # Empty softwareversion is allowed to check an empty version
+            if condition.softwareversion == None:
+                condition.softwareversion = ''
+            # Check name exists then if at least one of the versions is greater than condition
+            if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
+                for s in softtab:
+                    if compare_versions(s.version, condition.softwareversion) >= 0:
+                        install = False
+                        break
 
     # Software installed and version higher than
     if install == True:
         for condition in pack.conditions.filter(depends='higher'):
-            if '*' in condition.softwarename:
-                nametab = condition.softwarename.split('*')
-                if software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1]).exists():
-                    softtab = software.objects.filter(host_id=m.id, name__startswith=nametab[0],name__endswith=nametab[1])
-                    for s in softtab:
-                        if compare_versions(s.version, condition.softwareversion) <= 0:
-                            install = False
-                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                            break
-                else:
-                    install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
+            # Empty softwareversion is useful to check any version
+            if condition.softwareversion == None:
+                condition.softwareversion = ''
+            # Check name exists then if all of the versions are lower than condition
+            if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
+                for s in softtab:
+                    if compare_versions(s.version, condition.softwareversion) <= 0:
+                        install = False
+                    else:
+                        install = True
+                        break
+            # Check name not exists
             else:
-                if software.objects.filter(host_id=m.id, name=condition.softwarename).exists():
-                    softtab = software.objects.filter(host_id=m.id, name=condition.softwarename)
-                    for s in softtab:
-                        if compare_versions(s.version, condition.softwareversion) <= 0:
-                            install = False
-                            status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
-                            break
-                else:
-                    install = False
-                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
+                install = False
+
+    if install == False:
+        status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 
     return install
 
