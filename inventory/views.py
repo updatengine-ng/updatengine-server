@@ -533,7 +533,7 @@ def post(request):
 def remove_duplicates():
     '''Remove all duplicated machines when an inventory is received (more recent entry is keeped)'''
     '''order_by is useful to set the more recent packageprofile if there are many duplicates for one machine'''
-    duplicates = machine.objects.values('name').annotate(count=Count('id'),max_lastsave=Max('lastsave')).filter(count__gt=1).order_by('lastsave')
+    duplicates = machine.objects.values('name').annotate(count=Count('id'),max_lastsave=Max('lastsave')).filter(count__gt=1)
 
     for duplicate in duplicates:
         current_host_obj = machine.objects.filter(name = duplicate['name'], lastsave = duplicate['max_lastsave'])[0]
