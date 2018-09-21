@@ -2,6 +2,8 @@
 
 Version 2.2-RC1
 
+UpdatEngine Server is a web app allowing people to inventory computer an server, deploy software and create profile to apply on inventoried machines for Windows and Linux.
+
 - [History](#history)
 - [What's new](#whats-new-)
 - [Install](#install)
@@ -12,10 +14,9 @@ Version 2.2-RC1
 
 ## History
 UpdatEngine client and server was originally written by Yves Guimard.
-
-Other developers participated in the project especially Damien GUILLEM who just posted the latest version of UpdatEngine-client.
-
-I'm an UpdatEngine's user since many years and it works great !
+He had to stop his participation in the project in July 2017.
+Since version 2.1.1 of 2014, there was not much evolution for the server part and this repository has no other pretensions than to try to improve the functionalities.
+Thanks to Yves, to the developers who participated and still participates as well as to the users.
 
 ## What's new ?
 UpdatEngine-server was upgraded :
@@ -27,7 +28,7 @@ UpdatEngine-server was upgraded :
   - Hide 'Warning' messages in deployment history
 - Script 'clear_history' to add in schedule task
 - 100% compatibility with [**UpdatEngine-client 2.4.9.4**](https://github.com/dam09fr/updatengine-client/releases)
-- Not tested with Ubuntu 18.04
+- Tested with Debian 8, Ubuntu 16.04, Ubuntu 18.04, CentOs 7
 
 ## Install
 See [**2.1.1 installation documentation**](https://updatengine.com/) for details
@@ -46,6 +47,11 @@ sudo /var/www/UE-environment/bin/pip install -r /var/www/UE-environment/updateng
 mysqladmin -u root -p create updatengine
 mysql -u root -p -e "GRANT ALL PRIVILEGES ON updatengine.* TO 'updatengineuser'@'localhost' IDENTIFIED by 'unmotdepasse' WITH GRANT OPTION;"
 mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
+# You may see some warnings such as below, but don't worry about this. This files are used by 'tzselect' linux command and are not timezone.
+# Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.
+# Warning: Unable to load '/usr/share/zoneinfo/leap-seconds.list' as time zone. Skipping it.
+# Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.
+# Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.
 sudo service mysql restart
 
 sudo cp /var/www/UE-environment/updatengine-server/updatengine/settings.py.model /var/www/UE-environment/updatengine-server/updatengine/settings.py
