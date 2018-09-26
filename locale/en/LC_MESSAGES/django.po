@@ -532,6 +532,8 @@ msgstr ""
 "For operating system condition, this field must contain the version of the "
 "operating system. You can use undefined (default) if you don't care about "
 "the operating system version (Service pack etc...)."
+"For software conditions 'not installed or lower' and 'installed and upper'," 
+"an empty version means to check only the name of the software."
 
 #: deploy/models.py:58
 msgid "packagecondition|entity"

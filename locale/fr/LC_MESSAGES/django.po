@@ -540,8 +540,10 @@ msgstr "version"
 msgid "packagecondition|softwareversion help text"
 msgstr ""
 "Pour une condition concernant le système d'exploitation, indiquer la version "
-"du système ou laissez undefined si vous ne souhaitez pas préciser de version "
+"du système ou laisser undefined si vous ne souhaitez pas préciser de version "
 "(Service pack etc...)."
+"Pour les conditions 'non installé ou inférieure' et 'installé et supérieure',"
+"une version vide signifie de ne vérifier que le nom du logiciel."
 
 #: deploy/models.py:58
 msgid "packagecondition|entity"

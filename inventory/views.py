@@ -128,7 +128,7 @@ def check_conditions(m,pack):
     if install == True:
         for condition in pack.conditions.filter(depends='notinstalled'):
             nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
-            # Empty softwareversion is allowed
+            # Empty softwareversion is allowed (else django filter error!)
             if condition.softwareversion == None:
                 condition.softwareversion = ''
             # Check name exists
@@ -139,7 +139,7 @@ def check_conditions(m,pack):
     if install == True:
         for condition in pack.conditions.filter(depends='installed'):
             nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
-            # Empty softwareversion is allowed
+            # Empty softwareversion is allowed (else django filter error!)
             if condition.softwareversion == None:
                 condition.softwareversion = ''
             # Check name exists
@@ -199,35 +199,36 @@ def check_conditions(m,pack):
     # Software not installed or version lower than (wildcards can be used for condition name)
     if install == True:
         for condition in pack.conditions.filter(depends='lower'):
-            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
-            # Empty softwareversion is allowed to check an empty version
-            if condition.softwareversion == None:
-                condition.softwareversion = ''
-            # Check name exists then if at least one of the versions is greater than condition
+            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"            
+            # Check if name exists
             if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                # Empty softwareversion is useful to ignore the version
+                if condition.softwareversion == None or condition.softwareversion == '':
+                    return False
+                # Check if at least one of the versions is greater than condition
                 softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
                 for s in softtab:
                     if compare_versions(s.version, condition.softwareversion) >= 0:
                         install = False
                         break
 
-    # Software installed and version higher than
+    # Software installed and version higher than (wildcards can be used for condition name)
     if install == True:
         for condition in pack.conditions.filter(depends='higher'):
             nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
-            # Empty softwareversion is useful to check any version
-            if condition.softwareversion == None:
-                condition.softwareversion = ''
-            # Check name exists then if all of the versions are lower than condition
+            # Check if name exists
             if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                # Empty softwareversion is useful to ignore the version
+                if condition.softwareversion == None or condition.softwareversion == '':
+                    return True
+                # Check if all of the versions are lower than condition
                 softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
                 for s in softtab:
                     if compare_versions(s.version, condition.softwareversion) <= 0:
-                        install = False
-                    else:
                         install = True
+                    else:
+                        install = False
                         break
-            # Check name not exists
             else:
                 install = False
 
