@@ -21,6 +21,10 @@
 from django.utils.translation import gettext_lazy as _
 import os
 
+# Project paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 ##############################################
 ### -- Set your UE server settings here -- ###
@@ -89,9 +93,6 @@ SECRET_KEY = 'vb-9kix=4$g56(qt*ryg5u!md*pdm*ki@)45d$*%%%9bwl6-y6'
 ##############################################
 
 
-# Project paths
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Grappelli definition
 GRAPPELLI_ADMIN_TITLE = 'UpdatEngine'

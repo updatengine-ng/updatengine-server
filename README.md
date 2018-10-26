@@ -1,6 +1,6 @@
 # UpdatEngine-server
 
-Version 2.2-RC1
+Version 2.2.0
 
 UpdatEngine Server is a web app allowing people to inventory computer an server, deploy software and create profile to apply on inventoried machines for Windows and Linux.
 
@@ -132,6 +132,7 @@ sudo service apache2 restart
 To update an existing version do :
   ```
 cd /var/www/UE-environment/updatengine-server/
+sudo git checkout --track origin/master
 sudo git pull
 sudo service apache2 restart
   ```

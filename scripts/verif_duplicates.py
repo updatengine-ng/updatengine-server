@@ -12,7 +12,7 @@ def run():
 
 
 def remove_duplicates():
-    duplicates = machine.objects.values('name').annotate(count=Count('id'),max_lastsave=Max('lastsave')).filter(count__gt=1).order_by('lastsave')
+    duplicates = machine.objects.values('name').annotate(count=Count('id'),max_lastsave=Max('lastsave')).filter(count__gt=1)
 
     for duplicate in duplicates:
         print duplicate['name'], duplicate['max_lastsave']
