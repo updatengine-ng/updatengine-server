@@ -1,4 +1,4 @@
-from django.test import TestCase
+	from django.test import TestCase
 from inventory.models import machine, software, osdistribution
 from deploy.models import package, packagecondition
 from inventory.views import *
@@ -6,7 +6,7 @@ class machineTestCase(TestCase):
     def setUp(self):
         # Define machine and software associated
 
-        #machine xp 
+        #machine Linux
         mlinux = machine.objects.create(serial='1234', name='mlinux', language = 'fr_CA')
         osdistribution.objects.create(name = 'Linux Mint', version = '15', arch = '64bits', systemdrive = 'undefined', host=mlinux, manualy_created='no')
 
@@ -15,6 +15,9 @@ class machineTestCase(TestCase):
         software.objects.create(name = 'PDFCreator', version = '1.6.2',uninstall = 'bla', host=m, manualy_created = 'no')
         software.objects.create(name = 'mozilla', version = '24.0.1',uninstall = 'bla', host=m, manualy_created = 'no')
         software.objects.create(name = 'mozilla-beta', version = '24.0.1.a',uninstall = 'bla', host=m, manualy_created = 'no')
+        software.objects.create(name = 'Java 8 Update 171', version = '8.0.1710.11',uninstall = 'bla', host=m, manualy_created = 'no')
+        software.objects.create(name = 'Java 8 Update 181', version = '8.0.1810.13',uninstall = 'bla', host=m, manualy_created = 'no')
+        #software.objects.create(name = 'Java 8 Update 191', version = '8.0.1910.12',uninstall = 'bla', host=m, manualy_created = 'no')
         osdistribution.objects.create(name = 'Microsoft Windows 7', version = 'sp1', arch = '32bits', systemdrive = 'c', host=m, manualy_created='no')
         
         #machine 64 bits windows 7
@@ -22,6 +25,9 @@ class machineTestCase(TestCase):
         software.objects.create(name = 'PDFCreator', version = '1.6.2',uninstall = 'bla', host=m64, manualy_created = 'no')
         software.objects.create(name = 'mozilla', version = '24.0.1',uninstall = 'bla', host=m64, manualy_created = 'no')
         software.objects.create(name = 'mozilla-beta', version = '24.0.1.a',uninstall = 'bla', host=m64, manualy_created = 'no')
+        #software.objects.create(name = 'Java 8 Update 171 (64-bit)', version = '8.0.1710.11',uninstall = 'bla', host=m64, manualy_created = 'no')
+        #software.objects.create(name = 'Java 8 Update 181 (64-bit)', version = '8.0.1810.13',uninstall = 'bla', host=m64, manualy_created = 'no')
+        #software.objects.create(name = 'Java 8 Update 191 (64-bit)', version = '8.0.1910.12',uninstall = 'bla', host=m64, manualy_created = 'no')
         osdistribution.objects.create(name = 'Microsoft Windows 7', version = 'sp1', arch = '64bits', systemdrive = 'c', host=m64, manualy_created='no')
 
         # packages with language condition
@@ -73,7 +79,15 @@ class machineTestCase(TestCase):
         jpackage_moz17.conditions.add(jcondition_moz17)
         jpackage_moz17.save()
 
+        jpackage_java181h = package.objects.create(name = 'Java 181 higher', description = 'install Java 181 depend app', command = 'rem')
+        jcondition_higherjava181 = packagecondition.objects.create(name = 'install if Java >= 181', softwarename = 'Java 8 Update *', softwareversion = '8.0.1810.12',depends = 'higher')
+        jpackage_java181h.conditions.add(jcondition_higherjava181)
+        jpackage_java181h.save()
 
+        jpackage_javanoverh = package.objects.create(name = 'Java 8u higher empty version', description = 'install Java 8u...', command = 'rem')
+        jcondition_higherjavanover = packagecondition.objects.create(name = 'install if Java exist', softwarename = 'Java 8 Update *', softwareversion = '',depends = 'higher')
+        jpackage_javanoverh.conditions.add(jcondition_higherjavanover)
+        jpackage_javanoverh.save()
 
         # Packages with Joker and lower condition
         jpackage_pdf171 = package.objects.create(name = 'jPDFCreator 1.7.1', description = 'install PDFCreator 1.7.1', command = 'rem')
@@ -100,6 +114,16 @@ class machineTestCase(TestCase):
         jcondition_lowermoz24b = packagecondition.objects.create(name = 'install mozilla* if < 24.0.1.b', softwarename = 'jmozilla * beta b', softwareversion = '24.0.1.b',depends = 'lower')
         jpackage_moz24b.conditions.add(jcondition_lowermoz24b)
         jpackage_moz24b.save()
+
+        jpackage_java191 = package.objects.create(name = 'jjava 191', description = 'install java 191', command = 'rem')
+        jcondition_lowerjava191 = packagecondition.objects.create(name = 'install java* if < 191', softwarename = 'Java 8 Update *', softwareversion = '8.0.1910.12',depends = 'lower')
+        jpackage_java191.conditions.add(jcondition_lowerjava191)
+        jpackage_java191.save()
+
+        jpackage_java191noprev = package.objects.create(name = 'jjava 191 noprev empty version', description = 'install java 191 if no previous version', command = 'rem')
+        jcondition_lowerjava191noprev = packagecondition.objects.create(name = 'install java* if no previous version', softwarename = 'Java 8 Update *', softwareversion = '',depends = 'lower')
+        jpackage_java191noprev.conditions.add(jcondition_lowerjava191noprev)
+        jpackage_java191noprev.save()
 
         # package with condition arch 32bits
         package_arch32 = package.objects.create(name = 'arch32', description = 'install if 32bits', command = 'rem')
@@ -137,6 +161,18 @@ class machineTestCase(TestCase):
         jpackage_MS7.conditions.add(jcondition_MS7)
         jpackage_MS7.save()
 
+        # package with condition system_isnot Microsoft Windows 7
+        package_MS7not = package.objects.create(name = 'MS7not', description = 'install if Microsoft Windows 7', command = 'rem')
+        condition_MS7not = packagecondition.objects.create(name = 'install if Microsoft Windows 7', softwarename = 'Microsoft Windows 7', softwareversion = 'undefined',depends = 'system_not')
+        package_MS7not.conditions.add(condition_MS7not)
+        package_MS7not.save()
+
+        # package with condition system_isnot Microsoft Windows 7
+        jpackage_MS7not = package.objects.create(name = 'jMS7not', description = 'install if Microsoft *', command = 'rem')
+        jcondition_MS7not = packagecondition.objects.create(name = 'install if Microsoft *', softwarename = 'Microsoft Windows *', softwareversion = 'undefined',depends = 'system_not')
+        jpackage_MS7not.conditions.add(jcondition_MS7not)
+        jpackage_MS7not.save()
+
 
     def test_lower_condition_without_joker(self):
         m = machine.objects.get(name = 'machine_windows_7_32')
@@ -160,7 +196,12 @@ class machineTestCase(TestCase):
     def test_higher_condition_with_joker(self):
         m = machine.objects.get(name = 'machine_windows_7_32')
         pdf162h = package.objects.get(name = 'PDFCreator 1.6.2 higher')
+        java181h = package.objects.get(name = 'Java 181 higher')
+        javanoverh = package.objects.get(name = 'Java 8u higher empty version')# New above 2.2.0
+
         self.assertEqual(check_conditions(m,pdf162h), True)
+        self.assertEqual(check_conditions(m,java181h), True)
+        self.assertEqual(check_conditions(m,javanoverh), True)
     
     def test_lang_condition(self):
         m = machine.objects.get(name = 'machine_windows_7_32')
@@ -177,12 +218,16 @@ class machineTestCase(TestCase):
         moz25 = package.objects.get(name = 'jmozilla 25')
         moz17 = package.objects.get(name = 'jmozilla 17')
         moz24b = package.objects.get(name = 'jmozilla 24 beta b')
+        java191 = package.objects.get(name = 'jjava 191')
+        java191noprev = package.objects.get(name = 'jjava 191 noprev empty version')
 
         self.assertEqual(check_conditions(m,pdf171), True)
         self.assertEqual(check_conditions(m,pdf162), False)
         self.assertEqual(check_conditions(m,moz25), True)
         self.assertEqual(check_conditions(m,moz17), False)
         self.assertEqual(check_conditions(m,moz24b), True)
+        self.assertEqual(check_conditions(m,java191), True)
+        self.assertEqual(check_conditions(m,java191noprev), False)
     
     def test_arch32_or_64(self):
         m32 = machine.objects.get(name = 'machine_windows_7_32')
@@ -209,6 +254,20 @@ class machineTestCase(TestCase):
         self.assertEqual(check_conditions(m32,jpms7), True)
         self.assertEqual(check_conditions(mlinux,jpms7), False)
 
+    def test_system_is_not_without_joker(self):# New since 2.2.0
+        m32 = machine.objects.get(name = 'machine_windows_7_32')
+        mlinux = machine.objects.get(name = 'mlinux')
+        pms7 = package.objects.get(name = 'MS7not')
+        self.assertEqual(check_conditions(m32,pms7), False)
+        self.assertEqual(check_conditions(mlinux,pms7), True)
+
+    def test_system_is_not_with_joker(self):# New since 2.2.0
+        m32 = machine.objects.get(name = 'machine_windows_7_32')
+        mlinux = machine.objects.get(name = 'mlinux')
+        jpms7 = package.objects.get(name = 'jMS7not')
+        self.assertEqual(check_conditions(m32,jpms7), False)
+        self.assertEqual(check_conditions(mlinux,jpms7), True)
+
     def test_package_with_condition_lower_arch(self):
         m32 = machine.objects.get(name = 'machine_windows_7_32')
         m64 = machine.objects.get(name = 'machine_windows_7_64')
@@ -219,3 +278,4 @@ class machineTestCase(TestCase):
         self.assertEqual(check_conditions(m64,lower_arch64), True)
         self.assertEqual(check_conditions(m32,lower_arch64), False)
         self.assertEqual(check_conditions(m64,lower_arch32), False)
+

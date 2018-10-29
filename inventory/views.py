@@ -199,7 +199,7 @@ def check_conditions(m,pack):
     # Software not installed or version lower than (wildcards can be used for condition name)
     if install == True:
         for condition in pack.conditions.filter(depends='lower'):
-            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"            
+            nameregex = "^"+re.escape(condition.softwarename).replace('\*', '.*')+"$"
             # Check if name exists
             if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
                 # Empty softwareversion is useful to ignore the version
@@ -225,9 +225,9 @@ def check_conditions(m,pack):
                 softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
                 for s in softtab:
                     if compare_versions(s.version, condition.softwareversion) <= 0:
-                        install = True
-                    else:
                         install = False
+                    else:
+                        install = True
                         break
             else:
                 install = False
