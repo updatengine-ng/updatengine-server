@@ -134,9 +134,11 @@ To update an existing version do :
 cd /var/www/UE-environment/updatengine-server/
 sudo git checkout --track origin/master
 sudo git pull
+sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py migrate
+# In case of 'Table already exsist' error then run this before retry 'migrate' :
+# sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py migrate --fake deploy 0002_auto_20180605_1910
 sudo service apache2 restart
   ```
-Currently, there is no change to the structure of the database so there is no need to update it with ```manage.py migrate```
   
 ## Links
 - French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr

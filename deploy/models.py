@@ -46,14 +46,17 @@ class packagecondition(models.Model):
             ('notinstalled',_('notinstalled')),
             ('lower',_('lower')),
             ('higher',_('higher')),
-            ('system_is',_('operating_system_is')), ('system_not',_('operating_system_not')),
+            ('system_is',_('operating_system_is')),
+            ('system_not',_('operating_system_not')),
             ('is_W64_bits',_('is_W64_bits')),
             ('is_W32_bits',_('is_W32_bits')),
-            ('language_is',_('language_is'))
+            ('language_is',_('language_is')),
+            ('hostname_in',_('hostname_in')),
+            ('hostname_not',_('hostname_not')),
         )
     name = models.CharField(max_length=100, verbose_name = _('packagecondition|name'))
     depends = models.CharField(max_length=12, choices=choice, default='installed', verbose_name = _('packagecondition|depends'))
-    softwarename = models.CharField(max_length=100, null= True, blank=True, default="undefined", verbose_name = _('packagecondition|softwarename'), help_text= _('packagecondition|softwarename help text'))
+    softwarename = models.CharField(max_length=500, null= True, blank=True, default="undefined", verbose_name = _('packagecondition|softwarename'), help_text= _('packagecondition|softwarename help text'))
     softwareversion = models.CharField(max_length=500, null= True, blank=True, default="undefined", verbose_name = _('packagecondition|softwareversion'), help_text= _('packagecondition|softwareversion help text'))
     entity = models.ManyToManyField(entity, blank=True, verbose_name = _('packagecondition|entity'))
     editor = models.ForeignKey(User, null=True, verbose_name = _('packagecondition| condition last editor'))

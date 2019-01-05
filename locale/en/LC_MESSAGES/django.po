@@ -504,6 +504,14 @@ msgstr "Windows 32 bits computer"
 msgid "language_is"
 msgstr "Operating system language is:"
 
+#: deploy/models.py
+msgid "hostname_in"
+msgstr "Hostname is:"
+
+#: deploy/models.py
+msgid "hostname_not"
+msgstr "Hostname is not:"
+
 #: deploy/models.py:54
 msgid "packagecondition|name"
 msgstr "condition name"
@@ -521,6 +529,7 @@ msgid "packagecondition|softwarename help text"
 msgstr ""
 "For operating system condition, this field must contain the name of the "
 "operating system."
+"For 'hostname' conditions, it can be a list of names separated by a comma."
 
 #: deploy/models.py:57
 msgid "packagecondition|softwareversion"

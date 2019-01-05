@@ -134,6 +134,7 @@ def check_conditions(m,pack):
             # Check name exists
             if software.objects.filter(host_id=m.id, name__iregex=nameregex, version=condition.softwareversion).exists():
                 install = False
+                break # Do not test this condition type again
 
     # Software installed (wildcards can be used for condition name)
     if install == True:
@@ -145,18 +146,21 @@ def check_conditions(m,pack):
             # Check name exists
             if not software.objects.filter(host_id=m.id, name__iregex=nameregex, version=condition.softwareversion).exists():
                 install = False
+                break # Do not test this condition type again
 
     # OS architecture is Windows 64bits
     if install == True:
         for condition in pack.conditions.filter(depends='is_W64_bits'):
             if not osdistribution.objects.filter(host_id=m.id, name__icontains='Windows', arch__contains='64').exists():
                 install = False
+                break # Do not test this condition type again
 
     # OS architecture is Windows 32bits
     if install == True:
         for condition in pack.conditions.filter(depends='is_W32_bits'):
             if not (osdistribution.objects.filter(host_id=m.id, name__icontains='Windows', arch__contains='32').exists() or osdistribution.objects.filter(host_id=m.id, name__icontains='Windows', arch__contains='undefined').exists()):
                 install = False
+                break # Do not test this condition type again
 
     # System name is (wildcards can be used)
     if install == True:
@@ -168,11 +172,13 @@ def check_conditions(m,pack):
             # Check name + version
             if condition.softwareversion != 'undefined':
                 if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex, version__icontains=condition.softwareversion).exists():
-                    install = False                
+                    install = False
+                    break # Do not test this condition type again
             # Check name
             else:
                 if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
                     install = False
+                    break # Do not test this condition type again
 
     # System name is not (wildcards can be used)
     if install == True:
@@ -184,17 +190,20 @@ def check_conditions(m,pack):
             # Check name + version
             if condition.softwareversion != 'undefined':
                 if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex, version__icontains=condition.softwareversion).exists():
-                    install = False                
+                    install = False
+                    break # Do not test this condition type again
             # Check name
             else:
                 if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
                     install = False
+                    break # Do not test this condition type again
 
     # Default system language is (ex: fr_FR)
     if install == True:
         for condition in pack.conditions.filter(depends='language_is'):
             if m.language.upper() != condition.softwarename.upper():
                 install = False
+                break # Do not test this condition type again
 
     # Software not installed or version lower than (wildcards can be used for condition name)
     if install == True:
@@ -212,6 +221,9 @@ def check_conditions(m,pack):
                         if compare_versions(s.version, condition.softwareversion) >= 0:
                             install = False
                             break
+            # Do not test this condition type again if the last check failed
+            if install == False:
+                break
 
     # Software installed and version higher than (wildcards can be used for condition name)
     if install == True:
@@ -231,6 +243,50 @@ def check_conditions(m,pack):
                             break
             else:
                 install = False
+            # Do not test this condition type again if the last check failed
+            if install == False:
+                break
+
+
+    # Hostname is in the list (comma separated list, wildcards can be used for condition name)
+    if install == True:
+        for condition in pack.conditions.filter(depends='hostname_in'):
+            try:
+                # Check the list
+                hosts = condition.softwarename.split(',')
+                for hostname in hosts:
+                    if not hostname:
+                        continue
+                    nameregex = "^"+re.escape(hostname).replace('\*', '.*')+"$"
+                    if re.match(nameregex, m.name, re.IGNORECASE):
+                        install = True
+                        break
+                    else:
+                        install = False
+                # Do not test this condition type again if the last check failed
+                if install == False:
+                    break
+            except:
+                pass
+
+    # Hostname is NOT in the list (comma separated list, wildcards can be used for condition name)
+    if install == True:
+        for condition in pack.conditions.filter(depends='hostname_not'):
+            try:
+                # Check the list
+                hosts = condition.softwarename.split(',')
+                for hostname in hosts:
+                    if not hostname:
+                        continue
+                    nameregex = "^"+re.escape(hostname).replace('\*', '.*')+"$"
+                    if re.match(nameregex, m.name, re.IGNORECASE):
+                        install = False
+                        break
+                # Do not test this condition type again if the last check failed
+                if install == False:
+                    break
+            except:
+                pass
 
     if install == False:
         status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
@@ -390,6 +446,8 @@ def inventory(xml):
                     # check client IP with all comma separated IP/CIDR networks (could be simple a IP Address)
                     for network_range in network:
                         try:
+                            if not network_range:
+                                continue
                             if IPAddress(host_ip_addr) in IPNetwork(network_range):
                                if m.entity_id != entity_obj.id:
                                    host_previous_entity = entity.objects.filter(id = m.entity_id)[0]
