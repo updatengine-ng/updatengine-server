@@ -204,13 +204,14 @@ def check_conditions(m,pack):
             if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
                 # Empty softwareversion is useful to ignore the version
                 if condition.softwareversion == None or condition.softwareversion == '':
-                    return False
-                # Check if at least one of the versions is greater than condition
-                softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
-                for s in softtab:
-                    if compare_versions(s.version, condition.softwareversion) >= 0:
-                        install = False
-                        break
+                    install = False
+                else:
+                    # Check if at least one of the versions is greater than condition
+                    softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
+                    for s in softtab:
+                        if compare_versions(s.version, condition.softwareversion) >= 0:
+                            install = False
+                            break
 
     # Software installed and version higher than (wildcards can be used for condition name)
     if install == True:
@@ -219,16 +220,15 @@ def check_conditions(m,pack):
             # Check if name exists
             if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
                 # Empty softwareversion is useful to ignore the version
-                if condition.softwareversion == None or condition.softwareversion == '':
-                    return True
-                # Check if all of the versions are lower than condition
-                softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
-                for s in softtab:
-                    if compare_versions(s.version, condition.softwareversion) <= 0:
-                        install = False
-                    else:
-                        install = True
-                        break
+                if not condition.softwareversion == None and not condition.softwareversion == '':
+                    # Check if all of the versions are lower than condition
+                    softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
+                    for s in softtab:
+                        if compare_versions(s.version, condition.softwareversion) <= 0:
+                            install = False
+                        else:
+                            install = True
+                            break
             else:
                 install = False
 

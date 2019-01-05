@@ -56,7 +56,7 @@ DATABASES = {
         # 'HOST': '',                             # Set to empty string for localhost. Not used with sqlite3.
         # 'PORT': '',                             # Set to empty string for default. Not used with sqlite3.
         # 'OPTIONS': {
-        #     'init_command': 'SET storage_engine=InnoDB',
+        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         # }
     }
 }
@@ -68,6 +68,15 @@ DATABASES = {
 #         'NAME' : os.path.join(PROJECT_DIR, 'db/updatengine.db'),
 #     }
 # }
+
+# TEST settings
+# Execution command:
+# cd /var/www/UE-environment/updatengine-server
+# /var/www/UE-environment/bin/python2.7 /var/www/UE-environment/updatengine-server/manage.py test --verbosity 2
+import sys
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -87,6 +96,22 @@ DEBUG = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'vb-9kix=4$g56(qt*ryg5u!md*pdm*ki@)45d$*%%%9bwl6-y6'
+
+# EMAIL
+ADMINS = (
+     #('admin', 'admin@your_adress.tld'),
+)
+MANAGERS = ADMINS
+DEFAULT_FROM_EMAIL = 'updatengine@your_adress.tld'
+SERVER_EMAIL = 'updatengine_error@your_adress.tld'
+# Optional SMTP authentication information:
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'server.your_adress.tld'
+#EMAIL_PORT = 465
+#EMAIL_HOST_USER = 'USERNAME@your_adress.tld'
+#EMAIL_HOST_PASSWORD = 'PASSWORD'
+#EMAIL_USE_TLS = False
+#EMAIL_USE_SSL = True
 
 ##############################################
 ###      -- End UE server settings --      ###

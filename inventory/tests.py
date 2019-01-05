@@ -1,4 +1,4 @@
-	from django.test import TestCase
+from django.test import TestCase
 from inventory.models import machine, software, osdistribution
 from deploy.models import package, packagecondition
 from inventory.views import *
