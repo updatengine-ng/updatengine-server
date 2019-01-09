@@ -53,6 +53,8 @@ class packagecondition(models.Model):
             ('language_is',_('language_is')),
             ('hostname_in',_('hostname_in')),
             ('hostname_not',_('hostname_not')),
+            ('ipaddr_in',_('ipaddr_in')),
+            ('ipaddr_not',_('ipaddr_not')),
         )
     name = models.CharField(max_length=100, verbose_name = _('packagecondition|name'))
     depends = models.CharField(max_length=12, choices=choice, default='installed', verbose_name = _('packagecondition|depends'))

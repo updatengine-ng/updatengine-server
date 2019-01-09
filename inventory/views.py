@@ -288,6 +288,46 @@ def check_conditions(m,pack):
             except:
                 pass
 
+    # IP address is in the list (comma separated list, wildcards can be used for condition name)
+    if install == True:
+        for condition in pack.conditions.filter(depends='ipaddr_in'):
+            try:
+                host_ip = net.objects.filter(host_id=m.id).values_list('ip', flat=True)
+                for host_ip_addr in host_ip:
+                    host_ip_addr = "".join(host_ip_addr)
+                    networks = condition.softwarename.split(',')
+                    for network in networks:
+                        if not network:
+                            continue
+                        if IPAddress(host_ip_addr) in IPNetwork(network):
+                            install = True
+                            break
+                        else:
+                            install = False
+                    if install == True:
+                        break
+            except:
+                pass
+
+    # IP address is NOT in the list (comma separated list, wildcards can be used for condition name)
+    if install == True:
+        for condition in pack.conditions.filter(depends='ipaddr_not'):
+            try:
+                host_ip = net.objects.filter(host_id=m.id).values_list('ip', flat=True)
+                for host_ip_addr in host_ip:
+                    host_ip_addr = "".join(host_ip_addr)
+                    networks = condition.softwarename.split(',')
+                    for network in networks:
+                        if not network:
+                            continue
+                        if IPAddress(host_ip_addr) in IPNetwork(network):
+                            install = False
+                            break
+                    if install == False:
+                        break
+            except:
+                pass
+
     if install == False:
         status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Warning condition: '+escape(condition.name)+'</Status></Packagestatus>')
 

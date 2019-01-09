@@ -512,6 +512,14 @@ msgstr "Hostname is:"
 msgid "hostname_not"
 msgstr "Hostname is not:"
 
+#: deploy/models.py
+msgid "ipaddr_in"
+msgstr "IP address is:"
+
+#: deploy/models.py
+msgid "ipaddr_not"
+msgstr "IP address is not:"
+
 #: deploy/models.py:54
 msgid "packagecondition|name"
 msgstr "condition name"
@@ -529,7 +537,7 @@ msgid "packagecondition|softwarename help text"
 msgstr ""
 "For operating system condition, this field must contain the name of the "
 "operating system."
-"For 'hostname' conditions, it can be a list of names separated by a comma."
+"For 'Hostname' and 'IP address' conditions, it can be a list of values separated by commas."
 
 #: deploy/models.py:57
 msgid "packagecondition|softwareversion"

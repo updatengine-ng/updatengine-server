@@ -522,6 +522,14 @@ msgstr "Le nom d'hôte est:"
 msgid "hostname_not"
 msgstr "Le nom d'hôte n'est pas:"
 
+#: deploy/models.py
+msgid "ipaddr_in"
+msgstr "L'adresse IP est:"
+
+#: deploy/models.py
+msgid "ipaddr_not"
+msgstr "L'adresse IP n'est pas:"
+
 #: deploy/models.py:54
 msgid "packagecondition|name"
 msgstr "nom de la condition"
@@ -539,7 +547,7 @@ msgid "packagecondition|softwarename help text"
 msgstr ""
 "Pour une condition concernant le système d'exploitation, indiquer le nom du "
 "système concerné."
-"Pour les conditions 'nom d'hôte', ce peut être une liste de noms séparés par une virgule."
+"Pour les conditions 'Nom d'hôte' et 'Adresse IP', ce peut être une liste de valeurs séparées par des virgules."
 
 #: deploy/models.py:57
 msgid "packagecondition|softwareversion"
