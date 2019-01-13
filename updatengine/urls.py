@@ -30,6 +30,8 @@ from inventory.machine import machineviews
 from django.contrib.admin import site
 import adminactions.actions as actions
 
+from views import check_version
+
 # register all adminactions
 site.add_action(actions.mass_update)
 site.add_action(actions.export_as_csv)
@@ -42,6 +44,7 @@ urlpatterns = [
     url(r'^adminactions/', include('adminactions.urls')),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^', include(admin.site.urls)),
+    url(r'^check_version/$', check_version, name='latest_version'),
 ]
 # Use lines below only during development if you want django 
 # to server static files
