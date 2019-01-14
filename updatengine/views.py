@@ -1,28 +1,25 @@
 from django.http import JsonResponse
 import json
-import urllib2
-import re
-import datetime
+import os
+import ssl
+from utils import extract_text_from_url
 
 def check_version(request):
-    urlFile = urllib2.urlopen(request.build_absolute_uri('/') + 'static/json/app.json',)
-    jsonList = json.load(urlFile)
-    url = jsonList['url'] + '/releases'
-        
-    regex = 'releases/tag/(.+?)">'
-    version = extract_text_from_url(url, regex)
-
-    data = {
-        'version' : version,
-        'url' : url + '/tag/' + version,
-    }
-    return JsonResponse(data)
-    
-def extract_text_from_url(url, regex):
     try:
-        req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"})
-        html = urllib2.urlopen(req).read()
-        version = re.search(regex, html, re.IGNORECASE | re.DOTALL).group(1)
+        json_file = os.path.join(os.path.dirname(__file__), 'static/json/app.json')
+        json_data = open(json_file).read()
+        json_list = json.loads(json_data)
+        url = json_list['url'] + '/releases'
+        regex = 'releases/tag/(.+?)">'
+        version = extract_text_from_url(url, regex)
+        data = {
+            'version' : version,
+            'url' : url + '/tag/' + version,
+        }
+        return JsonResponse(data)
     except:
-        version = ''
-    return version
+        return JsonResponse({
+            'version' : '',
+            'url' : ''
+        })
+
