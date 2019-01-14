@@ -1,6 +1,6 @@
 # UpdatEngine-server
 
-Version 2.2.0
+Version 2.3.0 RC1
 
 UpdatEngine Server is a web app allowing people to inventory computer an server, deploy software and create profile to apply on inventoried machines for Windows and Linux.
 
@@ -18,15 +18,8 @@ He had to stop his participation in the project in July 2017.
 Since version 2.1.1 of 2014, there was not much evolution for the server part and this repository has no other pretensions than to try to improve the functionalities.
 Thanks to Yves, to the developers who participated and still participates as well as to the users.
 
-## What's new ?
-UpdatEngine-server was upgraded :
-- Django 1.11 LTS
-- Deprecated migration tool 'South' removed
-- Display column 'Operating system' added and 'Comment' removed from inventory machines
-- New menu "General configuration" with theses options :
-  - Remove duplicated machines
-  - Hide 'Warning' messages in deployment history
-- Script 'clear_history' to add in schedule task
+## Features
+- Django 1.11 LTS project
 - 100% compatibility with [**UpdatEngine-client 2.4.9.4**](https://github.com/dam09fr/updatengine-client/releases)
 - Tested with Debian 8, Ubuntu 16.04, Ubuntu 18.04, CentOs 7
 
