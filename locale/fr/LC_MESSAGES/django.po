@@ -61,51 +61,63 @@ msgstr "Exporter comme 'Delete Tree'"
 msgid "Export delete tree"
 msgstr "Exporter comme 'Delete Tree'"
 
-#: adminactions/forms.py:33
-msgid "adminactions|header"
+#: adminactions/forms.py:37
+msgid "adminactions|Header"
 msgstr "Entêtes"
 
-#: adminactions/forms.py:34
-msgid "adminactions|delimiter"
+#: adminactions/forms.py:38
+msgid "adminactions|Delimiter"
 msgstr "Séparateur"
 
-#: adminactions/forms.py:35
-msgid "adminactions|quotechar"
+#: adminactions/forms.py:39
+msgid "adminactions|Quotechar"
 msgstr "Délimiteur"
 
-#: adminactions/forms.py:37
-msgid "adminactions|All"
-msgstr "Tout"
-
-#: adminactions/forms.py:38
-msgid "adminactions|Minimal"
-msgstr "Minimum"
-
-#: adminactions/forms.py:39
-msgid "adminactions|None"
-msgstr "Aucun"
-
-#: adminactions/forms.py:40
-msgid "adminactions|Non Numeric"
-msgstr "Non numériques"
-
-#: adminactions/forms.py:40
-msgid "adminactions|quoting"
+#: adminactions/forms.py:41
+msgid "adminactions|Quoting"
 msgstr "Délimiter"
 
 #: adminactions/forms.py:42
-msgid "adminactions|escapechar"
+msgid "adminactions|All"
+msgstr "Tout"
+
+#: adminactions/forms.py:43
+msgid "adminactions|Minimal"
+msgstr "Minimum"
+
+#: adminactions/forms.py:44
+msgid "adminactions|None"
+msgstr "Aucun"
+
+#: adminactions/forms.py:45
+msgid "adminactions|Non Numeric"
+msgstr "Non numériques"
+
+#: adminactions/forms.py:47
+msgid "adminactions|Escapechar"
 msgstr "Echappement"
 
-#: adminactions/forms.py:46
-msgid "adminactions| columns"
+#: adminactions/forms.py:48
+msgid "adminactions|Datetime format"
+msgstr "Format date/heure"
+
+#: adminactions/forms.py:49
+msgid "adminactions|Date format"
+msgstr "Format date"
+
+#: adminactions/forms.py:50
+msgid "adminactions|Time format"
+msgstr "Format heure"
+
+#: adminactions/forms.py:51
+msgid "adminactions|Columns"
 msgstr "Colonnes"
 
-#: adminactions/mass_update.py:119
+#: adminactions/mass_update.py:128
 msgid "adminactions| Validate"
 msgstr "Methode d'enregistrement"
 
-#: adminactions/mass_update.py:120
+#: adminactions/mass_update.py:129
 msgid "adminactions|if checked use obj.save() instead of manager.update()"
 msgstr "Si cochée, utilise la méthode save() plutôt qu'update()"
 
@@ -113,7 +125,7 @@ msgstr "Si cochée, utilise la méthode save() plutôt qu'update()"
 msgid "Sorry you do not have rights to execute this action"
 msgstr "Désolé mais vous n'avez pas les droits d'exécuter cette action"
 
-#: adminactions/mass_update.py:297
+#: adminactions/mass_update.py:233
 #, python-format
 msgid "Updated %s records"
 msgstr "Mis à jour %s enregistrements"
@@ -163,31 +175,31 @@ msgstr "Exporter en CSV"
 msgid "adminactions|Mass Update"
 msgstr "Modification massive"
 
-#: adminactions/templates/adminactions/mass_update.html:56
+#: adminactions/templates/adminactions/mass_update.html:61
 msgid "adminactions|field name"
 msgstr "Nom du champ"
 
-#: adminactions/templates/adminactions/mass_update.html:57
+#: adminactions/templates/adminactions/mass_update.html:62
 msgid "adminactions|update"
 msgstr "Mettre à jour"
 
-#: adminactions/templates/adminactions/mass_update.html:58
+#: adminactions/templates/adminactions/mass_update.html:63
 msgid "adminactions|function"
 msgstr "Fonction"
 
-#: adminactions/templates/adminactions/mass_update.html:59
+#: adminactions/templates/adminactions/mass_update.html:64
 msgid "adminactions|new value"
 msgstr "Nouvelle valeur"
 
-#: adminactions/templates/adminactions/mass_update.html:60
+#: adminactions/templates/adminactions/mass_update.html:65
 msgid "adminactions|existing values"
 msgstr "Valeurs existantes"
 
-#: adminactions/templates/adminactions/mass_update.html:61
+#: adminactions/templates/adminactions/mass_update.html:66
 msgid "adminactions|(sample)"
 msgstr "Exemple"
 
-#: adminactions/templates/adminactions/mass_update.html:85
+#: adminactions/templates/adminactions/mass_update.html:90
 msgid "adminactions|Update records"
 msgstr "Mettre à jour"
 
@@ -1237,6 +1249,10 @@ msgstr "français"
 #: updatengine/settings.py:85
 msgid "english"
 msgstr "anglais"
+
+#: updatengine/templates/admin/base.html:70
+msgid "header|Latest stable"
+msgstr "Dernière stable"
 
 #: updatengine/templates/admin/base.html:82
 msgid "header|Inventory"

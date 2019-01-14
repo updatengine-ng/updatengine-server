@@ -61,52 +61,64 @@ msgstr ""
 msgid "Export delete tree"
 msgstr ""
 
-#: adminactions/forms.py:33
-msgid "adminactions|header"
+#: adminactions/forms.py:37
+msgid "adminactions|Header"
 msgstr "header"
 
-#: adminactions/forms.py:34
-msgid "adminactions|delimiter"
+#: adminactions/forms.py:38
+msgid "adminactions|Delimiter"
 msgstr "delimiter"
 
-#: adminactions/forms.py:35
-msgid "adminactions|quotechar"
+#: adminactions/forms.py:39
+msgid "adminactions|Quotechar"
 msgstr "quotechar"
 
-#: adminactions/forms.py:37
-msgid "adminactions|All"
-msgstr "%s"
-
-#: adminactions/forms.py:38
-msgid "adminactions|Minimal"
-msgstr "Minimal"
-
-#: adminactions/forms.py:39
-msgid "adminactions|None"
-msgstr "None"
-
-#: adminactions/forms.py:40
-msgid "adminactions|Non Numeric"
-msgstr "Non Numeric"
-
-#: adminactions/forms.py:40
-msgid "adminactions|quoting"
+#: adminactions/forms.py:41
+msgid "adminactions|Quoting"
 msgstr "quoting"
 
 #: adminactions/forms.py:42
-msgid "adminactions|escapechar"
-msgstr "escapechar"
-
-#: adminactions/forms.py:46
-msgid "adminactions| columns"
+msgid "adminactions|All"
 msgstr "%s"
 
-#: adminactions/mass_update.py:119
+#: adminactions/forms.py:43
+msgid "adminactions|Minimal"
+msgstr "Minimal"
+
+#: adminactions/forms.py:44
+msgid "adminactions|None"
+msgstr "None"
+
+#: adminactions/forms.py:45
+msgid "adminactions|Non Numeric"
+msgstr "Non Numeric"
+
+#: adminactions/forms.py:47
+msgid "adminactions|Escapechar"
+msgstr "escapechar"
+
+#: adminactions/forms.py:48
+msgid "adminactions|Datetime format"
+msgstr "Datetime format"
+
+#: adminactions/forms.py:49
+msgid "adminactions|Date format"
+msgstr "Date format"
+
+#: adminactions/forms.py:50
+msgid "adminactions|Time format"
+msgstr "Time format"
+
+#: adminactions/forms.py:51
+msgid "adminactions|Columns"
+msgstr "%s"
+
+#: adminactions/mass_update.py:128
 #, fuzzy
 msgid "adminactions| Validate"
 msgstr "update"
 
-#: adminactions/mass_update.py:120
+#: adminactions/mass_update.py:129
 msgid "adminactions|if checked use obj.save() instead of manager.update()"
 msgstr ""
 
@@ -114,7 +126,7 @@ msgstr ""
 msgid "Sorry you do not have rights to execute this action"
 msgstr "Sorry you do not have rights to execute this action"
 
-#: adminactions/mass_update.py:297
+#: adminactions/mass_update.py:233
 #, python-format
 msgid "Updated %s records"
 msgstr ""
@@ -164,31 +176,31 @@ msgstr ""
 msgid "adminactions|Mass Update"
 msgstr "Mass Update"
 
-#: adminactions/templates/adminactions/mass_update.html:56
+#: adminactions/templates/adminactions/mass_update.html:61
 msgid "adminactions|field name"
 msgstr "field name"
 
-#: adminactions/templates/adminactions/mass_update.html:57
+#: adminactions/templates/adminactions/mass_update.html:62
 msgid "adminactions|update"
 msgstr "update"
 
-#: adminactions/templates/adminactions/mass_update.html:58
+#: adminactions/templates/adminactions/mass_update.html:63
 msgid "adminactions|function"
 msgstr "function"
 
-#: adminactions/templates/adminactions/mass_update.html:59
+#: adminactions/templates/adminactions/mass_update.html:64
 msgid "adminactions|new value"
 msgstr "new value"
 
-#: adminactions/templates/adminactions/mass_update.html:60
+#: adminactions/templates/adminactions/mass_update.html:65
 msgid "adminactions|existing values"
 msgstr "existing value"
 
-#: adminactions/templates/adminactions/mass_update.html:61
+#: adminactions/templates/adminactions/mass_update.html:66
 msgid "adminactions|(sample)"
 msgstr "(sample)"
 
-#: adminactions/templates/adminactions/mass_update.html:85
+#: adminactions/templates/adminactions/mass_update.html:90
 msgid "adminactions|Update records"
 msgstr "Update records"
 
@@ -1220,6 +1232,10 @@ msgstr "french"
 #: updatengine/settings.py:85
 msgid "english"
 msgstr "english"
+
+#: updatengine/templates/admin/base.html:70
+msgid "header|Latest stable"
+msgstr "Latest stable"
 
 #: updatengine/templates/admin/base.html:82
 msgid "header|Inventory"

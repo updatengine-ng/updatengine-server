@@ -121,12 +121,12 @@ OPERATIONS = OperationManager({
 
 class MassUpdateForm(GenericActionForm):
     _no_sample_for = []
-    _clean = forms.BooleanField(label='clean()',
-                                required=False,
-                                help_text="if checked calls obj.clean()")
+    #_clean = forms.BooleanField(label='clean()',
+    #                            required=False,
+    #                            help_text="if checked calls obj.clean()")
 
-    _validate = forms.BooleanField(label='Validate',
-                                   help_text="if checked use obj.save() instead of manager.update()")
+    _validate = forms.BooleanField(label=_('adminactions| Validate'),
+                                   help_text=_("adminactions|if checked use obj.save() instead of manager.update()"))
 
     # _unique_transaction = forms.BooleanField(label='Unique transaction',
     # required=False,

@@ -67,7 +67,7 @@
                         $('#version').html('<small>Version ' + data.version +'</small>')
                         localStorage.setItem('ue_version', data.version);
                         if (data.version != undefined && ue_latest_version != undefined && ue_latest_version != data.version)
-                            $('#updatestatus').html('<a href="' + ue_latest_url + '">Latest stable is '+ ue_latest_version + '</a>');
+                            $('#updatestatus').html('<a href="' + ue_latest_url + '">{% trans 'header|Latest stable' %}: '+ ue_latest_version + '</a>');
                     });
 
                     function setIntervalAndExecute(fn, t) {
@@ -82,7 +82,7 @@
                                 ue_latest_url = data.url;
                                 localStorage.setItem('ue_latest_version', data.version);
                                 localStorage.setItem('ue_latest_url', data.url);
-                                $('#updatestatus').html('<a href="' + ue_latest_url + '">Latest stable is '+ ue_latest_version + '</a>');
+                                $('#updatestatus').html('<a href="' + ue_latest_url + '">{% trans 'header|Latest stable' %}: '+ ue_latest_version + '</a>');
                             }
                             else {
                                 localStorage.removeItem('ue_latest_version');

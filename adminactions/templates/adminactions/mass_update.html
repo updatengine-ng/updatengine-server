@@ -58,12 +58,12 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>field name</th>
-                    <th>update</th>
-                    <th>function</th>
-                    <th>new value</th>
-                    <th>existing values
-                        <small><i>(sample)</i></small>
+                    <th>{% trans "adminactions|field name" %}</th>
+                    <th>{% trans "adminactions|update" %}</th>
+                    <th>{% trans "adminactions|function" %}</th>
+                    <th>{% trans "adminactions|new value" %}</th>
+                    <th>{% trans "adminactions|existing values" %}
+                        <small><i>{% trans "adminactions|(sample)" %}</i></small>
                     </th>
                 </tr>
                 {% for field in adminform.form.model_fields %}
@@ -87,7 +87,7 @@
                 {{ hidden }}
             {% endfor %}
 {#            <input type="hidden" name="action" value="{{ action }}"/>#}
-            <input type="submit" name="apply" value="Update {{ selection.count }} records"/>
+            <input type="submit" name="apply" value="{% trans "adminactions|Update records" %}"/>
         </form>
     </div>
 {#    <div id='col2'>#}
