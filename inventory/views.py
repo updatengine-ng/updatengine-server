@@ -55,13 +55,11 @@ def is_deploy_authorized(m,handling):
     # Loading configuration datas
     config = deployconfig.objects.get(pk=1)
     now = datetime.now().time()
-    deploy_auth = False
     # if a global time period is defined
     if config.activate_time_deploy == 'yes':
         start = config.start_time
         end = config.end_time
-        if (start <= now and now <= end) or \
-        (end <= start and (start <= now or now <= end)):
+        if start <= now <= end or (end <= start and (start <= now or now <= end)):
             deploy_auth = True
         else:
             deploy_auth = False
@@ -70,8 +68,7 @@ def is_deploy_authorized(m,handling):
     elif m.timeprofile is not None:
         start = m.timeprofile.start_time
         end = m.timeprofile.end_time
-        if (start <= now and now <= end) or \
-        (end <= start and (start <= now or now <= end)):
+        if start <= now <= end or (end <= start and (start <= now or now <= end)):
             deploy_auth = True
         else:
             deploy_auth = False
@@ -364,7 +361,7 @@ def inventory(xml):
         handling.append('</Response>')
         return handling
     try:
-	    # Load default config
+        # Load default config
         config = deployconfig.objects.get(pk=1)
 
         # Typemachine import:
