@@ -114,7 +114,7 @@ msgid "adminactions|Columns"
 msgstr "Colonnes"
 
 #: adminactions/mass_update.py:128
-msgid "adminactions| Validate"
+msgid "adminactions|Validate"
 msgstr "Methode d'enregistrement"
 
 #: adminactions/mass_update.py:129
@@ -542,6 +542,46 @@ msgstr "L'adresse IP est:"
 msgid "ipaddr_not"
 msgstr "L'adresse IP n'est pas:"
 
+#: deploy/models.py
+msgid "isfile"
+msgstr "Le fichier existe:"
+
+#: deploy/models.py
+msgid "notisfile"
+msgstr "Le fichier n'existe pas:"
+
+#: deploy/models.py
+msgid "isdir"
+msgstr "Le répertoire existe:"
+
+#: deploy/models.py
+msgid "notisdir"
+msgstr "Le répertoire n'existe pas:"
+
+#: deploy/models.py
+msgid "isfiledir"
+msgstr "Le fichier ou le répertoire existe:"
+
+#: deploy/models.py
+msgid "notisfiledir"
+msgstr "Le fichier ou le répertoire n'existe pas:"
+
+#: deploy/models.py
+msgid "hashis"
+msgstr "Le hachage SHA-256 du fichier est:"
+
+#: deploy/models.py
+msgid "hashnot"
+msgstr "Le hachage SHA-256 du fichier n'est pas:"
+
+#: deploy/models.py
+msgid "exitcodeis"
+msgstr "Le code de retour de la commande est:"
+
+#: deploy/models.py
+msgid "exitcodenot"
+msgstr "Le code de retour de la commande n'est pas:"
+
 #: deploy/models.py:54
 msgid "packagecondition|name"
 msgstr "nom de la condition"
@@ -550,29 +590,41 @@ msgstr "nom de la condition"
 msgid "packagecondition|depends"
 msgstr "Condition à vérifier:"
 
+#: deploy/models.py:55
+msgid "packagecondition|depends help text"
+msgstr ""
+"<u>Attention</u> : Pour les clients < 3.0, les conditions étendues telles que l'existence "
+"de fichiers et répertoires, le hachage et le code retour de commande sont ignorées "
+"et le paquet de déploiement concerné n'est jamais installé."
+
 #: deploy/models.py:56
 msgid "packagecondition|softwarename"
-msgstr "nom"
+msgstr "nom de logiciel, d'hôte, de fichier, adresse IP ou commande"
 
 #: deploy/models.py:56
 msgid "packagecondition|softwarename help text"
 msgstr ""
+"Dans toutes les conditions qui concernent les logiciels et le nom d'hôte, "
+"le caractère '*' permet de remplacer 0 ou plusieurs caratères (ex: 'Java * Update * (64-bit)', "
+"'host1,host-2*').<br>"
 "Pour une condition concernant le système d'exploitation, indiquer le nom du "
-"système concerné."
-"Pour les conditions 'Nom d'hôte' et 'Adresse IP', ce peut être une liste de valeurs séparées par des virgules."
+"système concerné.<br>"
+"Pour les conditions 'Nom d'hôte' et 'Adresse IP', ce peut être une liste de valeurs séparées par des virgules.<br>"
+"Pour la condition 'Adresse IP', il est possible de spécifier une adresse IP ou une adresse réseau (ex: '192.168.1.10', "
+"'192.168.1.10/32', '192.168.1.0/24')."
 
 #: deploy/models.py:57
 msgid "packagecondition|softwareversion"
-msgstr "version"
+msgstr "version, hachage ou code de retour"
 
 #: deploy/models.py:57
 msgid "packagecondition|softwareversion help text"
 msgstr ""
 "Pour une condition concernant le système d'exploitation, indiquer la version "
 "du système ou laisser undefined si vous ne souhaitez pas préciser de version "
-"(Service pack etc...)."
-"Pour les conditions 'non installé ou inférieure' et 'installé et supérieure',"
-"une version vide signifie de ne vérifier que le nom du logiciel."
+"(Service pack etc...).<br>"
+"Pour les conditions 'non installé ou inférieure' et 'installé et supérieure', "
+"laisser vide pour de ne vérifier que le nom du logiciel.<br>"
 
 #: deploy/models.py:58
 msgid "packagecondition|entity"

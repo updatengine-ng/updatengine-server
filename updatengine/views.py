@@ -4,6 +4,7 @@ import os
 import ssl
 from utils import extract_text_from_url
 
+
 def check_version(request):
     try:
         json_file = os.path.join(os.path.dirname(__file__), 'static/json/app.json')

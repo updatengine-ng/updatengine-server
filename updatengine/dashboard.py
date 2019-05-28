@@ -1,22 +1,22 @@
-###################################################################################
-# UpdatEngine - Software Packages Deployment and Administration tool              #  
-#                                                                                 #
-# Copyright (C) Yves Guimard - yves.guimard@gmail.com                             #
-#                                                                                 #
-# This program is free software; you can redistribute it and/or                   #
-# modify it under the terms of the GNU General Public License                     #
-# as published by the Free Software Foundation; either version 2                  #
-# of the License, or (at your option) any later version.                          #
-#                                                                                 #
-# This program is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of                  #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                   #
-# GNU General Public License for more details.                                    #
-#                                                                                 #
-# You should have received a copy of the GNU General Public License               #
-# along with this program; if not, write to the Free Software                     #
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
-###################################################################################
+###############################################################################
+# UpdatEngine - Software Packages Deployment and Administration tool          #
+#                                                                             #
+# Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
+#                                                                             #
+# This program is free software; you can redistribute it and/or               #
+# modify it under the terms of the GNU General Public License                 #
+# as published by the Free Software Foundation; either version 2              #
+# of the License, or (at your option) any later version.                      #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program; if not, write to the Free Software Foundation,     #
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
+###############################################################################
 
 """
 This file was generated with the customdashboard management command and
@@ -27,7 +27,6 @@ To activate your index dashboard add the following to your settings.py::
 """
 
 from django.utils.translation import ugettext_lazy as _
-
 from grappelli.dashboard import modules, Dashboard
 
 
@@ -36,35 +35,34 @@ class CustomIndexDashboard(Dashboard):
     Custom index dashboard for www.
     """
 
-
     def init_with_context(self, context):
-
         # append an app list module for "Applications"
         # ".AppList( title=''," replaced by ".ModelList( _(header|label)," to have homogeneous display on 'home' page
-        self.children.append(modules.ModelList(		
-		_('header|Inventory'),
-		collapsible=False,
-		column=1,
-		css_classes=('collapse closed',),
-		models=('inventory.*',)
-		))
-	self.children.append(modules.ModelList(
-		_('header|Deploy'),
-		title_url='',
-		collapsible=False,
-		column=1,
-		css_classes=('collapse closed',),
-		models=('deploy.*',)
-		))
-	self.children.append(modules.ModelList(
-		_('header|Configuration'),
-		title_url='',
-		collapsible=False,
-		column=2,
-		css_classes=('collapse closed',),
-		models=('configuration.*',)
-		))
+        self.children.append(modules.ModelList(
+        _('header|Inventory'),
+        collapsible=False,
+        column=1,
+        css_classes=('collapse closed',),
+        models=('inventory.*',)
+        ))
 
+        self.children.append(modules.ModelList(
+            _('header|Deploy'),
+            title_url='',
+            collapsible=False,
+            column=1,
+            css_classes=('collapse closed',),
+            models=('deploy.*',)
+            ))
+
+        self.children.append(modules.ModelList(
+            _('header|Configuration'),
+            title_url='',
+            collapsible=False,
+            column=2,
+            css_classes=('collapse closed',),
+            models=('configuration.*',)
+            ))
 
         # append a recent actions module
         self.children.append(modules.RecentActions(
@@ -82,26 +80,15 @@ class CustomIndexDashboard(Dashboard):
             models=('django.contrib.*',),
         ))
 
-	# UpdatEngine feed module. Uncomment to show on dashboard
-#	self.children.append(modules.Feed(
-#		_('ModelList: Latest News'),
-#		column=2,
-#		collapsible=False,
-#		feed_url='http://www.updatengine.com/?feed=rss2',
-#		limit=3
-#	))
-
-
-	self.children.append(modules.LinkList(
-		_('ModelList: Links'),
-		layout='inline',
-		column=2,
-            	collapsible=False,
-		children=(
-			['www.updatengine.com', 'http://www.updatengine.com', True],
-			['Groupe discussion UpdatEngine FR', 'https://groups.google.com/forum/#!forum/updatengine-fr', True],
-			['UpdatEngine Client','https://github.com/dam09fr/updatengine-client/releases/', True],
-			['Github Damien GUILLEM', 'https://github.com/dam09fr', True],
-			['Github Noel MARTINON', 'https://github.com/noelmartinon', True],
-		)
-	))
+        self.children.append(modules.LinkList(
+            _('ModelList: Links'),
+            layout='inline',
+            column=2,
+                    collapsible=False,
+            children=(
+                ['www.updatengine.com', 'http://www.updatengine.com', True],
+                ['Groupe discussion UpdatEngine FR', 'https://groups.google.com/forum/#!forum/updatengine-fr', True],
+                ['UpdatEngine Client','https://github.com/dam09fr/updatengine-client/releases/', True],
+                ['Github Noel MARTINON', 'https://github.com/noelmartinon', True],
+            )
+        ))

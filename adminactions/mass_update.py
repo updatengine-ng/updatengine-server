@@ -23,7 +23,7 @@ from django.template.context import RequestContext
 from django.utils.encoding import smart_text
 from django.utils.functional import curry
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from adminactions.compat import atomic
 
@@ -125,7 +125,7 @@ class MassUpdateForm(GenericActionForm):
     #                            required=False,
     #                            help_text="if checked calls obj.clean()")
 
-    _validate = forms.BooleanField(label=_('adminactions| Validate'),
+    _validate = forms.BooleanField(label=_('adminactions|Validate'),
                                    help_text=_("adminactions|if checked use obj.save() instead of manager.update()"))
 
     # _unique_transaction = forms.BooleanField(label='Unique transaction',
