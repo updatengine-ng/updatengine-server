@@ -602,16 +602,29 @@ def inventory(xml):
         # Maintain compatibility with old (< 2.4.9.4) UpdatEngine Client
         try:
             u = root.find('Uuid').text
-            un = root.find('UserName').text
-            d = root.find('Domain').text
-            l = root.find('Language').text
-            clientversion = root.find('ClientVersion').text
         except:
             u = 'Unknown'
+
+        try:
+            un = root.find('UserName').text
+        except:
             un = 'Unknown'
+
+        try:
+            d = root.find('Domain').text
+        except:
             d = 'Unknown'
+
+        try:
+            l = root.find('Language').text
+        except:
             l = 'Unknown'
+
+        try:
+            clientversion = root.find('ClientVersion').text
+        except:
             clientversion = 'Unknown'
+
 
         softsum = root.find('Softsum').text
         ossum = root.find('Ossum').text
