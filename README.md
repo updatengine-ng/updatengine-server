@@ -1,6 +1,6 @@
 # UpdatEngine-server
 
-Version 3.0
+Version 3.0.1
 
 UpdatEngine Server is a web app allowing people to inventory computer an server, deploy software and create profile to apply on inventoried machines for Windows and Linux.
 

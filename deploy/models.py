@@ -396,7 +396,7 @@ def postcreate_impex(sender, instance, created, **kwargs):
         all_objects = packagelist + conditionlist
         data = serializers.serialize('json', all_objects)
 
-        if instance.filename is None or instance.filename == '':
+        if not instance.filename or instance.filename == '':
             path = random_directory()
             fullpath = settings.MEDIA_ROOT+'/package-file/'+path
             os.mkdir(fullpath)
