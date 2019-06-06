@@ -8,7 +8,6 @@ UpdatEngine Server is a web app allowing people to inventory computer an server,
 - [Project features](#project-features)
 - [New features and versions changes](#new-features-and-versions-changes)
 - [Install](#install)
-- [Upgrade from 2.1.1/Django 1.6.2](#upgrade-from-211django-162)
 - [Update](#update)
 - [Links](#links)
 - [License](#license)
@@ -86,59 +85,6 @@ sudo chown -R www-data:www-data /var/www/UE-environment/updatengine-server/updat
 sudo service apache2 restart
 
 sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py createsuperuser
-  ```
-
-## Upgrade from 2.1.1/Django 1.6.2
-Since UE Server now uses Django 1.11.13 and its integrate migration tools with new initial migration files, here is a clean solution to upgrade and keep your database.
-After this upgrade, next 'migrations' will be easier than the procedure below.
-
-Quickly (for debian/ubuntu):
-  ```
-# Backup existing database (for security reason)
-# To restore : 'mysqladmin -u root -p drop updatengine' then
-# recreate empty db and 'gunzip < ~/updatengine.sql.gz | mysql -u root -p updatengine'
-mysqldump -u root -p updatengine | gzip -9 > ~/updatengine.sql.gz
-
-# Move existing UE site (backup old version)
-sudo mv /var/www/UE-environment/ /var/www/UE-environment_1.6.2/
-
-# Install new version
-sudo virtualenv --distribute --no-site-packages -p /usr/bin/python2.7 /var/www/UE-environment
-cd /var/www/UE-environment/
-sudo git clone https://github.com/noelmartinon/updatengine-server
-
-sudo /var/www/UE-environment/bin/pip install --upgrade pip distribute setuptools
-sudo /var/www/UE-environment/bin/pip install -r /var/www/UE-environment/updatengine-server/requirements/pip-packages.txt
-
-sudo cp /var/www/UE-environment/updatengine-server/updatengine/settings.py.model /var/www/UE-environment/updatengine-server/updatengine/settings.py
-# and now MODIFY settings.py
-
-# Adapt the database ( add new fields, fake migration, remove 'south' table)
-/var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py dbshell
-
-ALTER TABLE inventory_entity ADD ip_range VARCHAR(200);
-CREATE TABLE `configuration_globalconfig` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `name` varchar(100) NOT NULL, `show_warning` varchar(3) NOT NULL, `remove_duplicate` varchar(3) NOT NULL);
-DROP TABLE IF EXISTS `south_migrationhistory`;
-DROP TABLE IF EXISTS `django_migrations`;
-quit
-
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py migrate --fake-initial
-
-# Here, your global deployment period is reset to initial value
-# so keep in mind that you must set your own values in configuration menu
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py loaddata /var/www/UE-environment/updatengine-server/initial_data/configuration_initial_data.yaml
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py loaddata /var/www/UE-environment/updatengine-server/initial_data/groups_initial_data.yaml
-
-# Copy deployment packages
-rsync -av /var/www/UE-environment_1.6.2/updatengine-server/updatengine/media/package-file/* /var/www/UE-environment/updatengine-server/updatengine/media/package-file/
-
-sudo chown -R www-data:www-data /var/www/UE-environment/updatengine-server/updatengine/static/
-sudo chown -R www-data:www-data /var/www/UE-environment/updatengine-server/updatengine/media/
-
-sudo service apache2 restart
-
-# If new site works perfectly then delete old UE site (DANGER impossible to go back):
-# sudo rm -rf /var/www/UE-environment_1.6.2
   ```
 
 ## Update
