@@ -843,6 +843,8 @@ def inventory_extended(xml):
         handling.append('</Response>')
         return handling
     try:
+        if s is None:
+            s = 'undefined'
         m = machine.objects.get(serial=s, name=n)
         handling.append('<Import>Import ok</Import>')
 
