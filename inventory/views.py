@@ -29,6 +29,7 @@ from xml.sax.saxutils import escape
 from django.db.models import Count, Max
 from netaddr import IPNetwork, IPAddress
 import sys
+import re
 
 
 def compare_versions(version1, version2):
@@ -149,7 +150,6 @@ def get_extended_conditions(m, pack):
 
 def check_conditions(m, pack, xml):
     '''This function check conditions of pack deployment package'''
-    import re
     install = True
     # All types of conditions are checked one by one
 
@@ -355,6 +355,10 @@ def check_conditions(m, pack, xml):
                         break
             except:
                 pass
+
+    # Basic check to avoid asking client for unnecessary extended conditions
+    if xml == 'BASIC_CHECK':
+        return install;
 
     ## Extended conditions ##
     try:
@@ -685,7 +689,7 @@ def inventory(xml):
                     try:
                      osdistribution.objects.create(name = osname, version = osversion, arch = osarch, systemdrive = ossystemdrive, host_id=m.id, manualy_created='no')
                     except:
-                        handling.append('<Warning>creation of System: '+osname+' -- '+osversion+' failed</Warning>')
+                        handling.append('<Warning>Creation of System: '+osname+' -- '+osversion+' failed</Warning>')
 
         # Software import
         if softsum != m.softsum:
@@ -723,7 +727,7 @@ def inventory(xml):
                 try:
                     net.objects.create(ip = netip, mask = netmask, mac = netmac, host_id = m.id, manualy_created='no')
                 except:
-                    handling.append('<Warning>creation of Network: '+netip+' -- '+netmask+' failed</Warning>')
+                    handling.append('<Warning>Creation of Network: '+netip+' -- '+netmask+' failed</Warning>')
         try:
             m.save()
             handling.append('<Import>Import ok</Import>')
@@ -791,7 +795,8 @@ def inventory(xml):
             if clientversion != 'Unknown':
                 for pack in sorted(package_to_deploy ,key=lambda package: package.name):
                     if period_to_deploy or pack.ignoreperiod == 'yes':
-                        extended_conditions += get_extended_conditions(m,pack)
+                        if check_conditions(m, pack,'BASIC_CHECK'):
+                            extended_conditions += get_extended_conditions(m,pack)
                 if len(extended_conditions) > 0 :
                     extended_conditions=list(set(extended_conditions)) # remove duplicates
                     extended_conditions.insert(0, '<Extended>')
@@ -803,6 +808,9 @@ def inventory(xml):
                 for pack in sorted(package_to_deploy ,key=lambda package: package.name):
                     if period_to_deploy or pack.ignoreperiod == 'yes':
                         if check_conditions(m, pack, None):
+                            if pack.command.find('no_break_on_error') != -1 and (clientversion == 'Unknown' or compare_versions(clientversion, '3.1') < 0):
+                                status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Unsupported option for updatengine-client version \''+clientversion+'\': Ignoring \'no_break_on_error\'</Status></Packagestatus>')
+                                pack.command = re.sub('\r?\nno_break_on_error', '', pack.command)
                             if pack.packagesum != 'nofile':
                                 if m.entity is not None and m.entity.redistrib_url:
                                     packurl = str(m.entity.redistrib_url)+str(pack.filename)
@@ -838,6 +846,11 @@ def inventory_extended(xml):
         root = etree.fromstring(xml)
         s = root.find('SerialNumber').text
         n = root.find('Hostname').text
+        try:
+            clientversion = root.find('ClientVersion').text  # For UE-client>3.1
+        except:
+            clientversion = 'Unknown'
+
     except:
         handling.append('<Error>Error etree or find in xml</Error>')
         handling.append('</Response>')
@@ -867,6 +880,12 @@ def inventory_extended(xml):
             for pack in sorted(package_to_deploy ,key=lambda package: package.name):
                 if period_to_deploy or pack.ignoreperiod == 'yes':
                     if check_conditions(m, pack, xml):
+                        if pack.command.find('no_break_on_error') != -1 and (clientversion == 'Unknown' or compare_versions(clientversion, '3.1') < 0):
+                                if clientversion == 'Unknown':
+                                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Possible use of unsupported option for updatengine-client version \''+clientversion+'\': \'no_break_on_error\' need client version >= 3.1 but this warning is only removed after that version</Status></Packagestatus>')
+                                else:
+                                    status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Unsupported option for updatengine-client version \''+clientversion+'\': Ignoring \'no_break_on_error\'</Status></Packagestatus>')
+                                    pack.command = re.sub('\r?\nno_break_on_error', '', pack.command)
                         if pack.packagesum != 'nofile':
                             if m.entity is not None and m.entity.redistrib_url:
                                 packurl = str(m.entity.redistrib_url)+str(pack.filename)
