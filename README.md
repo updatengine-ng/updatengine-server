@@ -4,7 +4,6 @@ UpdatEngine Server is a web app allowing people to inventory computer an server,
 
 * [History](#history)
 * [Project features](#project-features)
-* [New features and versions changes](#new-features-and-versions-changes)
 * [Install](#install)
 * [Update](#update)
 * [Examples](#examples-of-deployment-packages)
@@ -89,15 +88,15 @@ sudo service apache2 restart
 
 * Name: Mozilla Firefox - 1_Install - 64bits\
   Description: Silent installation of Mozilla Firefox 64bits\
-  Command: Firefox_Setup_69.0.1_64bits.exe -ms\
-  Package file: Firefox_Setup_69.0.1_64bits.exe
+  Command: Firefox_Setup_70.0.1_64bits.exe -ms\
+  Package file: Firefox_Setup_70.0.1_64bits.exe
 
 #### Conditions
 
-* Name: Mozilla Firefox < 69.0.1\
+* Name: Mozilla Firefox < 70.0.1\
   Condition: Software not installed or version lower than\
   Software name: Mozilla Firefox \*\
-  Version: 69.0.1
+  Version: 70.0.1
 
 * Name: Windows 64bits\
   Condition: Windows 64 bits computer
@@ -241,7 +240,7 @@ If cancelling then UpdatEngine-client will check and ask again on next inventory
 * Name: LibreOffice < 6.2.8.2\
   Condition: Software not installed or version lower than\
   Software name: LibreOffice \*\
-  Version: 8.0.2310.11
+  Version: 6.2.8.2
 
 * Name: Windows 64bits\
   Condition: Windows 64 bits computer
