@@ -36,7 +36,9 @@ sudo python${PY_VER} -m venv ${INST_DIR}
 cd ${INST_DIR}
 
 sudo git clone https://github.com/noelmartinon/updatengine-server
+cd updatengine-server
 sudo git checkout -b ${UE_VER} origin/${UE_VER}
+cd ..
 
 sudo bin/pip install --upgrade pip
 sudo bin/pip install --upgrade setuptools
@@ -92,7 +94,9 @@ sudo python${PY_VER} -m venv ${INST_DIR}
 cd ${INST_DIR}
 
 sudo git clone https://github.com/noelmartinon/updatengine-server
+cd updatengine-server
 sudo git checkout -b ${UE_VER} origin/${UE_VER}
+cd ..
 
 sudo bin/pip install --upgrade pip
 sudo bin/pip install --upgrade setuptools
@@ -107,6 +111,9 @@ sudo systemctl reload apache2
 # Remove previous version:
 # sudo rm -rf ${INST_DIR}_py2.7
 ```
+
+If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
+
 
 ## Update
 
