@@ -1,0 +1,3 @@
+# Directory files is used in static files generation :
+cd /var/www/UE-environment/updatengine-server
+../bin/python manage.py collectstatic

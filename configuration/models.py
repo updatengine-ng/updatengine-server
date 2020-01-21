@@ -45,7 +45,7 @@ class deployconfig(models.Model):
         verbose_name = _('deployconfig|deployconfig')
         verbose_name_plural = _('deployconfig|deployconfigs')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.activate_deploy
 
 
@@ -63,13 +63,13 @@ class globalconfig(models.Model):
         verbose_name = _('globalconfig|globalconfig')
         verbose_name_plural = _('globalconfig|globalconfigs')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 # Create subuser to extend default django user
 class subuser(models.Model):
-    user = models.OneToOneField(User, related_name='subuser')
+    user = models.OneToOneField(User, related_name='subuser', on_delete=models.CASCADE)
     entity = models.ManyToManyField(entity, blank=True, default=None, verbose_name=_('entity|entity'))
 
     class Meta:

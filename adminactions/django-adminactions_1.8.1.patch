@@ -1,0 +1,467 @@
+diff -ruN -x '*.pyc' ../lib/python3.7/site-packages/adminactions/forms.py adminactions/forms.py
+--- ../lib/python3.7/site-packages/adminactions/forms.py	2020-01-18 10:11:42.610524415 -0400
++++ adminactions/forms.py	2020-01-20 11:54:15.861307606 -0400
+@@ -31,21 +31,21 @@
+                                        widget=forms.HiddenInput({'class': 'select-across'}))
+     action = forms.CharField(label='', required=True, initial='', widget=forms.HiddenInput())
+ 
+-    header = forms.BooleanField(label=_('Header'), required=False)
+-    delimiter = forms.ChoiceField(label=_('Delimiter'), choices=list(zip(delimiters, delimiters)), initial=',')
+-    quotechar = forms.ChoiceField(label=_('Quotechar'), choices=list(zip(quotes, quotes)), initial="'")
++    header = forms.BooleanField(label=_('adminactions|Header'), required=False)
++    delimiter = forms.ChoiceField(label=_('adminactions|Delimiter'), choices=list(zip(delimiters, delimiters)), initial=',')
++    quotechar = forms.ChoiceField(label=_('adminactions|Quotechar'), choices=list(zip(quotes, quotes)), initial="'")
+     quoting = forms.ChoiceField(
+-        label=_('Quoting'),
+-        choices=((csv.QUOTE_ALL, _('All')),
+-                 (csv.QUOTE_MINIMAL, _('Minimal')),
+-                 (csv.QUOTE_NONE, _('None')),
+-                 (csv.QUOTE_NONNUMERIC, _('Non Numeric'))), initial=csv.QUOTE_ALL)
++        label=_('adminactions|Quoting'),
++        choices=((csv.QUOTE_ALL, _('adminactions|All')),
++                 (csv.QUOTE_MINIMAL, _('adminactions|Minimal')),
++                 (csv.QUOTE_NONE, _('adminactions|None')),
++                 (csv.QUOTE_NONNUMERIC, _('adminactions|Non Numeric'))), initial=csv.QUOTE_ALL)
+ 
+-    escapechar = forms.ChoiceField(label=_('Escapechar'), choices=(('', ''), ('\\', '\\')), required=False)
+-    datetime_format = forms.CharField(label=_('Datetime format'), initial=formats.get_format('DATETIME_FORMAT'))
+-    date_format = forms.CharField(label=_('Date format'), initial=formats.get_format('DATE_FORMAT'))
+-    time_format = forms.CharField(label=_('Time format'), initial=formats.get_format('TIME_FORMAT'))
+-    columns = forms.MultipleChoiceField(label=_('Columns'), widget=SelectMultiple(attrs={'size': 20}))
++    escapechar = forms.ChoiceField(label=_('adminactions|Escapechar'), choices=(('', ''), ('\\', '\\')), required=False)
++    datetime_format = forms.CharField(label=_('adminactions|Datetime format'), initial=formats.get_format('DATETIME_FORMAT'))
++    date_format = forms.CharField(label=_('adminactions|Date format'), initial=formats.get_format('DATE_FORMAT'))
++    time_format = forms.CharField(label=_('adminactions|Time format'), initial=formats.get_format('TIME_FORMAT'))
++    columns = forms.MultipleChoiceField(label=_('adminactions|Columns'), widget=SelectMultiple(attrs={'size': 20}))
+ 
+ 
+ class XLSOptions(forms.Form):
+diff -ruN -x '*.pyc' ../lib/python3.7/site-packages/adminactions/mass_update.py adminactions/mass_update.py
+--- ../lib/python3.7/site-packages/adminactions/mass_update.py	2020-01-18 10:11:42.614524364 -0400
++++ adminactions/mass_update.py	2020-01-20 07:43:53.269050237 -0400
+@@ -107,12 +107,12 @@
+ 
+ 
+ class MassUpdateForm(GenericActionForm):
+-    _clean = forms.BooleanField(label='clean()',
+-                                required=False,
+-                                help_text="if checked calls obj.clean()")
++    #_clean = forms.BooleanField(label='clean()',
++    #                            required=False,
++    #                            help_text=_("adminactions|if checked calls obj.clean()"))
+ 
+-    _validate = forms.BooleanField(label='Validate',
+-                                   help_text="if checked use obj.save() instead of manager.update()")
++    _validate = forms.BooleanField(label=_('adminactions|Validate'),
++                                   help_text=_("adminactions|if checked use obj.save() instead of manager.update()"))
+ 
+     # _unique_transaction = forms.BooleanField(label='Unique transaction',
+     # required=False,
+diff -ruN -x '*.pyc' ../lib/python3.7/site-packages/adminactions/templates/adminactions/export_csv.html adminactions/templates/adminactions/export_csv.html
+--- ../lib/python3.7/site-packages/adminactions/templates/adminactions/export_csv.html	2020-01-18 10:11:42.622524499 -0400
++++ adminactions/templates/adminactions/export_csv.html	2020-01-20 11:16:12.205343180 -0400
+@@ -42,13 +42,18 @@
+ {% endblock %}
+ 
+ {% block breadcrumbs %}{% if not is_popup %}
+-    <div class="breadcrumbs">
+-        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a> &rsaquo;
+-        <a href="{% url 'admin:index' %}{{ app_label}}">{{ app_label|capfirst }}</a> &rsaquo;
+-        {% if has_change_permission %}<a
+-                href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
+-	{{ action_short_description|capfirst }}
+-    </div>
++    <ul class="grp-horizontal-list">
++        <li><a href="{% url 'admin:index' %}">{% trans "Home" %}</a></li>
++        <li><a href="{% url 'admin:index' %}{{ app_label}}">
++        {% with header_label=app_label|capfirst|escape %}
++            {% with msgid="header|"|add:header_label %}
++                {% trans msgid %}
++            {% endwith %}
++        {% endwith %}
++        </a></li>
++        <li><a href="{% url opts|admin_urlname:'changelist' %}">{% blocktrans with msgid=opts.verbose_name_plural|capfirst %}{{ msgid }}{% endblocktrans %}</a></li>
++        <li>{{ action_short_description|capfirst }}</li>
++    </ul>
+ {% endif %}{% endblock %}
+ 
+ {% block content %}
+@@ -73,6 +78,7 @@
+     {% if url_format_date %}
+     <div id='legend-date'>
+     <table xmlns="http://www.w3.org/1999/xhtml" lass="doctable table">
++    {% if LANGUAGE_CODE != 'fr' %}
+     <caption><b>The following characters are recognized in the
+         <i><tt class="parameter">format</tt></i> parameter string</b></caption>
+ 
+@@ -391,6 +397,313 @@
+         </td>
+ 
+     </tr>
++    {% endif  %}
++    {% if LANGUAGE_CODE == 'fr' %}
++    <caption><strong>
++         Les caractères suivants sont reconnus dans le paramètre
++         <code class="parameter">format</code>
++        </strong></caption>
++
++         <thead>
++          <tr>
++           <th>Caractères pour le paramètre <code class="parameter">format</code></th>
++           <th>Description</th>
++           <th>Exemple de valeurs retournées</th>
++          </tr>
++
++         </thead>
++
++         <tbody class="tbody">
++          <tr>
++           <td style="text-align: center;"><em class="emphasis">Jour</em></td>
++           <td>---</td>
++           <td>---</td>
++          </tr>
++
++          <tr>
++           <td><em>d</em></td>
++           <td>Jour du mois, sur deux chiffres (avec un zéro initial)</td>
++           <td><em>01</em> à <em>31</em></td>
++          </tr>
++
++          <tr>
++           <td><em>D</em></td>
++           <td>Jour de la semaine, en trois lettres (et en anglais - par défaut : en anglais, ou sinon, dans la langue locale du serveur)</td>
++           <td><em>Mon</em> à <em>Sun</em></td>
++          </tr>
++
++          <tr>
++           <td><em>j</em></td>
++           <td>Jour du mois sans les zéros initiaux</td>
++           <td><em>1</em> à <em>31</em></td>
++          </tr>
++
++          <tr>
++           <td><em>l</em> (&#039;L&#039; minuscule)</td>
++           <td>Jour de la semaine, textuel, version longue, en anglais</td>
++           <td><em>Sunday</em> à <em>Saturday</em></td>
++          </tr>
++
++          {#              <tr>#}
++          {#               <td><em>N</em></td>#}
++          {#               <td>Représentation numérique ISO-8601 du jour de la semaine (ajouté en PHP 5.1.0)</td>#}
++          {#               <td><em>1</em> (pour Lundi) à <em>7</em> (pour Dimanche)</td>#}
++          {#              </tr>#}
++
++          <tr>
++           <td><em>S</em></td>
++           <td>Suffixe ordinal d&#039;un nombre pour le jour du mois, en anglais, sur deux lettres</td>
++           <td>
++            <em>st</em>, <em>nd</em>, <em>rd</em> ou
++            <em>th</em>.  Fonctionne bien avec <em>j</em>
++           </td>
++          </tr>
++
++          <tr>
++           <td><em>w</em></td>
++           <td>Jour de la semaine au format numérique</td>
++           <td><em>0</em> (pour dimanche) à <em>6</em> (pour samedi)</td>
++          </tr>
++
++          <tr>
++           <td><em>z</em></td>
++           <td>Jour de l&#039;année</td>
++           <td><em>0</em> à <em>365</em></td>
++          </tr>
++
++          <tr>
++           <td style="text-align: center;"><em class="emphasis">Semaine</em></td>
++           <td>---</td>
++           <td>---</td>
++          </tr>
++
++          <tr>
++           <td><em>W</em></td>
++           <td>Numéro de semaine dans l&#039;année ISO-8601, les semaines commencent
++            le lundi</td>
++           <td>Exemple : <em>42</em> (la 42ème semaine de l&#039;année)</td>
++          </tr>
++
++          <tr>
++           <td style="text-align: center;"><em class="emphasis">Mois</em></td>
++           <td>---</td>
++           <td>---</td>
++          </tr>
++
++          <tr>
++           <td><em>F</em></td>
++           <td>Mois, textuel, version longue; en anglais, comme
++            <em>January</em> ou <em>December</em></td>
++           <td><em>January</em> à <em>December</em></td>
++          </tr>
++
++          <tr>
++           <td><em>m</em></td>
++           <td>Mois au format numérique, avec zéros initiaux</td>
++           <td><em>01</em> à <em>12</em></td>
++          </tr>
++
++          <tr>
++           <td><em>M</em></td>
++           <td>Mois, en trois lettres, en anglais</td>
++           <td><em>Jan</em> à <em>Dec</em></td>
++          </tr>
++
++          <tr>
++           <td><em>n</em></td>
++           <td>Mois sans les zéros initiaux</td>
++           <td><em>1</em> à <em>12</em></td>
++          </tr>
++
++          <tr>
++           <td><em>t</em></td>
++           <td>Nombre de jours dans le mois</td>
++           <td><em>28</em> à <em>31</em></td>
++          </tr>
++
++          <tr>
++           <td style="text-align: center;"><em class="emphasis">Année</em></td>
++           <td>---</td>
++           <td>---</td>
++          </tr>
++
++          <tr>
++           <td><em>L</em></td>
++           <td>Est ce que l&#039;année est bissextile</td>
++           <td><em>1</em> si bissextile, <em>0</em> sinon.</td>
++          </tr>
++
++          {#              <tr>#}
++          {#               <td><em>o</em></td>#}
++          {#               <td>La numérotation de semaine dans l&#039;année ISO-8601. C&#039;est la même valeur que#}
++          {#                <em>Y</em>, excepté si le numéro de la semaine ISO#}
++          {#                (<em>W</em>) appartient à l&#039;année précédente ou suivante,#}
++          {#                cette année sera utilisé à la place. (ajouté en PHP 5.1.0)</td>#}
++          {#               <td>Exemples : <em>1999</em> ou <em>2003</em></td>#}
++          {#              </tr>#}
++
++          <tr>
++           <td><em>Y</em></td>
++           <td>Année sur 4 chiffres</td>
++           <td>Exemples : <em>1999</em> ou <em>2003</em></td>
++          </tr>
++
++          <tr>
++           <td><em>y</em></td>
++           <td>Année sur 2 chiffres</td>
++           <td>Exemples : <em>99</em> ou <em>03</em></td>
++          </tr>
++
++          <tr>
++           <td style="text-align: center;"><em class="emphasis">Heure</em></td>
++           <td>---</td>
++           <td>---</td>
++          </tr>
++
++          <tr>
++           <td><em>a</em></td>
++           <td>Ante meridiem et Post meridiem en minuscules</td>
++           <td><em>am</em> ou <em>pm</em></td>
++          </tr>
++
++          <tr>
++           <td><em>A</em></td>
++           <td>Ante meridiem et Post meridiem en majuscules</td>
++           <td><em>AM</em> ou <em>PM</em></td>
++          </tr>
++
++          <tr>
++           <td><em>B</em></td>
++           <td>Heure Internet Swatch</td>
++           <td><em>000</em> à <em>999</em></td>
++          </tr>
++
++          <tr>
++           <td><em>g</em></td>
++           <td>Heure, au format 12h, sans les zéros initiaux</td>
++           <td><em>1</em> à <em>12</em></td>
++          </tr>
++
++          <tr>
++           <td><em>G</em></td>
++           <td>Heure, au format 24h, sans les zéros initiaux</td>
++           <td><em>0</em> à <em>23</em></td>
++          </tr>
++
++          <tr>
++           <td><em>h</em></td>
++           <td>Heure, au format 12h, avec les zéros initiaux</td>
++           <td><em>01</em> à <em>12</em></td>
++          </tr>
++
++          <tr>
++           <td><em>H</em></td>
++           <td>Heure, au format 24h, avec les zéros initiaux</td>
++           <td><em>00</em> à <em>23</em></td>
++          </tr>
++
++          <tr>
++           <td><em>i</em></td>
++           <td>Minutes avec les zéros initiaux</td>
++           <td><em>00</em> à <em>59</em></td>
++          </tr>
++
++          <tr>
++           <td><em>s</em></td>
++           <td>Secondes, avec zéros initiaux</td>
++           <td><em>00</em> à <em>59</em></td>
++          </tr>
++
++          {#              <tr>#}
++          {#               <td><em>u</em></td>#}
++          {#               <td>#}
++          {#                Microsecondes (ajouté en PHP 5.2.2). Notez que la fonction#}
++          {#                <span class="function"><strong>date()</strong></span> génèrera toujours#}
++          {#                <em>000000</em> vu qu&#039;elle prend un paramètre de type#}
++          {#                entier, alors que la méthode <span class="methodname"><a href="datetime.format.php" class="methodname">DateTime::format()</a></span>#}
++          {#                supporte les microsecondes si <a href="class.datetime.php" class="classname">DateTime</a> a#}
++          {#                été créée avec des microsecondes.#}
++          {#               </td>#}
++          {#               <td>Exemple : <em>654321</em></td>#}
++          {#              </tr>#}
++
++          {#              <tr>#}
++          {#               <td><em>v</em></td>#}
++          {#               <td>#}
++          {#                Millisecondes (ajouté dans PHP 7.0.0). Même note que pour#}
++          {#                <em>u</em>.#}
++          {#               </td>#}
++          {#               <td>Exemple: <em>654</em></td>#}
++          {#              </tr>#}
++
++          <tr>
++           <td style="text-align: center;"><em class="emphasis">Fuseau horaire</em></td>
++           <td>---</td>
++           <td>---</td>
++          </tr>
++
++          {#              <tr>#}
++          {#               <td><em>e</em></td>#}
++          {#               <td>L&#039;identifiant du fuseau horaire (ajouté en PHP 5.1.0)</td>#}
++          {#               <td>Exemples : <em>UTC</em>, <em>GMT</em>, <em>Atlantic/Azores</em></td>#}
++          {#              </tr>#}
++
++          <tr>
++           <td><em>I</em> (i majuscule)</td>
++           <td>L&#039;heure d&#039;été est activée ou pas</td>
++           <td><em>1</em> si oui, <em>0</em> sinon.</td>
++          </tr>
++
++          <tr>
++           <td><em>O</em></td>
++           <td>Différence d&#039;heures avec l&#039;heure de Greenwich (GMT), exprimée en heures</td>
++           <td>Exemple : <em>+0200</em></td>
++          </tr>
++
++          {#              <tr>#}
++          {#               <td><em>P</em></td>#}
++          {#               <td>Différence avec l&#039;heure Greenwich (GMT) avec un deux-points#}
++          {#                entre les heures et les minutes (ajouté dans PHP 5.1.3)</td>#}
++          {#               <td>Exemple : <em>+02:00</em></td>#}
++          {#              </tr>#}
++
++          <tr>
++           <td><em>T</em></td>
++           <td>Abréviation du fuseau horaire</td>
++           <td>Exemples : <em>EST</em>, <em>MDT</em> ...</td>
++          </tr>
++
++          <tr>
++           <td><em>Z</em></td>
++           <td>Décalage horaire en secondes. Le décalage des zones à l&#039;ouest
++            de la zone UTC est négative, et à l&#039;est, il est positif.</td>
++           <td><em>-43200</em> à <em>50400</em></td>
++          </tr>
++
++          <tr>
++           <td style="text-align: center;"><em class="emphasis">Date et Heure complète</em></td>
++           <td>---</td>
++           <td>---</td>
++          </tr>
++
++          {#              <tr>#}
++          {#               <td><em>c</em></td>#}
++          {#               <td>Date au format ISO 8601  (ajouté en PHP 5)</td>#}
++          {#               <td>2004-02-12T15:19:21+00:00</td>#}
++          {#              </tr>#}
++
++          <tr>
++           <td><em>r</em></td>
++           <td>Format de date <a href="http://www.faqs.org/rfcs/rfc2822" class="link external">&raquo;&nbsp;RFC 2822</a></td>
++           <td>Exemple : <em>Thu, 21 Dec 2000 16:01:07 +0200</em></td>
++          </tr>
++
++          <tr>
++           <td><em>U</em></td>
++           <td>Secondes depuis l&#039;époque Unix (1er Janvier 1970,  0h00 00s GMT)</td>
++           {#               <td>Voir aussi <span class="function"><a href="function.time.php" class="function">time()</a></span></td>#}
++          </tr>
++    {% endif  %}
+ 
+     </tbody>
+ 
+diff -ruN -x '*.pyc' ../lib/python3.7/site-packages/adminactions/templates/adminactions/mass_update.html adminactions/templates/adminactions/mass_update.html
+--- ../lib/python3.7/site-packages/adminactions/templates/adminactions/mass_update.html	2020-01-18 10:11:42.622524499 -0400
++++ adminactions/templates/adminactions/mass_update.html	2020-01-20 07:19:39.673814586 -0400
+@@ -20,12 +20,18 @@
+ {% endblock %}
+ 
+ {% block breadcrumbs %}{% if not is_popup %}
+-    <div class="breadcrumbs">
+-        <a href="../../">{% trans "Home" %}</a> &rsaquo;
+-        <a href="../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+-        <a href=".">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+-	{{ action_short_description|capfirst }}
+-    </div>
++     <ul class="grp-horizontal-list">
++        <li><a href="../../">{% trans "Home" %}</a></li>
++        <li><a href="../">
++        {% with header_label=app_label|capfirst|escape %}
++            {% with msgid="header|"|add:header_label %}
++                {% trans msgid %}
++            {% endwith %}
++        {% endwith %}
++        </a></li>
++        <li><a href=".">{% blocktrans with msgid=opts.verbose_name_plural|capfirst %}{{ msgid }}{% endblocktrans %}</a></li>
++        <li>{{ action_short_description|capfirst }}</li>
++    </ul>
+ {% endif %}{% endblock %}
+ 
+ {% block content %}
+@@ -56,13 +62,13 @@
+                     </td>
+                 </tr>
+                 <tr>
+-                    <th>field name</th>
+-                    <th>update</th>
+-                    <th>function</th>
+-                    <th>new value</th>
++                    <th>{% trans "adminactions|field name" %}</th>
++                    <th>{% trans "adminactions|update" %}</th>
++                    <th>{% trans "adminactions|function" %}</th>
++                    <th>{% trans "adminactions|new value" %}</th>
+                     {% if grouped %}
+-                    <th>existing values
+-                        <small><i>(sample)</i></small>
++                    <th>{% trans "adminactions|existing values" %}
++                        <small><i>({% trans "adminactions|(sample)" %})</i></small>
+                     </th>
+                   {% endif %}
+                 </tr>
+@@ -88,7 +94,7 @@
+                 {{ hidden }}
+             {% endfor %}
+ {#            <input type="hidden" name="action" value="{{ action }}"/>#}
+-            <input type="submit" name="apply" value="Update {{ selection.count }} records"/>
++            <input type="submit" name="apply" value="{% trans "adminactions|Update records" %}"/>
+         </form>
+     </div>
+ {#    <div id='col2'>#}

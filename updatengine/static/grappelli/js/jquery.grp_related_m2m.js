@@ -18,7 +18,7 @@
                 $this.addClass('grp-has-related-lookup');
                 // lookup
                 lookup_id($this, options); // lookup when loading page
-                $this.bind("change focus keyup", function() { // id-handler
+                $this.on("change focus keyup", function() { // id-handler
                     lookup_id($this, options);
                 });
             });
@@ -44,8 +44,12 @@
             query_string: grappelli.get_query_string(elem)
         }, function(data) {
             values = $.map(data, function (a, i) {
-                if (data.length === i + 1) {
+                if (data.length === i + 1 && !a.safe) {
                     return $('<span class="grp-placeholder-label"></span>').text(a.label + '\u200E');
+                } else if (data.length === i + 1 && a.safe) {
+                        return $('<span class="grp-placeholder-label"></span>').html(a.label + '\u200E');
+                } else if (a.safe) {
+                    return $('<span class="grp-placeholder-label"></span>').html(a.label + '\u200E').append($('<span class="grp-separator"></span>'));
                 } else {
                     return $('<span class="grp-placeholder-label"></span>').text(a.label + '\u200E').append($('<span class="grp-separator"></span>'));
                 }

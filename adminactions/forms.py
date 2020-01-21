@@ -1,12 +1,9 @@
-from __future__ import absolute_import, unicode_literals
-
-from six.moves import zip
-
+# -*- coding: utf-8 -*-
 from django import forms
 from django.forms.models import ModelForm
 from django.forms.widgets import SelectMultiple
 from django.utils import formats
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .api import csv, delimiters, quotes
 

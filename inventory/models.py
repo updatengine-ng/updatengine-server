@@ -41,7 +41,7 @@ class entity(models.Model):
     redistrib_url = models.CharField(max_length=200, null=True, blank=True, verbose_name=_('entity|redistrib_url'))
     ip_range = models.CharField(max_length=200, null=True, blank=True, verbose_name=_('entity|ip_range'), help_text=_('entity|ip range help text'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -88,7 +88,7 @@ class entity(models.Model):
             all_root = entity.objects.filter(parent=current_entity)
         prefix_init = prefix
         for root in all_root:
-            print root.name
+            print(root.name)
             level += 1
             if prefix_init == '':
                 prefix = '%s' % level
@@ -104,7 +104,7 @@ class entity(models.Model):
 class typemachine (models.Model):
     name = models.CharField(max_length=100, verbose_name=_('typemachine|name'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -145,7 +145,7 @@ class machine(models.Model):
     def get_pack_from_profile(self):
         return '\n'.join([p.name for p in self.packageprofile.packages.all()])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def wakeup(self):
@@ -198,10 +198,10 @@ class osdistribution(models.Model):
     version = models.CharField(max_length=100, null=True, blank=True, default='undefined', verbose_name=_('osdistribution|version'))
     arch = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('osdistribution|arch'))
     systemdrive = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('osdistribution|systemdrive'))
-    host = models.ForeignKey(machine, verbose_name=_('osdistribution|host'))
+    host = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('osdistribution|host'))
     manualy_created = models.CharField(max_length=3, choices=choice, default='yes', verbose_name=_('osdistribution|manualy_created'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -217,10 +217,10 @@ class net(models.Model):
     ip = models.CharField(max_length=50, verbose_name=_('net|ip'))
     mask = models.CharField(max_length=50, verbose_name=_('net|mask'))
     mac = models.CharField(max_length=100, verbose_name=_('net|mac'))
-    host = models.ForeignKey(machine, verbose_name=_('net|host'))
+    host = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('net|host'))
     manualy_created = models.CharField(max_length=3, choices=choice, default='yes', verbose_name=_('net|manualy_created'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.ip
 
     class Meta:
@@ -236,10 +236,10 @@ class software(models.Model):
     name = models.CharField(max_length=300, verbose_name=_('software|name'))
     version = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('software|version'))
     uninstall = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('software|uninstall'))
-    host = models.ForeignKey(machine, verbose_name=_('software|host'))
+    host = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('software|host'))
     manualy_created = models.CharField(max_length=3, choices=choice, default='yes', verbose_name=_('software|manualy_created'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

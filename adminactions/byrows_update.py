@@ -1,21 +1,14 @@
-import django
+# -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.contrib.admin import helpers
 from django.forms.models import modelform_factory, modelformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
-from django.utils.encoding import smart_text
+from django.shortcuts import render
+from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
 from .forms import GenericActionForm
 from .models import get_permission_codename
-
-if django.VERSION[:2] > (1, 8):
-    from django.shortcuts import render
-
-    def render_to_response(template_name, context):  # noqa
-        return render(context.request, template_name, context=context.flatten())
 
 
 def byrows_update(modeladmin, request, queryset):  # noqa
@@ -37,7 +30,7 @@ def byrows_update(modeladmin, request, queryset):  # noqa
         def __init__(self, *args, **kwargs):
             super(modeladmin.form, self).__init__(*args, **kwargs)
             if self.instance:
-                readonly_fields = (modeladmin.model._meta.pk.name,) + modeladmin.get_readonly_fields(request)
+                readonly_fields = (modeladmin.model._meta.pk.name,) + tuple(modeladmin.get_readonly_fields(request))
                 for fname in readonly_fields:
                     if fname in self.fields:
                         self.fields[fname].widget.attrs['readonly'] = 'readonly'
@@ -45,11 +38,17 @@ def byrows_update(modeladmin, request, queryset):  # noqa
 
     fields = byrows_update_get_fields(modeladmin)
 
-    ActionForm = modelform_factory(modeladmin.model,
-                                   form=GenericActionForm,
-                                   fields=fields)
+    def formfield_callback(field, **kwargs):
+        return modeladmin.formfield_for_dbfield(field, request=request, **kwargs)
+    ActionForm = modelform_factory(
+        modeladmin.model,
+        form=GenericActionForm,
+        fields=fields,
+        formfield_callback=formfield_callback)
 
-    MFormSet = modelformset_factory(modeladmin.model, form=modelform, fields=fields, extra=0)
+    MFormSet = modelformset_factory(modeladmin.model, form=modelform,
+                                    fields=fields, extra=0,
+                                    formfield_callback=formfield_callback)
 
     if 'apply' in request.POST:
         actionform = ActionForm(request.POST)
@@ -79,15 +78,14 @@ def byrows_update(modeladmin, request, queryset):  # noqa
         'action_short_description': byrows_update.short_description,
         'title': u"%s (%s)" % (
             byrows_update.short_description.capitalize(),
-            smart_text(modeladmin.opts.verbose_name_plural),
+            smart_str(modeladmin.opts.verbose_name_plural),
         ),
         'formset': formset,
         'opts': modeladmin.model._meta,
         'app_label': modeladmin.model._meta.app_label,
     }
     ctx.update(modeladmin.admin_site.each_context(request))
-
-    return render_to_response(tpl, RequestContext(request, ctx))
+    return render(request, tpl, ctx)
 
 
 byrows_update.short_description = _("By rows update")

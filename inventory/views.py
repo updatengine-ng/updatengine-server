@@ -33,24 +33,15 @@ import re
 
 
 def compare_versions(version1, version2):
-    from distutils.version import StrictVersion, LooseVersion
-    if version1 == '':
-        v1 = '0'
-    else:
-        v1 = version1.encode('ascii', 'ignore')
-    if version2 == '':
-        v2 = '0'
-    else:
-        v2 = version2.encode('ascii', 'ignore')
-    try:
-        return cmp(StrictVersion(v1), StrictVersion(v2))
-    except ValueError:
-        # in case of abnormal version number, fall back to LooseVersion
-        try:
-            return cmp(LooseVersion(v1), LooseVersion(v2))
-        except TypeError:
-            # certain LooseVersion comparions raise due to unorderable types, fallback to string comparison
-            return cmp([str(v) for v in LooseVersion(v1).version], [str(v) for v in LooseVersion(v2).version])
+    ''' Compare two version string '''
+    from packaging import version
+    if version1 is None:
+        version1 = ''
+    if version2 is None:
+        version2 = ''
+    if version1 == version2:
+        return 0
+    return -1 if version.parse(version1) < version.parse(version2) else 1
 
 
 def is_deploy_authorized(m, handling):
@@ -357,7 +348,7 @@ def check_conditions(m, pack, xml):
                 pass
 
     # Basic check to avoid asking client for unnecessary extended conditions
-    if xml == 'BASIC_CHECK':
+    if xml == b'BASIC_CHECK':
         return install;
 
     ## Extended conditions ##
@@ -603,7 +594,7 @@ def inventory(xml):
         v = root.find('Manufacturer').text
         p = root.find('Product').text
         c = root.find('Chassistype').text
-        # Maintain compatibility with old (< 2.4.9.4) UpdatEngine Client
+
         try:
             u = root.find('Uuid').text
         except:
@@ -795,19 +786,19 @@ def inventory(xml):
             if clientversion != 'Unknown':
                 for pack in sorted(package_to_deploy ,key=lambda package: package.name):
                     if period_to_deploy or pack.ignoreperiod == 'yes':
-                        if check_conditions(m, pack,'BASIC_CHECK'):
-                            extended_conditions += get_extended_conditions(m,pack)
+                        if check_conditions(m, pack,  b'BASIC_CHECK'):
+                            extended_conditions += get_extended_conditions(m, pack)
                 if len(extended_conditions) > 0 :
                     extended_conditions=list(set(extended_conditions)) # remove duplicates
                     extended_conditions.insert(0, '<Extended>')
                     extended_conditions.append('</Extended>')
                     handling += extended_conditions
-
             # Prepare response to Updatengine client
             if len(extended_conditions) == 0 :
                 for pack in sorted(package_to_deploy ,key=lambda package: package.name):
                     if period_to_deploy or pack.ignoreperiod == 'yes':
-                        if check_conditions(m, pack, None):
+                        check_conditions(m, pack)
+                        if check_conditions(m, pack):
                             if pack.command.find('no_break_on_error') != -1 and (clientversion == 'Unknown' or compare_versions(clientversion, '3.1') < 0):
                                 status('<Packagestatus><Mid>'+str(m.id)+'</Mid><Pid>'+str(pack.id)+'</Pid><Status>Unsupported option for updatengine-client version \''+clientversion+'\': Ignoring \'no_break_on_error\'</Status></Packagestatus>')
                                 pack.command = re.sub('\r?\nno_break_on_error', '', pack.command)

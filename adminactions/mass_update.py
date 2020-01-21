@@ -1,43 +1,30 @@
-from __future__ import absolute_import, unicode_literals
-
+# -*- coding: utf-8 -*-
 import datetime
 import json
 import re
-
-import six
 from collections import OrderedDict as SortedDict, defaultdict
 
-import django
 from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import fields as df
+from django.db.models import ForeignKey, fields as df
+from django.db.transaction import atomic
 from django.forms import fields as ff
 from django.forms.models import (InlineForeignKeyField,
                                  ModelMultipleChoiceField, construct_instance,
                                  modelform_factory, )
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response
-from django.template.context import RequestContext
-from django.utils.encoding import smart_text
-from django.utils.functional import curry
+from django.shortcuts import render
+from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
-from adminactions.compat import atomic
-
-# from adminactions import compat
-from .compat import get_field_by_name
+from .compat import curry, get_field_by_name
 from .exceptions import ActionInterrupted
 from .forms import GenericActionForm
 from .models import get_permission_codename
 from .signals import adminaction_end, adminaction_requested, adminaction_start
-
-if six.PY2:
-    import string
-elif six.PY3:
-    string = str
 
 DO_NOT_MASS_UPDATE = 'do_NOT_mass_UPDATE'
 
@@ -100,12 +87,12 @@ class OperationManager(object):
 
 
 OPERATIONS = OperationManager({
-    df.CharField: [('upper', (string.upper, False, True, "convert to uppercase")),
-                   ('lower', (string.lower, False, True, "convert to lowercase")),
-                   ('capitalize', (string.capitalize, False, True, "capitalize first character")),
+    df.CharField: [('upper', (str.upper, False, True, "convert to uppercase")),
+                   ('lower', (str.lower, False, True, "convert to lowercase")),
+                   ('capitalize', (str.capitalize, False, True, "capitalize first character")),
                    # ('capwords', (string.capwords, False, True, "capitalize each word")),
                    # ('swapcase', (string.swapcase, False, True, "")),
-                   ('trim', (string.strip, False, True, "leading and trailing whitespace"))],
+                   ('trim', (str.strip, False, True, "leading and trailing whitespace"))],
     df.IntegerField: [('add percent', (add_percent, True, True, "add <arg> percent to existing value")),
                       ('sub percent', (sub_percent, True, True, "")),
                       ('sub', (sub_percent, True, True, "")),
@@ -113,17 +100,16 @@ OPERATIONS = OperationManager({
     df.BooleanField: [('swap', (negate, False, True, ""))],
     df.NullBooleanField: [('swap', (negate, False, True, ""))],
     df.EmailField: [('change domain', (change_domain, True, True, "")),
-                    ('upper', (string.upper, False, True, "convert to uppercase")),
-                    ('lower', (string.lower, False, True, "convert to lowercase"))],
+                    ('upper', (str.upper, False, True, "convert to uppercase")),
+                    ('lower', (str.lower, False, True, "convert to lowercase"))],
     df.URLField: [('change protocol', (change_protocol, True, True, ""))]
 })
 
 
 class MassUpdateForm(GenericActionForm):
-    _no_sample_for = []
     #_clean = forms.BooleanField(label='clean()',
     #                            required=False,
-    #                            help_text="if checked calls obj.clean()")
+    #                            help_text=_("adminactions|if checked calls obj.clean()"))
 
     _validate = forms.BooleanField(label=_('adminactions|Validate'),
                                    help_text=_("adminactions|if checked use obj.save() instead of manager.update()"))
@@ -204,6 +190,12 @@ class MassUpdateForm(GenericActionForm):
     def clean__clean(self):
         return bool(self.data.get('_clean', 0))
 
+    class Media:
+        css = {
+            # 'all': ('pretty.css',)
+        }
+        js = ('adminactions/js/massupdate.js',)
+
 
 def mass_update(modeladmin, request, queryset):  # noqa
     """
@@ -211,9 +203,28 @@ def mass_update(modeladmin, request, queryset):  # noqa
     """
 
     def not_required(field, **kwargs):
-        """ force all fields as not required"""
+        """force all fields as not required and return modeladmin field"""
         kwargs['required'] = False
-        return field.formfield(**kwargs)
+        kwargs['request'] = request
+        return modeladmin.formfield_for_dbfield(field, **kwargs)
+
+    def _get_sample():
+        for f in mass_update_hints:
+            if isinstance(f, ForeignKey):
+                # Filter by queryset so we only get results without our
+                # current resultset
+                filters = {"%s__in" % f.remote_field.name: queryset}
+                # Order by random to get a nice sample
+                query = f.related_model.objects.filter(**filters).distinct().order_by('?')
+                # Limit the amount of results so we don't accidently query
+                # many thousands of items and kill the database.
+                grouped[f.name] = [(a.pk, str(a)) for a in query[:10]]
+            elif hasattr(f, 'flatchoices') and f.flatchoices:
+                grouped[f.name] = dict(getattr(f, 'flatchoices')).keys()
+            elif hasattr(f, 'choices') and f.choices:
+                grouped[f.name] = dict(getattr(f, 'choices')).keys()
+            elif isinstance(f, df.BooleanField):
+                grouped[f.name] = [("True", True), ("False", False)]
 
     def _doit():
         errors = {}
@@ -260,10 +271,20 @@ def mass_update(modeladmin, request, queryset):  # noqa
         return
 
     # Allows to specified a custom mass update Form in the ModelAdmin
-    mass_update_form = getattr(modeladmin, 'mass_update_form', MassUpdateForm)
 
+    mass_update_form = getattr(modeladmin, 'mass_update_form', MassUpdateForm)
+    mass_update_fields = getattr(modeladmin, 'mass_update_fields', None)
+    mass_update_exclude = getattr(modeladmin, 'mass_update_exclude', ['pk']) or []
+    if 'pk' not in mass_update_exclude:
+        mass_update_exclude.append('pk')
+    mass_update_hints = getattr(modeladmin, 'mass_update_hints',
+                                [f.name for f in modeladmin.model._meta.fields])
+
+    if mass_update_fields and mass_update_exclude:
+        raise Exception("Cannot set both 'mass_update_exclude' and 'mass_update_fields'")
     MForm = modelform_factory(modeladmin.model, form=mass_update_form,
-                              exclude=('pk',),
+                              exclude=mass_update_exclude,
+                              fields=mass_update_fields,
                               formfield_callback=not_required)
     grouped = defaultdict(lambda: [])
     selected_fields = []
@@ -321,20 +342,18 @@ def mass_update(modeladmin, request, queryset):  # noqa
 
         form = MForm(initial=initial, instance=prefill_instance)
 
+    if mass_update_hints:
+        _get_sample()
+    already_grouped = set(grouped)
     for el in queryset.all()[:10]:
         for f in modeladmin.model._meta.fields:
-            if f.name not in form._no_sample_for:
-                if hasattr(f, 'flatchoices') and f.flatchoices:
-                    grouped[f.name] = list(dict(getattr(f, 'flatchoices')).values())
-                elif hasattr(f, 'choices') and f.choices:
-                    grouped[f.name] = list(dict(getattr(f, 'choices')).values())
-                elif isinstance(f, df.BooleanField):
-                    grouped[f.name] = [True, False]
-                else:
-                    value = getattr(el, f.name)
-                    if value is not None and value not in grouped[f.name]:
-                        grouped[f.name].append(value)
-                    initial[f.name] = initial.get(f.name, value)
+            if f.name in mass_update_hints and f.name not in already_grouped:
+                value = getattr(el, f.name)
+                target = [str(value), value]
+                if value is not None and target not in grouped[f.name]:
+                    grouped[f.name].append(target)
+
+                initial[f.name] = initial.get(f.name, value)
 
     adminForm = helpers.AdminForm(form, modeladmin.get_fieldsets(request), {}, [], model_admin=modeladmin)
     media = modeladmin.media + adminForm.media
@@ -345,7 +364,7 @@ def mass_update(modeladmin, request, queryset):  # noqa
            'action_short_description': mass_update.short_description,
            'title': u"%s (%s)" % (
                mass_update.short_description.capitalize(),
-               smart_text(modeladmin.opts.verbose_name_plural),
+               smart_str(modeladmin.opts.verbose_name_plural),
            ),
            'grouped': grouped,
            'fieldvalues': json.dumps(grouped, default=dthandler),
@@ -364,10 +383,7 @@ def mass_update(modeladmin, request, queryset):  # noqa
            'selection': queryset}
     ctx.update(modeladmin.admin_site.each_context(request))
 
-    if django.VERSION[:2] > (1, 8):
-        return render(request, tpl, context=ctx)
-    else:
-        return render_to_response(tpl, RequestContext(request, ctx))
+    return render(request, tpl, context=ctx)
 
 
 mass_update.short_description = _("Mass update")

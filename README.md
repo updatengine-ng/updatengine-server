@@ -5,6 +5,7 @@ UpdatEngine Server is a web app allowing people to inventory computer an server,
 * [History](#history)
 * [Project features](#project-features)
 * [Install](#install)
+* [Migrate to 4.0.0-RC1](#migrate-to-4.0.0-RC1)
 * [Update](#update)
 * [Examples](#examples-of-deployment-packages)
 * [Links](#links)
@@ -16,24 +17,30 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 ## Project features
 
-* Python 2.7 / Django 1.11 LTS project
-* Tested with Debian 8, Ubuntu 16.04, Ubuntu 18.04, CentOs 7
+* Python 3.7 / Django 2.2 LTS project
+* Tested with Debian 10, Ubuntu 18.04
 
 ## Install
 
-See **[2.1.1 installation documentation](https://updatengine.com/)** for details
+See old **[2.1.1 installation documentation](https://updatengine.com/)** for details
 
-Quickly (for debian/ubuntu):
+Quickly (for debian/ubuntu with mySQL):
 
 ```
-sudo apt-get install apache2 libapache2-mod-wsgi python2.7 python-virtualenv python-pip libxml2-dev libxslt-dev python-dev libmysqlclient-dev git-core mysql-server
-sudo virtualenv --distribute --no-site-packages -p /usr/bin/python2.7 /var/www/UE-environment
-cd /var/www/UE-environment/
-sudo git clone https://github.com/noelmartinon/updatengine-server
+export UE_VER=4.0.0-RC1
+export PY_VER=3.7
+export INST_DIR=/var/www/UE-environment
 
-sudo /var/www/UE-environment/bin/pip install --upgrade distribute
-sudo /var/www/UE-environment/bin/pip install --upgrade setuptools
-sudo /var/www/UE-environment/bin/pip install -r /var/www/UE-environment/updatengine-server/requirements/pip-packages.txt
+sudo apt install apache2 python${PY_VER} python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 git-core mysql-server -y
+sudo python${PY_VER} -m venv ${INST_DIR}
+cd ${INST_DIR}
+
+sudo git clone https://github.com/noelmartinon/updatengine-server
+sudo git checkout -b ${UE_VER} origin/${UE_VER}
+
+sudo bin/pip install --upgrade pip
+sudo bin/pip install --upgrade setuptools
+sudo bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
 mysqladmin -u root -p create updatengine
 mysql -u root -p -e "GRANT ALL PRIVILEGES ON updatengine.* TO 'updatengineuser'@'localhost' IDENTIFIED by 'unmotdepasse' WITH GRANT OPTION;"
@@ -45,25 +52,60 @@ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 # Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.
 sudo service mysql restart
 
-sudo cp /var/www/UE-environment/updatengine-server/updatengine/settings.py.model /var/www/UE-environment/updatengine-server/updatengine/settings.py
+sudo cp ${INST_DIR}/updatengine-server/updatengine/settings.py.model ${INST_DIR}/updatengine-server/updatengine/settings.py
 # and now modify settings.py
 
-sudo cp /var/www/UE-environment/updatengine-server/requirements/apache-updatengine.conf /etc/apache2/sites-available/apache-updatengine.conf
+sudo cp ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf /etc/apache2/sites-available/apache-updatengine.conf
 sudo a2ensite apache-updatengine
 sudo a2enmod wsgi
 sudo service apache2 restart
 
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py migrate
+sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate
 
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py loaddata /var/www/UE-environment/updatengine-server/initial_data/configuration_initial_data.yaml
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py loaddata /var/www/UE-environment/updatengine-server/initial_data/groups_initial_data.yaml
+sudo bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/configuration_initial_data.yaml
+sudo bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/groups_initial_data.yaml
 
-sudo chown -R www-data:www-data /var/www/UE-environment/updatengine-server/updatengine/static/
-sudo chown -R www-data:www-data /var/www/UE-environment/updatengine-server/updatengine/media/
+sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/static/
+sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/media/
 
-sudo service apache2 restart
+sudo systemctl reload apache2
 
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py createsuperuser
+sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py createsuperuser
+```
+
+## Migrate to 4.0.0-RC1
+
+The commands includes the backup of the previous version and the copy of all packages files.
+
+Quickly (for debian/ubuntu):
+
+```
+export UE_VER=4.0.0-RC1
+export PY_VER=3.7
+export INST_DIR=/var/www/UE-environment
+
+sudo apt install python${PY_VER} python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 -y
+
+sudo mv ${INST_DIR} ${INST_DIR}_py2.7
+
+sudo python${PY_VER} -m venv ${INST_DIR}
+cd ${INST_DIR}
+
+sudo git clone https://github.com/noelmartinon/updatengine-server
+sudo git checkout -b ${UE_VER} origin/${UE_VER}
+
+sudo bin/pip install --upgrade pip
+sudo bin/pip install --upgrade setuptools
+sudo bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
+
+sudo cp ../UE-environment_py2.7/updatengine-server/updatengine/settings.py updatengine-server/updatengine/
+sudo sed -i -e "s/0644/0o644/g" updatengine-server/updatengine/settings.py 
+sudo rsync -av ../UE-environment_py2.7/updatengine-server/updatengine/media/package-file/* updatengine-server/updatengine/media/package-file/
+
+sudo systemctl reload apache2
+
+# Remove previous version:
+# sudo rm -rf ${INST_DIR}_py2.7
 ```
 
 ## Update
@@ -71,12 +113,13 @@ sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-serv
 To update an existing version do :
 
 ```
-cd /var/www/UE-environment/updatengine-server/
+export INST_DIR=/var/www/UE-environment
+cd ${INST_DIR}/updatengine-server/
 sudo git checkout --track origin/master
 sudo git pull
-sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py migrate
+sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate
 # In case of 'Table already exist' error then run this before retry 'migrate' :
-# sudo /var/www/UE-environment/bin/python /var/www/UE-environment/updatengine-server/manage.py migrate --fake deploy 0002_auto_20180605_1910
+# sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate --fake deploy 0002_auto_20180605_1910
 sudo service apache2 restart
 ```
 

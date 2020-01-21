@@ -53,14 +53,14 @@ class packageForm(ModelForm):
         super(packageForm, self).__init__(*args, **kwargs)
         self.fields['editor'].choices =([(self.my_user.id,self.my_user.username)])
         self.fields['editor'].widget.can_add_related = False
-        if not self.my_user.is_superuser and self.fields.has_key('entity') and self.fields.has_key('conditions'):
+        if not self.my_user.is_superuser and 'entity' in self.fields and 'conditions' in self.fields:
             #restrict entity choice
             self.fields['entity'].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct()
             self.fields['entity'].required = True
             # Restrict condition choice
             self.fields['conditions'].queryset = packagecondition.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed()).\
                     order_by('name').distinct()
-        if self.fields.has_key('entity'):
+        if 'entity' in self.fields:
             self.fields['entity'].widget.can_add_related = False
 
     def clean_editor(self):
@@ -171,7 +171,7 @@ class packageprofileForm(ModelForm):
         super(packageprofileForm, self).__init__(*args, **kwargs)
         self.fields['editor'].choices =([(self.my_user.id,self.my_user.username)])
         self.fields['editor'].widget.can_add_related = False
-        if not self.my_user.is_superuser and self.fields.has_key('entity'):
+        if not self.my_user.is_superuser and 'entity' in self.fields:
             #restrict entity choice
             self.fields['entity'].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct()
             self.fields['entity'].required = True
@@ -181,7 +181,7 @@ class packageprofileForm(ModelForm):
             # Restrict parent choice
             self.fields['parent'].queryset = packageprofile.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed()).\
                     order_by('name').distinct()
-        if self.fields.has_key('entity'):
+        if 'entity' in self.fields:
             self.fields['entity'].widget.can_add_related = False
 
     def clean_editor(self):
@@ -258,11 +258,11 @@ class timeprofileForm(ModelForm):
         super(timeprofileForm, self).__init__(*args, **kwargs)
         self.fields['editor'].choices =([(self.my_user.id,self.my_user.username)])
         self.fields['editor'].widget.can_add_related = False
-        if not self.my_user.is_superuser and self.fields.has_key('entity'):
+        if not self.my_user.is_superuser and 'entity' in self.fields:
             #restrict entity choice
             self.fields['entity'].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct()
             self.fields['entity'].required = True
-        if self.fields.has_key('entity'):
+        if 'entity' in self.fields:
             self.fields['entity'].widget.can_add_related = False
 
     def clean_editor(self):
@@ -342,12 +342,12 @@ class packagewakeonlanForm(ModelForm):
         super(packagewakeonlanForm, self).__init__(*args, **kwargs)
         self.fields['editor'].choices =([(self.my_user.id,self.my_user.username)])
         self.fields['editor'].widget.can_add_related = False
-        if not self.my_user.is_superuser and self.fields.has_key('entity'):
+        if not self.my_user.is_superuser and 'entity' in self.fields:
             #restrict entity choice
             self.fields['entity'].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct()
             self.fields['entity'].required = True
             self.fields['machines'].queryset = machine.objects.filter(entity__pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct()
-        if self.fields.has_key('entity'):
+        if 'entity' in self.fields:
             self.fields['entity'].widget.can_add_related = False
 
     def clean_editor(self):
@@ -427,11 +427,11 @@ class packageconditionForm(ModelForm):
         super(packageconditionForm, self).__init__(*args, **kwargs)
         self.fields['editor'].choices =([(self.my_user.id,self.my_user.username)])
         self.fields['editor'].widget.can_add_related = False
-        if not self.my_user.is_superuser and self.fields.has_key('entity'):
+        if not self.my_user.is_superuser and 'entity' in self.fields:
             #restrict entity choice
             self.fields['entity'].queryset = entity.objects.filter(pk__in = self.my_user.subuser.id_entities_allowed()).order_by('name').distinct()
             self.fields['entity'].required = True
-        if self.fields.has_key('entity'):
+        if 'entity' in self.fields:
             self.fields['entity'].widget.can_add_related = False
 
     def clean_editor(self):

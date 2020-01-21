@@ -22,7 +22,7 @@
                 $this.addClass('grp-has-related-lookup');
                 // lookup
                 lookup_id($this, options); // lookup when loading page
-                $this.bind("change focus keyup", function() { // id-handler
+                $this.on("change focus keyup", function() { // id-handler
                     lookup_id($this, options);
                 });
             });
@@ -54,7 +54,11 @@
             } else {
                 text.show();
             }
-            text.html($('<span class="grp-placeholder-label"></span>').text(data[0].label + '\u200E'));
+            if (data[0].safe) {
+                text.html($('<span class="grp-placeholder-label"></span>').html(data[0].label + '\u200E'));
+            } else {
+                text.html($('<span class="grp-placeholder-label"></span>').text(data[0].label + '\u200E'));
+            }
         });
     };
 

@@ -16,18 +16,22 @@
             width: 100%;
         }
     </style>
-    <script language="javascript" type="text/javascript" src="{% static 'admin/js/jquery.js' %}"></script>
-    <script language="javascript" type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
-    <script language="javascript" type="text/javascript" src="{% static 'adminactions/js/massupdate.min.js' %}"></script>
+  {{ media }}
 {% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
-    <div class="breadcrumbs">
-        <a href="../../">{% trans "Home" %}</a> &rsaquo;
-        <a href="../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-        <a href=".">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-    {{ action_short_description|capfirst }}
-    </div>
+     <ul class="grp-horizontal-list">
+        <li><a href="../../">{% trans "Home" %}</a></li>
+        <li><a href="../">
+        {% with header_label=app_label|capfirst|escape %}
+            {% with msgid="header|"|add:header_label %}
+                {% trans msgid %}
+            {% endwith %}
+        {% endwith %}
+        </a></li>
+        <li><a href=".">{% blocktrans with msgid=opts.verbose_name_plural|capfirst %}{{ msgid }}{% endblocktrans %}</a></li>
+        <li>{{ action_short_description|capfirst }}</li>
+    </ul>
 {% endif %}{% endblock %}
 
 {% block content %}
@@ -62,9 +66,11 @@
                     <th>{% trans "adminactions|update" %}</th>
                     <th>{% trans "adminactions|function" %}</th>
                     <th>{% trans "adminactions|new value" %}</th>
+                    {% if grouped %}
                     <th>{% trans "adminactions|existing values" %}
-                        <small><i>{% trans "adminactions|(sample)" %}</i></small>
+                        <small><i>({% trans "adminactions|(sample)" %})</i></small>
                     </th>
+                  {% endif %}
                 </tr>
                 {% for field in adminform.form.model_fields %}
                     <tr class="{{ field.name }}-row">
@@ -75,10 +81,11 @@
                             {% field_function adminform.model_admin.model field %}&nbsp;</td>
                         <td class='col_field field-{{ field.name }}-value'>{{ field.errors }}
                         {{ field }}&nbsp;</td>
-
+                        {% if grouped %}
                         <td class='field-{{ field.name }}-commonvalues'>
                             {% link_fields_values grouped field.name %}
                         </td>
+                        {% endif %}
 
                     </tr>
                 {% endfor %}

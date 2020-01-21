@@ -30,7 +30,7 @@ class Command(BaseCommand):
         now = datetime.utcnow().replace(tzinfo=utc)
         for package in packagewakeonlan.objects.filter(status='Programmed', date__lt=now):
             for machine in package.machines.all():
-                print 'Wakeonlan of '+machine.name
+                print('Wakeonlan of '+machine.name)
                 machine.wakeup()
                 sleep(3)
             package.status = 'Completed'

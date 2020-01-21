@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from datetime import datetime
 
-import django
 from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
@@ -12,9 +9,8 @@ from django.forms import HiddenInput, TextInput
 from django.forms.formsets import formset_factory
 from django.forms.models import model_to_dict, modelform_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response
-from django.template import RequestContext
-from django.utils.encoding import smart_text
+from django.shortcuts import render
+from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
@@ -24,7 +20,9 @@ from .models import get_permission_codename
 from .utils import clone_instance
 
 
-class MergeForm(GenericActionForm):
+class MergeFormBase(forms.Form):
+    use_required_attribute = False
+
     DEP_MOVE = 1
     DEP_DELETE = 2
     GEN_IGNORE = 1
@@ -59,17 +57,25 @@ class MergeForm(GenericActionForm):
             return None
 
     def full_clean(self):
-        super(MergeForm, self).full_clean()
+        super(MergeFormBase, self).full_clean()
 
     def clean(self):
-        return super(MergeForm, self).clean()
+        return super(MergeFormBase, self).clean()
 
     def is_valid(self):
-        return super(MergeForm, self).is_valid()
+        return super(MergeFormBase, self).is_valid()
 
     class Media:
-        js = ['adminactions/js/merge.min.js']
+        js = [
+            'admin/js/vendor/jquery/jquery.js',
+            'admin/js/jquery.init.js',
+            'adminactions/js/merge.min.js',
+        ]
         css = {'all': ['adminactions/css/adminactions.min.css']}
+
+
+class MergeForm(GenericActionForm, MergeFormBase):
+    pass
 
 
 def merge(modeladmin, request, queryset):  # noqa
@@ -101,6 +107,27 @@ def merge(modeladmin, request, queryset):  # noqa
                               exclude=('pk',),
                               formfield_callback=raw_widget)
 
+    def validate(request, master, other):
+        """Validate the model is still valid after the merge"""
+        merge_kwargs = {}
+        with transaction.nocommit():
+            merge_form = MergeFormBase(request.POST)
+            if merge_form.is_valid():
+                form = MForm(request.POST, instance=master)
+                if merge_form.cleaned_data['dependencies'] == MergeForm.DEP_MOVE:
+                    merge_kwargs['related'] = api.ALL_FIELDS
+                    merge_kwargs['m2m'] = api.ALL_FIELDS
+                else:
+                    merge_kwargs['related'] = None
+                    merge_kwargs['m2m'] = None
+                merge_kwargs['fields'] = merge_form.cleaned_data['field_names']
+                stored_pk = other.pk
+                api.merge(master, other, commit=True, **merge_kwargs)
+                other.pk = stored_pk
+                return (form.is_valid(), form, merge_kwargs)
+            else:
+                return (False, merge_form, merge_kwargs)
+
     tpl = 'adminactions/merge.html'
     # transaction_supported = model_supports_transactions(modeladmin.model)
     ctx = {
@@ -118,36 +145,22 @@ def merge(modeladmin, request, queryset):  # noqa
         original = clone_instance(master)
         other = queryset.get(pk=request.POST.get('other_pk'))
         formset = formset_factory(OForm)(initial=[model_to_dict(master), model_to_dict(other)])
-        with transaction.nocommit():
-            form = MForm(request.POST, instance=master)
-            other.delete()
-            form_is_valid = form.is_valid()
-        if form_is_valid:
+        is_valid, form, merge_kwargs = validate(request, master, other)
+        if is_valid:
             ctx.update({'original': original})
             tpl = 'adminactions/merge_preview.html'
         else:
             master = queryset.get(pk=request.POST.get('master_pk'))
             other = queryset.get(pk=request.POST.get('other_pk'))
+            messages.error(request, form.errors)
 
     elif 'apply' in request.POST:
         master = queryset.get(pk=request.POST.get('master_pk'))
         other = queryset.get(pk=request.POST.get('other_pk'))
         formset = formset_factory(OForm)(initial=[model_to_dict(master), model_to_dict(other)])
-        with transaction.nocommit():
-            form = MForm(request.POST, instance=master)
-            stored_pk = other.pk
-            other.delete()
-            ok = form.is_valid()
-            other.pk = stored_pk
+        ok, form, merge_kwargs = validate(request, master, other)
         if ok:
-            if form.cleaned_data['dependencies'] == MergeForm.DEP_MOVE:
-                related = api.ALL_FIELDS
-                m2m = api.ALL_FIELDS
-            else:
-                related = None
-                m2m = None
-            fields = form.cleaned_data['field_names']
-            api.merge(master, other, fields=fields, commit=True, m2m=m2m, related=related)
+            api.merge(master, other, commit=True, **merge_kwargs)
             return HttpResponseRedirect(request.get_full_path())
         else:
             messages.error(request, form.errors)
@@ -190,15 +203,12 @@ def merge(modeladmin, request, queryset):  # noqa
                 'action_short_description': merge.short_description,
                 'title': u"%s (%s)" % (
                     merge.short_description.capitalize(),
-                    smart_text(modeladmin.opts.verbose_name_plural),
+                    smart_str(modeladmin.opts.verbose_name_plural),
                 ),
                 'master': master,
                 'other': other})
     ctx.update(modeladmin.admin_site.each_context(request))
-    if django.VERSION[:2] > (1, 8):
-        return render(request, tpl, context=ctx)
-    else:
-        return render_to_response(tpl, RequestContext(request, ctx))
+    return render(request, tpl, context=ctx)
 
 
 merge.short_description = _("Merge selected %(verbose_name_plural)s")

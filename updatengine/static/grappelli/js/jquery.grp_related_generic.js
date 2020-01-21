@@ -21,10 +21,10 @@
                 if (val) {
                     lookup_id($this, options); // lookup when loading page
                 }
-                $this.bind("change focus keyup", function() { // id-handler
+                $this.on("change focus keyup", function() { // id-handler
                     lookup_id($this, options);
                 });
-                $(options.content_type).bind("change", function() { // content-type-handler
+                $(options.content_type).on("change", function() { // content-type-handler
                     update_lookup($(this), options);
                 });
             });
@@ -74,7 +74,11 @@
             } else {
                 text.show();
             }
-            text.html($('<span class="grp-placeholder-label"></span>').text(data[0].label + '\u200E'));
+            if (data[0].safe) {
+                text.html($('<span class="grp-placeholder-label"></span>').html(data[0].label + '\u200E'));
+            } else {
+                text.html($('<span class="grp-placeholder-label"></span>').text(data[0].label + '\u200E'));
+            }
         });
     };
 

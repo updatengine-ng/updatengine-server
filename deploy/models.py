@@ -76,7 +76,7 @@ class packagecondition(models.Model):
     softwarename = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('packagecondition|softwarename'), help_text=_('packagecondition|softwarename help text'))
     softwareversion = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('packagecondition|softwareversion'), help_text=_('packagecondition|softwareversion help text'))
     entity = models.ManyToManyField(entity, blank=True, verbose_name=_('packagecondition|entity'))
-    editor = models.ForeignKey(User, null=True, verbose_name=_('packagecondition| condition last editor'))
+    editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('packagecondition| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('packagecondition|exclusive editor'))
 
     class Meta:
@@ -84,7 +84,7 @@ class packagecondition(models.Model):
         verbose_name_plural = _('packagecondition|packages conditions')
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -106,7 +106,7 @@ class package(models.Model):
     ignoreperiod = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|ignore deploy period'))
     public = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package| public package'))
     entity = models.ManyToManyField(entity, blank=True, verbose_name=_('package|entity'))
-    editor = models.ForeignKey(User, null=True, verbose_name=_('package| package last editor'))
+    editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('package| package last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|exclusive editor'))
 
     class Meta:
@@ -146,7 +146,7 @@ class package(models.Model):
             md5.update(data)
         return str(md5.hexdigest())
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -215,7 +215,7 @@ class packagehistory(models.Model):
     command = models.TextField(max_length=1000, null=True, blank=True, verbose_name=_('packagehistory|command'))
     packagesum = models.CharField(max_length=40, null=True, blank=True, verbose_name=_('packagehistory|packagesum'))
     filename = models.CharField(max_length=500, null=True, blank=True, verbose_name=_('packagehistory|filename'))
-    machine = models.ForeignKey(machine, verbose_name=_('packagehistory|machine'))
+    machine = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('packagehistory|machine'))
     package = models.ForeignKey(package, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_('packagehistory|package'))
     status = models.CharField(max_length=500, default='Programmed', null=True, blank=True, verbose_name=_('packagehistory|status'))
     date = models.DateTimeField(auto_now=True, verbose_name=_('packagehistory|date'))
@@ -225,7 +225,7 @@ class packagehistory(models.Model):
         verbose_name_plural = _('packagehistory|packages history')
         ordering = ['date']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -239,7 +239,7 @@ class packageprofile(models.Model):
     packages = models.ManyToManyField('package', blank=True, verbose_name=_('packageprofile|packages'))
     parent = models.ForeignKey('self', null=True, blank=True, related_name='child', on_delete=models.SET_NULL, verbose_name=_('packageprofile|parent'))
     entity = models.ManyToManyField(entity, blank=True,  related_name='package_profile_entity', verbose_name=_('packageprofile|entity'))
-    editor = models.ForeignKey(User, null=True, verbose_name=_('packageprofile| condition last editor'))
+    editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('packageprofile| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('packageprofile|exclusive editor'))
 
     class Meta:
@@ -247,7 +247,7 @@ class packageprofile(models.Model):
         verbose_name_plural = _('packageprofile|packages profiles')
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_all_parents(self, plist):
@@ -293,7 +293,7 @@ class packagewakeonlan(models.Model):
     date = models.DateTimeField(verbose_name=_('packagewakeonlan|start_time'))
     status = models.CharField(max_length=100, choices=choice, default='Programmed', verbose_name=_('packagewakeonlan|status'))
     entity = models.ManyToManyField(entity, blank=True,  related_name='packagewakonelan_entity', verbose_name=_('packagewakonelan|entity'))
-    editor = models.ForeignKey(User, null=True, verbose_name=_('packagewakonelan| condition last editor'))
+    editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('packagewakonelan| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('packagewakonelan|exclusive editor'))
 
     class Meta:
@@ -301,7 +301,7 @@ class packagewakeonlan(models.Model):
         verbose_name_plural = _('packagewakeonlan|packages wakeonlan')
         ordering = ['date']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -314,8 +314,8 @@ class timeprofile(models.Model):
     description = models.CharField(max_length=500, null=True, blank=True, verbose_name=_('timeprofile|description'))
     start_time = models.TimeField(verbose_name=_('timeprofile|start_time'))
     end_time = models.TimeField(verbose_name=_('timeprofile|end_time'))
-    entity = models.ManyToManyField(entity, blank=True,  related_name='time_profile_entity', verbose_name=_('timeprofile|entity'))
-    editor = models.ForeignKey(User, null=True, verbose_name=_('timeprofile| condition last editor'))
+    entity = models.ManyToManyField(entity, blank=True, related_name='time_profile_entity', verbose_name=_('timeprofile|entity'))
+    editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('timeprofile| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('timeprofile|exclusive editor'))
 
     class Meta:
@@ -323,7 +323,7 @@ class timeprofile(models.Model):
         verbose_name_plural = _('timeprofile|time profiles')
         ordering = ['start_time']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -339,7 +339,7 @@ class impex(models.Model):
     package = models.ForeignKey(package, null=True, blank=True, default=None, on_delete=models.SET_NULL, verbose_name=_('impex|package'))
     date = models.DateTimeField(auto_now=True, verbose_name=_('impex|date'))
     entity = models.ManyToManyField(entity, blank=True,  related_name='impex_entity', verbose_name=_('impex|entity'))
-    editor = models.ForeignKey(User, null=True, verbose_name=_('impex| condition last editor'))
+    editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('impex| condition last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('impex|exclusive editor'))
 
     # Function below allow us to display a link to download export packages in admin.py on a readonly filefield
@@ -378,7 +378,7 @@ class impex(models.Model):
             md5.update(data)
         return str(md5.hexdigest())
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

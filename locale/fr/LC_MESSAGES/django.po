@@ -1054,7 +1054,7 @@ msgstr ""
 
 #: inventory/models.py:36
 msgid "entity|force_packageprofile"
-msgstr "Forcer l'application du profil?"
+msgstr "Forcer l'application du profil ?"
 
 #: inventory/models.py:37
 msgid "entity|time profile"
@@ -1080,11 +1080,11 @@ msgstr ""
 
 #: inventory/models.py:39
 msgid "entity|force_timeprofile"
-msgstr "Forcer l'application de la période de déploiement?"
+msgstr "Forcer la période de déploiement ?"
 
 #: inventory/models.py:40
 msgid "entity|redistrib_url"
-msgstr "Chemin vers le serveur de redistribution"
+msgstr "Chemin de redistribution"
 
 #: inventory/models.py:41
 msgid "entity|ip_range"

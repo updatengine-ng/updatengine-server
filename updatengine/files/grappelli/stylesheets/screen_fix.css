@@ -1,10 +1,10 @@
 #grp-content {
-    top: 135px;
+    top: 40px;
 }
-    
+
 #grp-user-tools > li.grp-user-options-container {
     width: 150px;
-}    
+}
 
 div.grp-readonly {
     border: none;
@@ -12,5 +12,10 @@ div.grp-readonly {
 }
 
 table.grp-table td a.add-another, table.grp-table th a.add-another {
-    top: 0;    
+    top: 0;
+}
+
+/* Fix some mass_update pages (already ok on others) */
+caption, th, td {
+    vertical-align: top;
 }

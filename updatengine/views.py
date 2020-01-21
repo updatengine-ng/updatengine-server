@@ -2,7 +2,7 @@ from django.http import JsonResponse
 import json
 import os
 import ssl
-from utils import extract_text_from_url
+from .utils import extract_text_from_url
 
 
 def check_version(request):

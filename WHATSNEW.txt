@@ -1,0 +1,37 @@
+######################
+# UpdatEngine-server #
+######################
+
+4.0.0:
+- Port code to Python 3.7
+- Migrate to Django 2.2
+- Use the latest python packages in line with the upgrade (django-grappelli, mysqlclient...)
+
+3.0.2:
+- Optimizes extended conditions with client: Pre-check conditions to avoid asking client for unnecessary extended conditions if already a condition on the software is not satisfied.
+
+3.0.1:
+- Fix bug in imports/exports deployments
+- Fix inventory dispatch (clients < 3.0 was sending 'undefined' for UserName, Domain and Language)
+
+3.0:
+- Interface:
+  - The chosen language remains displayed
+  - Fix some translations in 'Export as CSV' and 'Mass update'
+  - An update information is displayed in the menu below the current version number when a new version is available
+- Deployment conditions:
+  - New conditions:
+    - Compatible with all UpdatEngine-client versions:
+      - 'Host name is', 'Host name is not': Single value or comma separated list of values
+      - 'IP address is', 'IP address is not': IP or network address / Single value or a comma separated list of values
+    - Extended conditions only compatible with client versions from 3.0:
+      - 'File exists', 'File doesn't exists'
+      - 'Directory exists', 'Directory doesn't exists'
+      - 'File or directory exists', 'File or directory doesn't exists'
+      - 'SHA-256 hash is', 'SHA-256 hash is not': if file doesn't exist then client returns 'undefined' value
+      - 'Command exit code is', 'Command exit code is not': if command doesn't exist then client returns 'undefined' value. Execution timed out after 30 seconds.
+  - Allow the mutliple use of wildcard '*' in conditions 'software' and 'hostname' 
+  - Allow the use of characters '&', '<' and '>' in the packages name, description and command
+- Deployment commands:
+  - Usage of 'section_end' is deprecated and clients >= 3.0 pass over it. For retro compatibility, this option remain allow.
+

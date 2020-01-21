@@ -33,26 +33,20 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import os, sys
+import os
+import sys
+
 path = os.path.join(os.path.dirname(os.path.dirname(__file__)))
 if path not in sys.path:
-        sys.path.append(path)
+    sys.path.append(path)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "updatengine.settings")
+python_version = '.'.join(map(str, sys.version_info[:2]))
+packages_path = 'lib/python%s/site-packages' % python_version
+apps_path = os.path.join(os.path.join(os.path.dirname(path)), packages_path)
+if apps_path not in sys.path:
+    sys.path.append(apps_path)
 
-# Force mod_wsgi to use virtual env python version
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'updatengine.settings')
 
-venv_path = os.path.join(os.path.dirname(path))
-activate_this = os.path.join(venv_path, "bin/activate_this.py")
-execfile(activate_this, dict(__file__=activate_this))
-
-
-# This application object is used by any WSGI server configured to use this
-# file. This includes Django's development server, if the WSGI_APPLICATION
-# setting points here.
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
-
-# Apply WSGI middleware here.
-# from helloworld.wsgi import HelloWorldApplication
-# application = HelloWorldApplication(application)
