@@ -137,14 +137,14 @@ class package(models.Model):
     def md5_for_file(self, block_size=2**20):
         if self.filename == '':
             return 'nofile'
-        f = open(self.filename.path, 'r')
+        f = open(self.filename.path, 'rb')
         md5 = hashlib.md5()
         while True:
-            data = str(f.read(block_size))
+            data = f.read(block_size)
             if not data:
                 break
             md5.update(data)
-        return str(md5.hexdigest())
+        return md5.hexdigest()
 
     def __str__(self):
         return self.name
