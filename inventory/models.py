@@ -182,7 +182,7 @@ class machine(models.Model):
             for netcard in net.objects.filter(host=self):
                 if netcard.ip != '127.0.0.1':
                     Sock.connect((netcard.ip, Port))
-                    Sock.send(self.softsum)
+                    Sock.send(self.softsum.encode('utf-8'))
                     Sock.close()
                     time.sleep(1)
         except:

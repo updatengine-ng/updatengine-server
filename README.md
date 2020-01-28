@@ -4,8 +4,9 @@ UpdatEngine Server is a web app allowing people to inventory computer an server,
 
 * [History](#history)
 * [Project features](#project-features)
+* [Compatiblity](#Compatiblity)
 * [Install](#install)
-* [Migrate to 4.0.0-RC1](#migrate-to-4.0.0-RC1)
+* [Migrate to 4.0.0-RC1](#migrate-to-400-rc1)
 * [Update](#update)
 * [Examples](#examples-of-deployment-packages)
 * [Links](#links)
@@ -19,6 +20,10 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 * Python 3.7 / Django 2.2 LTS project
 * Tested with Debian 10, Ubuntu 18.04
+
+## Compatiblity
+
+The 'force contact' functionality is not compatible with clients version 3.x and below.
 
 ## Install
 
