@@ -34,6 +34,7 @@ from django.core import serializers
 from django.conf import settings
 from inventory.models import entity
 from django.contrib.auth.models import User
+from django.utils.safestring import mark_safe
 
 
 def random_directory(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
@@ -115,8 +116,9 @@ class package(models.Model):
         ordering = ['name']
 
     def get_conditions(self):
-        return '<br/>'.join([c.name for c in self.conditions.all()])
-    get_conditions.allow_tags = True
+        retval = mark_safe('<br/>- '.join([c.name for c in self.conditions.all()]))
+        if len(retval): retval = mark_safe('- ' + retval)
+        return retval
     get_conditions.short_description = _('packageAdmin|get_conditions')
 
     def save(self, *args, **kwargs):
@@ -272,9 +274,9 @@ class packageprofile(models.Model):
         return sorted(packlist, key=lambda package: package.name)
 
     def get_packages(self):
-        return '<br/>'.join([p.name for p in self.get_soft()])
-
-    get_packages.allow_tags = True
+        retval = mark_safe('<br/>- '.join([p.name for p in self.get_soft()]))
+        if len(retval): retval = mark_safe('- ' + retval)
+        return retval
     get_packages.short_description = _('packageAdmin|get_packages')
 
 
@@ -345,10 +347,9 @@ class impex(models.Model):
     # Function below allow us to display a link to download export packages in admin.py on a readonly filefield
     def filename_link(self):
         if self.filename:
-            return '<a href="%s">Export</a>' % (self.filename.url)
+            return mark_safe('<a href="%s">Export</a>' % (self.filename.url))
         else:
             return '---'
-    filename_link.allow_tags = True
     filename_link.short_description = _('impex|filename_link')
 
     class Meta:
