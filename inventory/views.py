@@ -139,7 +139,7 @@ def get_extended_conditions(m, pack):
     return handling
 
 
-def check_conditions(m, pack, xml):
+def check_conditions(m, pack, xml=None):
     '''This function check conditions of pack deployment package'''
     install = True
     # All types of conditions are checked one by one
