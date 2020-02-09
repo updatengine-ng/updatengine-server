@@ -29,25 +29,23 @@ The 'force contact' functionality is not compatible with clients version 3.x and
 
 See old **[2.1.1 installation documentation](https://updatengine.com/)** for details
 
-Quickly (for debian/ubuntu with mySQL):
+Quickly (for debian/ubuntu with mySQL and self-signed certificate):
 
 ```
 export UE_VER=4.0.0-RC1
 export PY_VER=3.7
 export INST_DIR=/var/www/UE-environment
 
-sudo apt install apache2 python${PY_VER} python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 git-core mysql-server -y
+sudo apt install apache2 python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 git-core mysql-server libmysqlclient-dev -y
 sudo python${PY_VER} -m venv ${INST_DIR}
 cd ${INST_DIR}
 
-sudo git clone https://github.com/noelmartinon/updatengine-server
+sudo git clone https://github.com/updatengine-ng/updatengine-server
 cd updatengine-server
 sudo git checkout -b ${UE_VER} origin/${UE_VER}
-cd ..
 
-sudo bin/pip install --upgrade pip
-sudo bin/pip install --upgrade setuptools
-sudo bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
+sudo ${INST_DIR}/bin/pip install --upgrade pip setuptools
+sudo ${INST_DIR}/bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
 mysqladmin -u root -p create updatengine
 mysql -u root -p -e "GRANT ALL PRIVILEGES ON updatengine.* TO 'updatengineuser'@'localhost' IDENTIFIED by 'unmotdepasse' WITH GRANT OPTION;"
@@ -65,12 +63,14 @@ sudo cp ${INST_DIR}/updatengine-server/updatengine/settings.py.model ${INST_DIR}
 sudo cp ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf /etc/apache2/sites-available/apache-updatengine.conf
 sudo a2ensite apache-updatengine
 sudo a2enmod wsgi
-sudo service apache2 restart
+sudo openssl req --new -newkey rsa:2048 -days 365 -nodes -x509 -keyout /etc/ssl/private/updatengine.key -out /etc/ssl/certs/updatengine.crt -subj "/C=FR/ST=Guadeloupe/L=Saint-Claude/O=UpdatEngine-NG/CN=updatengine-ng.com"
+sudo a2enmod ssl
+sudo systemctl restart apache2
 
-sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate
+sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py migrate
 
-sudo bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/configuration_initial_data.yaml
-sudo bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/groups_initial_data.yaml
+sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/configuration_initial_data.yaml
+sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/groups_initial_data.yaml
 
 sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/static/
 sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/media/
@@ -79,6 +79,8 @@ sudo systemctl reload apache2
 
 sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py createsuperuser
 ```
+If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
+
 
 ## Migrate to 4.0.0-RC1
 
@@ -91,25 +93,23 @@ export UE_VER=4.0.0-RC1
 export PY_VER=3.7
 export INST_DIR=/var/www/UE-environment
 
-sudo apt install python${PY_VER} python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 -y
+sudo apt install python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 -y
 
 sudo mv ${INST_DIR} ${INST_DIR}_py2.7
 
 sudo python${PY_VER} -m venv ${INST_DIR}
 cd ${INST_DIR}
 
-sudo git clone https://github.com/noelmartinon/updatengine-server
+sudo git clone https://github.com/updatengine-ng/updatengine-server
 cd updatengine-server
 sudo git checkout -b ${UE_VER} origin/${UE_VER}
-cd ..
 
-sudo bin/pip install --upgrade pip
-sudo bin/pip install --upgrade setuptools
-sudo bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
+sudo ${INST_DIR}/bin/pip install --upgrade pip setuptools
+sudo ${INST_DIR}/bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
-sudo cp ../UE-environment_py2.7/updatengine-server/updatengine/settings.py updatengine-server/updatengine/
-sudo sed -i -e "s/0644/0o644/g" updatengine-server/updatengine/settings.py 
-sudo rsync -av ../UE-environment_py2.7/updatengine-server/updatengine/media/package-file/* updatengine-server/updatengine/media/package-file/
+sudo cp ${INST_DIR}_py2.7/updatengine-server/updatengine/settings.py updatengine-server/updatengine/
+sudo sed -i -e "s/0644/0o644/g" updatengine-server/updatengine/settings.py
+sudo rsync -av ${INST_DIR}_py2.7/updatengine-server/updatengine/media/package-file/* updatengine-server/updatengine/media/package-file/
 
 sudo systemctl reload apache2
 
@@ -301,7 +301,7 @@ If cancelling then UpdatEngine-client will check and ask again on next inventory
   Condition: Windows 64 bits computer
 
 ## Links
-
+* Official site : https://updatengine-ng.com/
 * French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr
 * Old official site : https://updatengine.com/
 * Site archive : https://web.archive.org/web/20170318143615/http://www.updatengine.com:80/

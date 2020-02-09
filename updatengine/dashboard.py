@@ -86,9 +86,7 @@ class CustomIndexDashboard(Dashboard):
             column=2,
                     collapsible=False,
             children=(
-                ['www.updatengine.com', 'http://www.updatengine.com', True],
+                ['www.updatengine-ng.com', 'http://www.updatengine-ng.com', True],
                 ['Groupe discussion UpdatEngine FR', 'https://groups.google.com/forum/#!forum/updatengine-fr', True],
-                ['UpdatEngine Client','https://github.com/dam09fr/updatengine-client/releases/', True],
-                ['Github Noel MARTINON', 'https://github.com/noelmartinon', True],
             )
         ))
