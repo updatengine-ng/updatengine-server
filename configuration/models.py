@@ -113,4 +113,3 @@ class subuser(models.Model):
 def create_subuser(sender, instance, created, **kwargs):
     if created:
         subuser.objects.create(user=instance)
-    instance.subuser.save()
