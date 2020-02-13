@@ -22,6 +22,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from inventory.models import entity
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class deployconfig(models.Model):
@@ -105,3 +107,10 @@ class subuser(models.Model):
             if user.is_superuser:
                 return user
         raise Exception('No superuser found!')
+
+
+@receiver(post_save, sender=User)
+def create_subuser(sender, instance, created, **kwargs):
+    if created:
+        subuser.objects.create(user=instance)
+    instance.subuser.save()

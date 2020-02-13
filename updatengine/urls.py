@@ -26,7 +26,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 from inventory.views import post
-from inventory.machine import machineviews
 from django.contrib.admin import site
 import adminactions.actions as actions
 
@@ -37,7 +36,6 @@ site.add_action(actions.mass_update)
 site.add_action(actions.export_as_csv)
 
 urlpatterns = [
-    url(r'^machine/(?P<machine_id>\d+)/$', machineviews),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^post/', post),
     url(r'^adminactions/', include('adminactions.urls')),
