@@ -1,13 +1,13 @@
 # UpdatEngine-server
 
-UpdatEngine Server is a web app allowing people to inventory computer an server, deploy software and create profile to apply on inventoried machines for Windows and Linux.
+UpdatEngine Server is a web app allowing people to inventory computer and server, deploy software and create profile to apply on inventoried machines for Windows and Linux.
 
 * [History](#history)
 * [Project features](#project-features)
 * [Compatiblity](#Compatiblity)
-* [Install](#install)
-* [Migrate to 4.0.0-RC1](#migrate-to-400-rc1)
+* [Install](#install-latest-stable)
 * [Update](#update)
+* [Migrate from previous Python 2.7 / UE-Server < 4.0.0](#migrate-from-previous-python-27--ue-server--400)
 * [Examples](#examples-of-deployment-packages)
 * [Links](#links)
 * [License](#license)
@@ -23,16 +23,16 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 ## Compatiblity
 
-The 'force contact' functionality is not compatible with clients version 3.x and below.
+The 'force contact' functionality is not compatible with clients version 3.x and below. Please install UE-Client from 4.0.0.
 
-## Install
+## Install latest stable
 
 See old **[2.1.1 installation documentation](https://updatengine.com/)** for details
 
 Quickly (for debian/ubuntu with mySQL and self-signed certificate):
 
 ```
-export UE_VER=4.0.0-RC1
+export UE_VER=master
 export PY_VER=3.7
 export INST_DIR=/var/www/UE-environment
 
@@ -82,14 +82,32 @@ sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py createsuper
 If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
 
 
-## Migrate to 4.0.0-RC1
+## Update
+
+To update an existing version do :
+
+```
+export INST_DIR=/var/www/UE-environment
+cd ${INST_DIR}/updatengine-server/
+sudo git checkout --track origin/master
+sudo git pull
+sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate
+# In case of 'Table already exist' error then run this before retry 'migrate' :
+# sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate --fake deploy 0002_auto_20180605_1910
+sudo service apache2 restart
+```
+
+
+## Migrate from previous Python 2.7 / UE-Server < 4.0.0
+
+All UE-Server versions before 4.0.0 was written in Python 2.7. From 4.0.0, Python 3 is used. So a simple update is not enough and a migration is needed.
 
 The commands includes the backup of the previous version and the copy of all packages files.
 
 Quickly (for debian/ubuntu):
 
 ```
-export UE_VER=4.0.0-RC1
+export UE_VER=v4.0.0
 export PY_VER=3.7
 export INST_DIR=/var/www/UE-environment
 
@@ -119,21 +137,6 @@ sudo systemctl reload apache2
 
 If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
 
-
-## Update
-
-To update an existing version do :
-
-```
-export INST_DIR=/var/www/UE-environment
-cd ${INST_DIR}/updatengine-server/
-sudo git checkout --track origin/master
-sudo git pull
-sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate
-# In case of 'Table already exist' error then run this before retry 'migrate' :
-# sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate --fake deploy 0002_auto_20180605_1910
-sudo service apache2 restart
-```
 
 ## Examples of deployment packages
 
