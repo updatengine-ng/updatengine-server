@@ -59,6 +59,8 @@ class packagecondition(models.Model):
         ('language_is', _('language_is')),
         ('hostname_in', _('hostname_in')),
         ('hostname_not', _('hostname_not')),
+        ('username_in', _('username_in')),
+        ('username_not', _('username_not')),
         ('ipaddr_in', _('ipaddr_in')),
         ('ipaddr_not', _('ipaddr_not')),
         ('isfile', _('isfile')),

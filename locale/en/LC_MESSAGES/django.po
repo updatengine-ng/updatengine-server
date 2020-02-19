@@ -489,19 +489,19 @@ msgstr "Software / version not installed"
 
 #: deploy/models.py:47
 msgid "lower"
-msgstr "Software not installed or version lower than :"
+msgstr "Software not installed or version lower than"
 
 #: deploy/models.py:48
 msgid "higher"
-msgstr "Software installed and version upper than :"
+msgstr "Software installed and version upper than"
 
 #: deploy/models.py:49
 msgid "operating_system_is"
-msgstr "Operating system is:"
+msgstr "Operating system is"
 
 #: deploy/models.py:49
 msgid "operating_system_not"
-msgstr "Operating system is not:"
+msgstr "Operating system is not"
 
 #: deploy/models.py:50
 msgid "is_W64_bits"
@@ -513,63 +513,71 @@ msgstr "Windows 32 bits computer"
 
 #: deploy/models.py:52
 msgid "language_is"
-msgstr "Operating system language is:"
+msgstr "Operating system language is"
 
 #: deploy/models.py
 msgid "hostname_in"
-msgstr "Hostname is:"
+msgstr "Hostname is"
 
 #: deploy/models.py
 msgid "hostname_not"
-msgstr "Hostname is not:"
+msgstr "Hostname is not"
+
+#: deploy/models.py
+msgid "username_in"
+msgstr "Username is"
+
+#: deploy/models.py
+msgid "username_not"
+msgstr "Username is not"
 
 #: deploy/models.py
 msgid "ipaddr_in"
-msgstr "IP address is:"
+msgstr "IP address is"
 
 #: deploy/models.py
 msgid "ipaddr_not"
-msgstr "IP address is not:"
+msgstr "IP address is not"
 
 #: deploy/models.py
 msgid "isfile"
-msgstr "File exists:"
+msgstr "File exists"
 
 #: deploy/models.py
 msgid "notisfile"
-msgstr "File does not exist:"
+msgstr "File does not exist"
 
 #: deploy/models.py
 msgid "isdir"
-msgstr "Directory exists:"
+msgstr "Directory exists"
 
 #: deploy/models.py
 msgid "notisdir"
-msgstr "Directory does not exist:"
+msgstr "Directory does not exist"
 
 #: deploy/models.py
 msgid "isfiledir"
-msgstr "File or directory exists:"
+msgstr "File or directory exists"
 
 #: deploy/models.py
 msgid "notisfiledir"
-msgstr "File or directory does not exist:"
+msgstr "File or directory does not exist"
 
 #: deploy/models.py
 msgid "hashis"
-msgstr "The SHA-256 hash of the file is:"
+msgstr "The SHA-256 hash of the file is"
 
 #: deploy/models.py
 msgid "hashnot"
-msgstr "The SHA-256 hash of the file is not:"
+msgstr "The SHA-256 hash of the file is not"
 
 #: deploy/models.py
 msgid "exitcodeis"
-msgstr "The command exit code is:"
+msgstr "The command exit code is"
 
 #: deploy/models.py
 msgid "exitcodenot"
-msgstr "The command exit code is not:"
+msgstr "The command exit code is not"
 
 #: deploy/models.py:54
 msgid "packagecondition|name"
@@ -593,12 +601,12 @@ msgstr "software name, host name, file name, IP address or command"
 #: deploy/models.py:56
 msgid "packagecondition|softwarename help text"
 msgstr ""
-"In all software and host name conditions, the '*' character is used to "
+"In all software, hostname and username conditions, the '*' character is used to "
 "replace 0 or more characters (e.g. 'Java * Update * (64-bit)', "
 "'host1,host-2*').<br>"
 "For operating system condition, this field must contain the name of the "
 "operating system.<br>"
-"For 'Hostname' and 'IP address' conditions, it can be a list of values separated by commas.<br>"
+"For 'Hostname', 'Username' and 'IP address' conditions, it can be a list of values separated by commas.<br>"
 "For the 'IP address' condition, it is possible to specify an IP address or a network address "
 "(e.g. '192.168.1.10', '192.168.1.10/32', '192.168.1.0/24')."
 

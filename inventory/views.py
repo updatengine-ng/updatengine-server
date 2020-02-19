@@ -307,6 +307,46 @@ def check_conditions(m, pack, xml=None):
             except:
                 pass
 
+    # Username is in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='username_in'):
+            try:
+                # Check the list
+                users = condition.softwarename.split(',')
+                for username in users:
+                    if not username:
+                        continue
+                    nameregex = '^'+re.escape(username).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.username, re.IGNORECASE):
+                        install = True
+                        break
+                    else:
+                        install = False
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
+    # Username is NOT in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='username_not'):
+            try:
+                # Check the list
+                users = condition.softwarename.split(',')
+                for username in users:
+                    if not username:
+                        continue
+                    nameregex = '^'+re.escape(username).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.username, re.IGNORECASE):
+                        install = False
+                        break
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
     # IP address is in the list (comma separated list, wildcards can be used for condition name)
     if install is True:
         for condition in pack.conditions.filter(depends='ipaddr_in'):
@@ -645,6 +685,8 @@ def inventory(xml):
         m.uuid = u
         if un != 'Unknown' or m.username == 'Unknown':
             m.username = un
+        if un == 'Unknown' and not ' (not logged in)' in m.username:
+            m.username += ' (not logged in)'
         m.domain = d
         m.language = l
         m.typemachine_id=ch.id
