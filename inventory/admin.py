@@ -153,8 +153,7 @@ class machineAdmin(ueAdmin):
         # Inspired from https://groups.google.com/forum/#!topic/updatengine-fr/gx5YaUOXEv8 (thx jerome)
         os_name = osdistribution.objects.filter(host=instance.id).values_list('name', flat=True)
         os_arch = osdistribution.objects.filter(host=instance.id).values_list('arch', flat=True)
-        result = '%s %s' % (''.join(os_name), ''.join(os_arch))
-        return result
+        return ('%s %s' % (''.join(os_name if os_name and os_name[0] else ''), ''.join(os_arch if os_arch and os_arch[0] else ''))).strip()
     operatingsystem.admin_order_field = 'osdistribution__name'
     operatingsystem.short_description = _('operating_system')
 
