@@ -69,6 +69,9 @@ sudo systemctl restart apache2
 
 sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py migrate
 
+# Set utf8mb4 charset for all tables (all languages support):
+sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py runscript db_convert_utf8
+
 sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/configuration_initial_data.yaml
 sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/groups_initial_data.yaml
 
