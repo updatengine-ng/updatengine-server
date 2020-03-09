@@ -2,6 +2,11 @@
 # UpdatEngine-server #
 ######################
 
+4.0.1:
+- Add script db tables conversion to utf-8 (all languages support)
+- Fix bug on remove os name or arch through the web gui
+- Add 'username' condition and 'not logged in' tag
+
 4.0.0:
 - Port code to Python 3.7
 - Migrate to Django 2.2
@@ -30,7 +35,7 @@
       - 'File or directory exists', 'File or directory doesn't exists'
       - 'SHA-256 hash is', 'SHA-256 hash is not': if file doesn't exist then client returns 'undefined' value
       - 'Command exit code is', 'Command exit code is not': if command doesn't exist then client returns 'undefined' value. Execution timed out after 30 seconds.
-  - Allow the mutliple use of wildcard '*' in conditions 'software' and 'hostname' 
+  - Allow the mutliple use of wildcard '*' in conditions 'software' and 'hostname'
   - Allow the use of characters '&', '<' and '>' in the packages name, description and command
 - Deployment commands:
   - Usage of 'section_end' is deprecated and clients >= 3.0 pass over it. For retro compatibility, this option remain allow.
