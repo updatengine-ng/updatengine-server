@@ -128,9 +128,9 @@ sudo git checkout -b ${UE_VER} origin/${UE_VER}
 sudo ${INST_DIR}/bin/pip install --upgrade pip setuptools
 sudo ${INST_DIR}/bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
-sudo cp ${INST_DIR}_py2.7/updatengine-server/updatengine/settings.py updatengine-server/updatengine/
-sudo sed -i -e "s/0644/0o644/g" updatengine-server/updatengine/settings.py
-sudo rsync -av ${INST_DIR}_py2.7/updatengine-server/updatengine/media/package-file/* updatengine-server/updatengine/media/package-file/
+sudo cp ${INST_DIR}_py2.7/updatengine-server/updatengine/settings.py ${INST_DIR}/updatengine-server/updatengine/
+sudo sed -i -e "s/0644/0o644/g" ${INST_DIR}/updatengine-server/updatengine/settings.py
+sudo rsync -av ${INST_DIR}_py2.7/updatengine-server/updatengine/media/package-file/* ${INST_DIR}/updatengine-server/updatengine/media/package-file/
 
 sudo systemctl reload apache2
 
