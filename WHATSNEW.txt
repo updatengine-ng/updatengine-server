@@ -2,6 +2,11 @@
 # UpdatEngine-server #
 ######################
 
+4.0.2:
+- Fix wol issue
+- Add lines to fix potential pip3 mysqlclient issue
+- Fix version check
+
 4.0.1:
 - Add script db tables conversion to utf-8 (all languages support)
 - Fix bug on remove os name or arch through the web gui

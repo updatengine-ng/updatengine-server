@@ -36,7 +36,7 @@ export UE_VER=master
 export PY_VER=3.7
 export INST_DIR=/var/www/UE-environment
 
-sudo apt install apache2 python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 git-core mysql-server libmysqlclient-dev -y
+sudo apt install apache2 python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 git-core mysql-server libmysqlclient-dev build-essential -y
 sudo python${PY_VER} -m venv ${INST_DIR}
 cd ${INST_DIR}
 
@@ -110,7 +110,7 @@ The commands includes the backup of the previous version and the copy of all pac
 Quickly (for debian/ubuntu):
 
 ```
-export UE_VER=v4.0.0
+export UE_VER=master
 export PY_VER=3.7
 export INST_DIR=/var/www/UE-environment
 
