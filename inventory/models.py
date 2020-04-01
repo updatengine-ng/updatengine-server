@@ -164,7 +164,7 @@ class machine(models.Model):
                     int(addr_byte[4], 16),
                     int(addr_byte[5], 16))
                 # Build the Wake-On-LAN 'Magic Packet'...
-                msg = '\xff' * 6 + hw_addr * 16
+                msg = b'\xff' * 6 + hw_addr * 16
                 # ...and send it to the broadcast address using UDP
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
