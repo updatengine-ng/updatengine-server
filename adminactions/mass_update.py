@@ -235,7 +235,11 @@ def mass_update(modeladmin, request, queryset):  # noqa
                     old_value = getattr(record, field_name)
                     setattr(record, field_name, value_or_func(old_value))
                 else:
-                    setattr(record, field_name, value_or_func)
+                    try:
+                        setattr(record, field_name, value_or_func)
+                    except:
+                        cls = getattr(record, field_name)
+                        cls.set(value_or_func)
             if clean:
                 record.clean()
             record.save()
