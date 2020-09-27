@@ -2,6 +2,10 @@
 # UpdatEngine-server #
 ######################
 
+4.0.3:
+- Fix white page on mass update
+- Remove web directory indexes from apache conf
+
 4.0.2:
 - Fix wol issue
 - Add lines to fix potential pip3 mysqlclient issue

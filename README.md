@@ -27,7 +27,7 @@ The 'force contact' functionality is not compatible with clients version 3.x and
 
 ## Install latest stable
 
-See old **[2.1.1 installation documentation](https://updatengine.com/)** for details
+See old **[2.1.1 installation documentation](https://updatengine-ng.com/)** for details
 
 Quickly (for debian/ubuntu with mySQL and self-signed certificate):
 
@@ -309,7 +309,6 @@ If cancelling then UpdatEngine-client will check and ask again on next inventory
 ## Links
 * Official site : https://updatengine-ng.com/
 * French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr
-* Old official site : https://updatengine.com/
 * Site archive : https://web.archive.org/web/20170318143615/http://www.updatengine.com:80/
 
 ## License
