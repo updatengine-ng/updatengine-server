@@ -1082,7 +1082,10 @@ msgstr "Force auto assignment for IP networks"
 
 #: inventory/models.py:41
 msgid "entity|ip range help text"
-msgstr "List of comma separated IP addresses. Ex:192.168.1.0/24,192.168.2.1"
+msgstr ""
+"List of comma separated IP addresses. Ex:192.168.1.0/24,192.168.2.1<br>"
+"Warning: Requires a default entity for new machines or an entity defined "
+"on existing machines to apply"
 
 #: inventory/models.py:47 updatengine/templates/admin/base.html:90
 msgid "entity|entities"

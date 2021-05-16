@@ -1100,7 +1100,10 @@ msgstr "Forcer affectation automatique pour les réseaux IP"
 
 #: inventory/models.py:41
 msgid "entity|ip range help text"
-msgstr "Liste d'adresses IP séparées par une virgule. Ex:192.168.1.0/24,192.168.2.1"
+msgstr ""
+"Liste d'adresses IP séparées par une virgule. Ex:192.168.1.0/24,192.168.2.1<br>"
+"Attention: Nécessite une entité par défaut pour les nouvelles machines ou une "
+"entité définie sur les machines existantes pour s'appliquer."
 
 #: inventory/models.py:47 updatengine/templates/admin/base.html:90
 msgid "entity|entities"
