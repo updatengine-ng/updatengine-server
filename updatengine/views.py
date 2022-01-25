@@ -11,7 +11,7 @@ def check_version(request):
         json_data = open(json_file).read()
         json_list = json.loads(json_data)
         url = json_list['url'] + '/releases'
-        regex = 'releases/tag/(.+?)">'
+        regex = 'releases/tag/(.+?)"'
         version = extract_text_from_url(url, regex)
         data = {
             'version' : version,
