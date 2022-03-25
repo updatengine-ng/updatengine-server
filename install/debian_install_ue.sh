@@ -62,7 +62,7 @@ sed -i "s|##database_name##|${DB_NAME}|" ${INST_DIR}/updatengine-server/updateng
 sed -i "s|##database_user_name##|${DB_USER}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 sed -i "s|##database_user_password##|${DB_PASSWORD}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 sed -i "s|Europe/Paris|$(cat /etc/timezone)|" ${INST_DIR}/updatengine-server/updatengine/settings.py
-sed -i "s|^SECRET_KEY = .*|SECRET_KEY = '$(tr -dc 'a-z0-9!@#$%^&*(-_=+)' < /dev/urandom | head -c50)'|" ${INST_DIR}/updatengine-server/updatengine/settings.py
+sed -i "s|^SECRET_KEY = .*|SECRET_KEY = '$(tr -dc 'a-z0-9!@#\$%\(\-_=+)' < /dev/urandom | head -c50)'|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 [[ ! -z ${EMAIL_ADMIN} ]] && sed -i "s|#('admin', 'admin@your_adress.tld'),|${EMAIL_ADMIN}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 [[ ! -z ${EMAIL_FROM_SERVER} ]] && sed -i "s|updatengine@your_adress.tld|${EMAIL_FROM_SERVER}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 [[ ! -z ${EMAIL_FROM_SERVER_ERROR} ]] && sed -i "s|updatengine_error@your_adress.tld|${EMAIL_FROM_SERVER_ERROR}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
