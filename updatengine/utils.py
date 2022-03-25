@@ -1,6 +1,6 @@
 import urllib.request, urllib.error, urllib.parse
-import re
 import json
+
 
 def get_latest_release_version(url):
     try:
@@ -12,4 +12,3 @@ def get_latest_release_version(url):
     except Exception as e:
         retval = str(e)                                                                                                                                                                                                                       
     return retval
-
