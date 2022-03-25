@@ -2,6 +2,13 @@
 # UpdatEngine-server #
 ######################
 
+4.1.0:
+- Update last release version using json
+- Add debian installation script and new apache config
+- Complete entity ip range help text
+- Sort machines names in history filter list
+- Add os version in inventory view
+
 4.0.3:
 - Fix white page on mass update
 - Remove web directory indexes from apache conf

@@ -7,7 +7,6 @@ UpdatEngine Server is a web app allowing people to inventory computer and server
 * [Compatiblity](#Compatiblity)
 * [Install](#install-latest-stable)
 * [Update](#update)
-* [Migrate from previous Python 2.7 / UE-Server < 4.0.0](#migrate-from-previous-python-27--ue-server--400)
 * [Examples](#examples-of-deployment-packages)
 * [Links](#links)
 * [License](#license)
@@ -18,71 +17,17 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 ## Project features
 
-* Python 3.7 / Django 2.2 LTS project
-* Tested with Debian 10, Ubuntu 18.04
+* Python 3.8 / Django 2.2 LTS project
+* Tested with Debian 10, Ubuntu 18.04, Debian 11, Ubuntu 20.04
 
-## Compatiblity
-
-The 'force contact' functionality is not compatible with clients version 3.x and below. Please install UE-Client from 4.0.0.
 
 ## Install latest stable
 
+A Debian/Ubuntu installation script is located in the 'install' folder. Customize your settings in this file (Installation directories, URL, database, SMTP...) then run it !
+
+The script automaticaly update the python settings, the apache.conf and create auto-signed SSL certfificat.
+ 
 See old **[2.1.1 installation documentation](https://updatengine-ng.com/)** for details
-
-Quickly (for debian/ubuntu with mySQL and self-signed certificate):
-
-```
-export UE_VER=master
-export PY_VER=3.7
-export INST_DIR=/var/www/UE-environment
-
-sudo apt install apache2 python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 git-core mysql-server libmysqlclient-dev build-essential -y
-sudo python${PY_VER} -m venv ${INST_DIR}
-cd ${INST_DIR}
-
-sudo git clone https://github.com/updatengine-ng/updatengine-server
-cd updatengine-server
-sudo git checkout -b ${UE_VER} origin/${UE_VER}
-
-sudo ${INST_DIR}/bin/pip install --upgrade pip setuptools
-sudo ${INST_DIR}/bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
-
-mysqladmin -u root -p create updatengine
-mysql -u root -p -e "GRANT ALL PRIVILEGES ON updatengine.* TO 'updatengineuser'@'localhost' IDENTIFIED by 'unmotdepasse' WITH GRANT OPTION;"
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
-# You may see some warnings such as below, but don't worry about this. This files are used by 'tzselect' linux command and are not timezone.
-# Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.
-# Warning: Unable to load '/usr/share/zoneinfo/leap-seconds.list' as time zone. Skipping it.
-# Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.
-# Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.
-sudo service mysql restart
-
-sudo cp ${INST_DIR}/updatengine-server/updatengine/settings.py.model ${INST_DIR}/updatengine-server/updatengine/settings.py
-# and now modify settings.py
-
-sudo cp ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf /etc/apache2/sites-available/apache-updatengine.conf
-sudo a2ensite apache-updatengine
-sudo a2enmod wsgi
-sudo openssl req --new -newkey rsa:2048 -days 365 -nodes -x509 -keyout /etc/ssl/private/updatengine.key -out /etc/ssl/certs/updatengine.crt -subj "/C=FR/ST=Guadeloupe/L=Saint-Claude/O=UpdatEngine-NG/CN=updatengine-ng.com"
-sudo a2enmod ssl
-sudo systemctl restart apache2
-
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py migrate
-
-# Set utf8mb4 charset for all tables (all languages support):
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py runscript db_convert_utf8
-
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/configuration_initial_data.yaml
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/groups_initial_data.yaml
-
-sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/static/
-sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/media/
-
-sudo systemctl reload apache2
-
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py createsuperuser
-```
-If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
 
 
 ## Update
@@ -90,56 +35,14 @@ If you encounter some errors as 'Did you install mysqlclient?' then try with PY_
 To update an existing version do :
 
 ```
+su -
 export INST_DIR=/var/www/UE-environment
 cd ${INST_DIR}/updatengine-server/
-sudo git checkout --track origin/master
-sudo git pull
-sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate
-# In case of 'Table already exist' error then run this before retry 'migrate' :
-# sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate --fake deploy 0002_auto_20180605_1910
+git checkout --track origin/master
+git pull
+bin/python ${INST_DIR}/updatengine-server/manage.py migrate
 sudo service apache2 restart
 ```
-
-
-## Migrate from previous Python 2.7 / UE-Server < 4.0.0
-
-All UE-Server versions before 4.0.0 was written in Python 2.7. From 4.0.0, Python 3 is used. So a simple update is not enough and a migration is needed.
-
-The commands includes the backup of the previous version and the copy of all packages files.
-
-Quickly (for debian/ubuntu):
-
-```
-export UE_VER=master
-export PY_VER=3.7
-export INST_DIR=/var/www/UE-environment
-
-sudo apt install python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 -y
-
-sudo mv ${INST_DIR} ${INST_DIR}_py2.7
-
-sudo python${PY_VER} -m venv ${INST_DIR}
-cd ${INST_DIR}
-
-sudo git clone https://github.com/updatengine-ng/updatengine-server
-cd updatengine-server
-sudo git checkout -b ${UE_VER} origin/${UE_VER}
-
-sudo ${INST_DIR}/bin/pip install --upgrade pip setuptools
-sudo ${INST_DIR}/bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
-
-sudo cp ${INST_DIR}_py2.7/updatengine-server/updatengine/settings.py ${INST_DIR}/updatengine-server/updatengine/
-sudo sed -i -e "s/0644/0o644/g" ${INST_DIR}/updatengine-server/updatengine/settings.py
-sudo rsync -av ${INST_DIR}_py2.7/updatengine-server/updatengine/media/package-file/* ${INST_DIR}/updatengine-server/updatengine/media/package-file/
-
-sudo systemctl reload apache2
-
-# Remove previous version:
-# sudo rm -rf ${INST_DIR}_py2.7
-```
-
-If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
-
 
 ## Examples of deployment packages
 
