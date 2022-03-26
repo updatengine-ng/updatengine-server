@@ -2,14 +2,32 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2022/03/25
+## 2022/03/26
 ################################################
+#
+#             /!\ WARNING /!\
+#
+# This script might replaced some existing files so
+# save them before running :
+#
+# /etc/apache2/sites-available/apache-updatengine.conf
+# ${INST_DIR}/updatengine-server/updatengine/settings.py
+# ${SSL_DIR}/updatengine.crt
+# ${SSL_DIR}/updatengine.key
+#
+################################################
+
 
 ## Must be root user to install
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root user"
     exit
 fi
+
+
+################################################
+###  -- UE server installation settings --   ###
+################################################
 
 ## Values required
 export INST_DIR=/srv
@@ -18,21 +36,27 @@ export SSL_DIR=/etc/apache2
 export DB_NAME=updatengine
 export DB_USER=updatengineuser
 export DB_PASSWORD=updatenginepwd
-export SRV_URL=https://localhost:1979
+export SRV_URL=https://ue-server.domain.tld:1979
 export SRV_PORT=1979
+export ALLOWED_HOSTS="'ue-server.domain.tld', 'IP_SERVER'" # This value must be delimited with double quotes
 
 ## Email settings (optional but recommended)
-#export EMAIL_ADMIN=('admin', 'admin@domain.tld'),
+#export EMAIL_ADMIN="('admin', 'admin@domain.tld')," # This value must be delimited with double quotes
 #export EMAIL_FROM_SERVER=updatengine@domain.tld
 #export EMAIL_FROM SERVER_ERROR=updatengine-error@domain.tld
 
 ## SMTP server (optional)
 #export EMAIL_HOST=smtp.domain.tld
 #export EMAIL_PORT=465
-#export EMAIL_HOST_USER=USERNAME@your_adress.tld'
+#export EMAIL_HOST_USER=USERNAME@your_adress.tld
 #export EMAIL_HOST_PASSWORD=PASSWORD
 #export EMAIL_USE_TLS=False
 #export EMAIL_USE_SSL=True
+
+
+################################################
+###      -- Installation process --          ###
+################################################
 
 ## Install linux packages and python modules
 apt install sudo git -y
@@ -58,6 +82,7 @@ service mysql restart
 ## Copy and modify settings.py
 cp ${INST_DIR}/updatengine-server/updatengine/settings.py.model ${INST_DIR}/updatengine-server/updatengine/settings.py
 sed -i "/^PROJECT_URL/c\PROJECT_URL = '${SRV_URL}'" ${INST_DIR}/updatengine-server/updatengine/settings.py
+sed -i "s|'##updatengine_server.domain.tld##'|${ALLOWED_HOSTS}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 sed -i "s|##database_name##|${DB_NAME}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 sed -i "s|##database_user_name##|${DB_USER}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 sed -i "s|##database_user_password##|${DB_PASSWORD}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
