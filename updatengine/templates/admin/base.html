@@ -63,7 +63,7 @@
                     var ue_latest_url=localStorage.getItem('ue_latest_url');
 
                     $.getJSON("{% static "json/app.json" %}", function(data){
-                        $('#version').attr('href', data.url)
+                        $('#version').attr('href', 'https://github.com/' + data.repository)
                         $('#version').html('<small>Version ' + data.version +'</small>')
                         localStorage.setItem('ue_version', data.version);
                         if (data.version != undefined && ue_latest_version != undefined && ue_latest_version != data.version)
