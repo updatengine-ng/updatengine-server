@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2022/03/26
+## 2022/03/27
 ################################################
 #
 #             /!\ WARNING /!\
@@ -59,8 +59,8 @@ export ALLOWED_HOSTS="'ue-server.domain.tld', 'IP_SERVER'" # This value must be 
 ################################################
 
 ## Install linux packages and python modules
-apt install sudo git -y
-apt install apache2 python3 python3-dev python3-venv python3-pip python3-distutils libapache2-mod-wsgi-py3 git mariadb-server libmariadb-dev build-essential libxml2-dev libxslt-dev -y
+apt update
+apt install git apache2 python3 python3-dev python3-venv python3-pip python3-distutils libapache2-mod-wsgi-py3 git mariadb-server libmariadb-dev build-essential libxml2-dev libxslt-dev -y
 
 mkdir -p ${VENV_DIR}
 
@@ -105,14 +105,14 @@ for i in "${PARAMS[@]}"; do
 	[[ ! -z ${VALUE} ]] && sed -i "s|^#\?${i} = .*|${i} = ${VALUE}|" ${INST_DIR}/updatengine-server/updatengine/settings.py
 done
 
+## Set apache configuration
+envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf 
+
 ## Generate SSL certificat
 a2ensite apache-updatengine
 a2enmod wsgi
 openssl req --new -newkey rsa:2048 -days 365 -nodes -x509 -keyout ${SSL_DIR}/updatengine.key -out ${SSL_DIR}/updatengine.crt -subj "/C=FR/ST=Guadeloupe/L=Saint-Claude/O=UpdatEngine-NG/CN=updatengine-ng.com"
 a2enmod ssl
-
-## Set apache configuration
-envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf 
 
 ## Start apache daemon
 systemctl restart apache2
