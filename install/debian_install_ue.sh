@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2022/03/27
+## 2022/04/10
 ################################################
 #
 #             /!\ WARNING /!\
@@ -118,10 +118,10 @@ a2enmod ssl
 systemctl restart apache2
 
 ## Init database
-${VENV_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py migrate
-${VENV_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py runscript db_convert_utf8
-${VENV_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/configuration_initial_data.yaml
-${VENV_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/groups_initial_data.yaml
+python manage.py migrate
+python manage.py runscript db_convert_utf8
+python manage.py loaddata initial_data/configuration_initial_data.yaml
+python manage.py loaddata initial_data/groups_initial_data.yaml
 
 ## Set directory owner
 chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/static/
