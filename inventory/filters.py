@@ -1,5 +1,5 @@
 from django.contrib.admin import SimpleListFilter
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_text
 from inventory.models import software
 from inventory.models import entity, machine, software, osdistribution

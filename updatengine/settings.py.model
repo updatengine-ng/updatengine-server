@@ -236,3 +236,6 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 # Disable default limit of 1000 fields per request.
 # Necessary for bulk modification of objects - e.g., when saving on a linux machine
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
+# Set default default type for primary keys
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

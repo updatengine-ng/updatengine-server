@@ -21,7 +21,7 @@
 from inventory.models import entity, machine, net, software, osdistribution
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from inventory.filters import enableFilter, as_or_notFilter, softwareFilter, versionFilter
 from inventory.filters import (
     entityFilter, domainFilter, usernameFilter, languageFilter, typemachineFilter,

@@ -18,7 +18,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
 ###############################################################################
 
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 
@@ -36,12 +36,12 @@ site.add_action(actions.mass_update)
 site.add_action(actions.export_as_csv)
 
 urlpatterns = [
-    url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^post/', post),
-    url(r'^adminactions/', include('adminactions.urls')),
-    url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^', admin.site.urls),
-    url(r'^check_version/$', check_version, name='latest_version'),
+    re_path(r'^grappelli/', include('grappelli.urls')),
+    re_path(r'^post/', post),
+    re_path(r'^adminactions/', include('adminactions.urls')),
+    re_path(r'^i18n/', include('django.conf.urls.i18n')),
+    re_path(r'^', admin.site.urls),
+    re_path(r'^check_version/$', check_version, name='latest_version'),
 ]
 # Use lines below only during development if you want django
 # to server static files
