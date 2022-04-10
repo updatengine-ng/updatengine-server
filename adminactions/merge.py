@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime
-
 from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
@@ -16,8 +14,8 @@ from django.utils.translation import gettext as _
 
 from . import api, compat as transaction
 from .forms import GenericActionForm
-from .models import get_permission_codename
-from .utils import clone_instance
+from .perms import get_permission_codename
+from .utils import clone_instance, get_ignored_fields
 
 
 class MergeFormBase(forms.Form):
@@ -31,12 +29,6 @@ class MergeFormBase(forms.Form):
 
     dependencies = forms.ChoiceField(label=_('Dependencies'),
                                      choices=((DEP_MOVE, _("Move")), (DEP_DELETE, _("Delete"))))
-
-    # generic = forms.ChoiceField(label=_('Search GenericForeignKeys'),
-    #                             help_text=_("Search for generic relation"),
-    #                             choices=((GEN_IGNORE, _("No")),
-    #                                      (GEN_RELATED, _("Only Related (look for Managers)")),
-    #                                      (GEN_DEEP, _("Analyze Mode (very slow)"))))
 
     master_pk = forms.CharField(widget=HiddenInput)
     other_pk = forms.CharField(widget=HiddenInput)
@@ -57,13 +49,13 @@ class MergeFormBase(forms.Form):
             return None
 
     def full_clean(self):
-        super(MergeFormBase, self).full_clean()
+        super().full_clean()
 
     def clean(self):
-        return super(MergeFormBase, self).clean()
+        return super().clean()
 
     def is_valid(self):
-        return super(MergeFormBase, self).is_valid()
+        return super().is_valid()
 
     class Media:
         js = [
@@ -85,7 +77,8 @@ def merge(modeladmin, request, queryset):  # noqa
     """
 
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_merge', opts))
+    perm = "{0}.{1}".format(opts.app_label,
+                            get_permission_codename(merge.base_permission, opts))
     if not request.user.has_perm(perm):
         messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
@@ -129,17 +122,18 @@ def merge(modeladmin, request, queryset):  # noqa
                 return (False, merge_form, merge_kwargs)
 
     tpl = 'adminactions/merge.html'
-    # transaction_supported = model_supports_transactions(modeladmin.model)
+    ignored_fields = get_ignored_fields(queryset.model, "MERGE_ACTION_IGNORED_FIELDS")
+
     ctx = {
         '_selected_action': request.POST.getlist(helpers.ACTION_CHECKBOX_NAME),
         'transaction_supported': 'Un',
         'select_across': request.POST.get('select_across') == '1',
         'action': request.POST.get('action'),
-        'fields': [f for f in queryset.model._meta.fields if not f.primary_key and f.editable],
+        'fields': [f for f in queryset.model._meta.fields
+                   if not f.primary_key and f.editable and f.name not in ignored_fields],
         'app_label': queryset.model._meta.app_label,
         'result': '',
         'opts': queryset.model._meta}
-
     if 'preview' in request.POST:
         master = queryset.get(pk=request.POST.get('master_pk'))
         original = clone_instance(master)
@@ -212,3 +206,4 @@ def merge(modeladmin, request, queryset):  # noqa
 
 
 merge.short_description = _("Merge selected %(verbose_name_plural)s")
+merge.base_permission = 'adminactions_merge'

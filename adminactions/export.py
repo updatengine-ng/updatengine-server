@@ -1,5 +1,3 @@
-from itertools import chain
-
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -13,12 +11,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from itertools import chain
 
 from .api import (export_as_csv as _export_as_csv,
-                  export_as_xls as _export_as_xls, )
+                  export_as_xls as _export_as_xls,)
 from .exceptions import ActionInterrupted
 from .forms import CSVOptions, XLSOptions
-from .models import get_permission_codename
+from .perms import get_permission_codename
 from .signals import adminaction_end, adminaction_requested, adminaction_start
 
 
@@ -36,7 +35,8 @@ def base_export(modeladmin, request, queryset, title, impl,  # noqa
         export a queryset to csv file
     """
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_export', opts))
+    perm = "{0}.{1}".format(opts.app_label,
+                            get_permission_codename(base_export.base_permission, opts))
     if not request.user.has_perm(perm):
         messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
@@ -119,6 +119,9 @@ def base_export(modeladmin, request, queryset, title, impl,  # noqa
     return render(request, template, ctx)
 
 
+base_export.base_permission = 'adminactions_export'
+
+
 def export_as_csv(modeladmin, request, queryset):
     return base_export(modeladmin, request, queryset,
                        impl=_export_as_csv,
@@ -133,6 +136,7 @@ def export_as_csv(modeladmin, request, queryset):
 
 
 export_as_csv.short_description = _("Export as CSV")
+export_as_csv.base_permission = 'adminactions_export'
 
 
 def export_as_xls(modeladmin, request, queryset):
@@ -149,22 +153,23 @@ def export_as_xls(modeladmin, request, queryset):
 
 
 export_as_xls.short_description = _("Export as XLS")
+export_as_xls.base_permission = 'adminactions_export'
 
 
-class FlatCollector(object):
+class FlatCollector:
     def __init__(self, using):
         self._visited = []
-        super(FlatCollector, self).__init__()
+        super().__init__()
 
     def collect(self, objs):
         self.data = objs
         self.models = set([o.__class__ for o in self.data])
 
 
-class ForeignKeysCollector(object):
+class ForeignKeysCollector:
     def __init__(self, using):
         self._visited = []
-        super(ForeignKeysCollector, self).__init__()
+        super().__init__()
 
     def _collect(self, objs):
         objects = []
@@ -200,7 +205,8 @@ class FixtureOptions(forms.Form):
                                        widget=forms.HiddenInput({'class': 'select-across'}))
     action = forms.CharField(label='', required=True, initial='', widget=forms.HiddenInput())
 
-    use_natural_key = forms.BooleanField(required=False)
+    use_natural_pk = forms.BooleanField(label=_('Use Natural Primary Keys'), required=False)
+    use_natural_fk = forms.BooleanField(label=_('Use Natural Foreign Keys'), required=False)
     on_screen = forms.BooleanField(label='Dump on screen', required=False)
     add_foreign_keys = forms.BooleanField(required=False)
 
@@ -213,7 +219,8 @@ def _dump_qs(form, queryset, data, filename):
 
     json = ser.get_serializer(fmt)()
     ret = json.serialize(data,
-                         use_natural_foreign_keys=form.cleaned_data.get('use_natural_key', False),
+                         use_natural_foreign_keys=form.cleaned_data.get('use_natural_fk', False),
+                         use_natural_primary_keys=form.cleaned_data.get('use_natural_pk', False),
                          indent=form.cleaned_data.get('indent'))
 
     response = HttpResponse(content_type='application/json')
@@ -232,7 +239,8 @@ def export_as_fixture(modeladmin, request, queryset):
                'serializer': 'json',
                'indent': 4}
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_export', opts))
+    perm = "{0}.{1}".format(opts.app_label,
+                            get_permission_codename(export_as_fixture.base_permission, opts))
     if not request.user.has_perm(perm):
         messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
@@ -306,6 +314,7 @@ def export_as_fixture(modeladmin, request, queryset):
 
 
 export_as_fixture.short_description = _("Export as fixture")
+export_as_fixture.base_permission = 'adminactions_export'
 
 
 def export_delete_tree(modeladmin, request, queryset):  # noqa
@@ -314,7 +323,8 @@ def export_delete_tree(modeladmin, request, queryset):  # noqa
     That mean that dump what will be deleted if the queryset was deleted
     """
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_export', opts))
+    perm = "{0}.{1}".format(opts.app_label,
+                            get_permission_codename(export_delete_tree.base_permission, opts))
     if not request.user.has_perm(perm):
         messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
@@ -398,3 +408,4 @@ def export_delete_tree(modeladmin, request, queryset):  # noqa
 
 
 export_delete_tree.short_description = _("Export delete tree")
+export_delete_tree.base_permission = 'adminactions_export'

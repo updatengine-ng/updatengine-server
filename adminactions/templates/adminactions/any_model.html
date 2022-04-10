@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_modify adminmedia static %}
+{% load i18n admin_modify static %}
 {% block extrahead %}{{ block.super }}
     <style type="text/css">
         #col1 {
@@ -71,7 +71,7 @@
                 {{ hidden }}
             {% endfor %}
             <input type="hidden" name="action" value="{{ action }}"/>
-            <input type="submit" name="apply" value="Update records"/>
+            <input type="submit" name="apply" value="{% trans 'Update records' %}"/>
         </form>
     </div>
     <div id='col2'>

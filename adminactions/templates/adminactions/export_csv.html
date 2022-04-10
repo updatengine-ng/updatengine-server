@@ -42,18 +42,13 @@
 {% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
-    <ul class="grp-horizontal-list">
-        <li><a href="{% url 'admin:index' %}">{% trans "Home" %}</a></li>
-        <li><a href="{% url 'admin:index' %}{{ app_label}}">
-        {% with header_label=app_label|capfirst|escape %}
-            {% with msgid="header|"|add:header_label %}
-                {% trans msgid %}
-            {% endwith %}
-        {% endwith %}
-        </a></li>
-        <li><a href="{% url opts|admin_urlname:'changelist' %}">{% blocktrans with msgid=opts.verbose_name_plural|capfirst %}{{ msgid }}{% endblocktrans %}</a></li>
-        <li>{{ action_short_description|capfirst }}</li>
-    </ul>
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a> &rsaquo;
+        <a href="{% url 'admin:index' %}{{ app_label}}">{{ app_label|capfirst }}</a> &rsaquo;
+        {% if has_change_permission %}<a
+                href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
+	{{ action_short_description|capfirst }}
+    </div>
 {% endif %}{% endblock %}
 
 {% block content %}
@@ -78,632 +73,264 @@
     {% if url_format_date %}
     <div id='legend-date'>
     <table xmlns="http://www.w3.org/1999/xhtml" lass="doctable table">
-    {% if LANGUAGE_CODE != 'fr' %}
-    <caption><b>The following characters are recognized in the
-        <i><tt class="parameter">format</tt></i> parameter string</b></caption>
+    <caption><b>{% trans "The following characters are recognized in the" %}
+        <i><tt class="parameter"> '{% trans "format" %}' </tt></i>{% trans "parameter string" %}</b></caption>
 
     <thead valign="middle">
     <tr valign="middle">
-        <th><i><tt class="parameter">format</tt></i> character</th>
-
-        <th>Description</th>
-        <th>Example returned values</th>
+        <th><i></i>{% trans "character" %}</th>
+        <th>{% trans "Description" %}</th>
+        <th>{% trans "Example returned values" %}</th>
     </tr>
 
     </thead>
 
     <tbody valign="middle" class="tbody">
     <tr valign="middle">
-        <td align="center"><em class="emphasis">Day</em></td>
-
+        <td align="center"><em class="emphasis">{% trans "Day" %}</em></td>
         <td align="left">---</td>
         <td align="left">---</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>d</i></td>
-        <td align="left">Day of the month, 2 digits with leading zeros</td>
-
-        <td align="left"><i>01</i> to <i>31</i></td>
+        <td align="left">{% trans "Day of the month, 2 digits with leading zeros" %}</td>
+        <td align="left"><i>01</i> {% trans "to" %} <i>31</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>D</i></td>
-        <td align="left">A textual representation of a day, three letters</td>
-
-        <td align="left"><i>Mon</i> through <i>Sun</i></td>
+        <td align="left">{% trans "A textual representation of a day, three letters" %}</td>
+        <td align="left"><i>{% trans "Mon" %}</i>{% trans "through" %}<i>{% trans "Sun" %}</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>j</i></td>
-        <td align="left">Day of the month without leading zeros</td>
-
-        <td align="left"><i>1</i> to <i>31</i></td>
+        <td align="left">{% trans "Day of the month without leading zeros" %}</td>
+        <td align="left"><i>1</i> {% trans "to" %}<i>31</i></td>
     </tr>
 
     <tr valign="middle">
-        <td align="left"><i>l</i> (lowercase 'L')</td>
-        <td align="left">A full textual representation of the day of the week</td>
-
-        <td align="left"><i>Sunday</i> through <i>Saturday</i></td>
+        <td align="left"><i>l</i> {% trans "(lowercase 'L')" %}</td>
+        <td align="left">{% trans "A full textual representation of the day of the week" %}</td>
+        <td align="left"><i>{% trans "Sunday" %}</i>{% trans "through" %}<i>{% trans "Saturday" %}</i></td>
     </tr>
-    <tr>
-    <td align="left"><i>1</i> (for Monday) through <i>7</i> (for Sunday)</td>
+
+    <tr valign="middle">
+        <td align="left"><i>N</td>
+        <td align="left">{% trans "ISO-8601 numeric representation of the day of the week" %}</td>
+        <td align="left"><i>1</i>{% trans "for Monday through" %}<i>7</i>{% trans "for Sunday"%}</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>S</i></td>
-        <td align="left">English ordinal suffix for the day of the month, 2 characters</td>
-
+        <td align="left">{% trans "English ordinal suffix for the day of the month, 2 characters" %}</td>
         <td align="left">
             <i>st</i>, <i>nd</i>, <i>rd</i> or
-            <i>th</i>. Works well with <i>j</i>
+            <i>th</i>.{% trans "Works well with" %} <i>j</i>
         </td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>w</i></td>
-        <td align="left">Numeric representation of the day of the week</td>
-        <td align="left"><i>0</i> (for Sunday) through <i>6</i> (for Saturday)</td>
-
+        <td align="left">{% trans "Numeric representation of the day of the week" %}</td>
+        <td align="left"><i>0</i>{% trans "(for Sunday) through" %}<i>6</i>{% trans "(for Saturday)" %}</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>z</i></td>
-        <td align="left">The day of the year (starting from 0)</td>
-        <td align="left"><i>0</i> through <i>365</i></td>
-
+        <td align="left">{% trans "The day of the year (starting from 0)" %}</td>
+        <td align="left"><i>0</i>{% trans "through" %}<i>365</i></td>
     </tr>
 
     <tr valign="middle">
-        <td align="center"><em class="emphasis">Week</em></td>
+        <td align="center"><em class="emphasis">{% trans "Week" %}</em></td>
         <td align="left">---</td>
         <td align="left">---</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>W</i></td>
-        <td align="left">ISO-8601 week number of year, weeks starting on Monday (added in PHP 4.1.0)</td>
-        <td align="left">Example: <i>42</i> (the 42nd week in the year)</td>
+        <td align="left">{% trans "ISO-8601 week number of year, weeks starting on Monday (added in PHP 4.1.0)"%}</td>
+        <td align="left">{% trans "Example:" %} <i>42</i> {% trans "(the 42nd week in the year)" %}</td>
     </tr>
 
     <tr valign="middle">
-        <td align="center"><em class="emphasis">Month</em></td>
+        <td align="center"><em class="emphasis">{% trans "Month" %}</em></td>
         <td align="left">---</td>
         <td align="left">---</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>F</i></td>
-
-        <td align="left">A full textual representation of a month, such as January or March</td>
-        <td align="left"><i>January</i> through <i>December</i></td>
+        <td align="left">{% trans "A full textual representation of a month, such as January or March" %}</td>
+        <td align="left"><i>{% trans "January" %}</i> {% trans "through" %}<i>{% trans "December" %}</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>m</i></td>
-
-        <td align="left">Numeric representation of a month, with leading zeros</td>
-        <td align="left"><i>01</i> through <i>12</i></td>
+        <td align="left">{% trans "Numeric representation of a month, with leading zeros" %}</td>
+        <td align="left"><i>01</i>{% trans " through" %} <i>12</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>M</i></td>
-
-        <td align="left">A short textual representation of a month, three letters</td>
-        <td align="left"><i>Jan</i> through <i>Dec</i></td>
+        <td align="left">{% trans "A short textual representation of a month, three letters" %}</td>
+        <td align="left"><i>{% trans "Jan" %}</i>{% trans " through" %}<i>{% trans "Dec" %}</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>n</i></td>
-
-        <td align="left">Numeric representation of a month, without leading zeros</td>
-        <td align="left"><i>1</i> through <i>12</i></td>
+        <td align="left">{% trans "Numeric representation of a month, without leading zeros" %}</td>
+        <td align="left"><i>1</i>{% trans " through" %}<i>12</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>t</i></td>
-
-        <td align="left">Number of days in the given month</td>
-        <td align="left"><i>28</i> through <i>31</i></td>
+        <td align="left">{% trans "Number of days in the given month" %}</td>
+        <td align="left"><i>28</i>{% trans " through" %} <i>31</i></td>
     </tr>
 
     <tr valign="middle">
-        <td align="center"><em class="emphasis">Year</em></td>
-
+        <td align="center"><em class="emphasis">{% trans "Year" %}</em></td>
         <td align="left">---</td>
         <td align="left">---</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>L</i></td>
-        <td align="left">Whether it's a leap year</td>
-
-        <td align="left"><i>1</i> if it is a leap year, <i>0</i> otherwise.</td>
+        <td align="left">{% trans "Whether it's a leap year"%}</td>
+        <td align="left"><i>1</i>{% trans " if it is a leap year, "%}<i>0</i> {% trans "otherwise."%}</td>
     </tr>
 
-    {#              <tr valign="middle">#}
-    {#               <td align="left"><i>o</i></td>#}
-    {#               <td align="left">ISO-8601 year number. This has the same value as#}
-    {#                <i>Y</i>, except that if the ISO week number#}
-    {#                (<i>W</i>) belongs to the previous or next year, that year#}
-    {#                is used instead. (added in PHP 5.1.0)</td>#}
-
-    <td align="left">Examples: <i>1999</i> or <i>2003</i></td>
+    <tr valign="middle">
+        <td align="left"><i>o</i></td>
+        <td align="left">{% trans "ISO 8601 week-numbering year. This has the same value as Y, except that if the ISO week number (W) belongs to the previous or next year, that year is used instead."%}</td>
+        <td align="left">{% trans "Examples:" %}<i>{% trans "1999" %}</i>{% trans " or" %} <i>{% trans "2003" %}</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>Y</i></td>
-        <td align="left">A full numeric representation of a year, 4 digits</td>
-
-        <td align="left">Examples: <i>1999</i> or <i>2003</i></td>
+        <td align="left">{% trans "A full numeric representation of a year, 4 digits"%}</td>
+        <td align="left">{% trans "Examples: "%}<i>{% trans "1999"%}</i> {% trans "or" %} <i>2003</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>y</i></td>
-        <td align="left">A two digit representation of a year</td>
-
-        <td align="left">Examples: <i>99</i> or <i>03</i></td>
+        <td align="left">{% trans "A two digit representation of a year" %}</td>
+        <td align="left">{% trans "Examples:"  %}<i>99</i> {% trans "or" %} <i>03</i></td>
     </tr>
 
     <tr valign="middle">
-        <td align="center"><em class="emphasis">Time</em></td>
+        <td align="center"><em class="emphasis">{% trans "Time" %}</em></td>
         <td align="left">---</td>
-
         <td align="left">---</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>a</i></td>
-        <td align="left">Lowercase Ante meridiem and Post meridiem</td>
-        <td align="left"><i>am</i> or <i>pm</i></td>
-
+        <td align="left">{% trans "Lowercase Ante meridiem and Post meridiem" %}</td>
+        <td align="left"><i>am</i> {% trans "or " %}<i>pm</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>A</i></td>
-        <td align="left">Uppercase Ante meridiem and Post meridiem</td>
-        <td align="left"><i>AM</i> or <i>PM</i></td>
-
+        <td align="left">{% trans "Uppercase Ante meridiem and Post meridiem" %}</td>
+        <td align="left"><i>AM</i>{% trans " or " %}<i>PM</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>B</i></td>
-        <td align="left">Swatch Internet time</td>
-        <td align="left"><i>000</i> through <i>999</i></td>
-
+        <td align="left">{% trans "Swatch Internet time" %}</td>
+        <td align="left"><i>000</i>{% trans " through " %}<i>999</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>g</i></td>
-        <td align="left">12-hour format of an hour without leading zeros</td>
-        <td align="left"><i>1</i> through <i>12</i></td>
-
+        <td align="left">{% trans "12-hour format of an hour without leading zeros" %}</td>
+        <td align="left"><i>1</i>{% trans " through " %}<i>12</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>G</i></td>
-        <td align="left">24-hour format of an hour without leading zeros</td>
-        <td align="left"><i>0</i> through <i>23</i></td>
-
+        <td align="left">{% trans "24-hour format of an hour without leading zeros" %}</td>
+        <td align="left"><i>0</i>{% trans " through " %}<i>23</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>h</i></td>
-        <td align="left">12-hour format of an hour with leading zeros</td>
-        <td align="left"><i>01</i> through <i>12</i></td>
-
+        <td align="left">{% trans "12-hour format of an hour with leading zeros" %}</td>
+        <td align="left"><i>01</i>{% trans " through " %}<i>12</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>H</i></td>
-        <td align="left">24-hour format of an hour with leading zeros</td>
-        <td align="left"><i>00</i> through <i>23</i></td>
-
+        <td align="left">{% trans "24-hour format of an hour with leading zeros" %}</td>
+        <td align="left"><i>00</i>{% trans " through " %}<i>23</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>i</i></td>
-        <td align="left">Minutes with leading zeros</td>
-        <td align="left"><i>00</i> to <i>59</i></td>
-
+        <td align="left">{% trans "Minutes with leading zeros" %}</td>
+        <td align="left"><i>00</i>{% trans " to " %}<i>59</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>s</i></td>
-        <td align="left">Seconds, with leading zeros</td>
-        <td align="left"><i>00</i> through <i>59</i></td>
-
+        <td align="left">{% trans "Seconds, with leading zeros" %}</td>
+        <td align="left"><i>00</i>{% trans " through" %} <i>59</i></td>
     </tr>
 
-    {#              <tr valign="middle">#}
-    {#               <td align="left"><i>u</i></td>#}
-    {#               <td align="left">Microseconds (added in PHP 5.2.2)</td>#}
-    {#               <td align="left">Example: <i>654321</i></td>#}
-    {#              </tr>#}
-
     <tr valign="middle">
-        <td align="center"><em class="emphasis">Timezone</em></td>
+        <td align="center"><em class="emphasis">{% trans "Timezone" %}</em></td>
         <td align="left">---</td>
         <td align="left">---</td>
     </tr>
 
-    {#              <tr valign="middle">#}
-    {##}
-    {#               <td align="left"><i>e</i></td>#}
-    {#               <td align="left">Timezone identifier (added in PHP 5.1.0)</td>#}
-    {#               <td align="left">Examples: <i>UTC</i>, <i>GMT</i>, <i>Atlantic/Azores</i></td>#}
-    {#              </tr>#}
-
     <tr valign="middle">
-        <td align="left"><i>I</i> (capital i)</td>
-        <td align="left">Whether or not the date is in daylight saving time</td>
-        <td align="left"><i>1</i> if Daylight Saving Time, <i>0</i> otherwise.</td>
-
+        <td align="left"><i>I</i>{% trans " (capital i)" %}</td>
+        <td align="left">{% trans "Whether or not the date is in daylight saving time" %}</td>
+        <td align="left"><i>1</i>{% trans " if Daylight Saving Time, <i>0</i> otherwise." %}</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>O</i></td>
-        <td align="left">Difference to Greenwich time (GMT) in hours</td>
-        <td align="left">Example: <i>+0200</i></td>
+        <td align="left">{% trans "Difference to Greenwich time (GMT) in hours" %}</td>
+        <td align="left">{% trans "Example: " %}<i>+0200</i></td>
     </tr>
 
-    {#              <tr valign="middle">#}
-    {#               <td align="left"><i>P</i></td>#}
-    {#               <td align="left">Difference to Greenwich time (GMT) with colon between hours and minutes (added in PHP 5.1.3)</td>#}
-    {#               <td align="left">Example: <i>+02:00</i></td>#}
-    {#              </tr>#}
-
     <tr valign="middle">
-
         <td align="left"><i>T</i></td>
-        <td align="left">Timezone abbreviation</td>
-        <td align="left">Examples: <i>EST</i>, <i>MDT</i> ...</td>
+        <td align="left">{% trans "Timezone abbreviation" %}</td>
+        <td align="left">{% trans "Examples: " %}<i>EST</i>, <i>MDT</i> ...</td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>Z</i></td>
-        <td align="left">Timezone offset in seconds. The offset for timezones west of UTC is always
-            negative, and for those east of UTC is always positive.
-        </td>
-        <td align="left"><i>-43200</i> through <i>50400</i></td>
+        <td align="left">{% trans "Timezone offset in seconds. The offset for timezones west of UTC is always negative, and for those east of UTC is always positive." %}</td>
+        <td align="left"><i>-43200</i>{% trans "through " %}<i>50400</i></td>
     </tr>
 
     <tr valign="middle">
-        <td align="center"><em class="emphasis">Full Date/Time</em></td>
+        <td align="center"><em class="emphasis">{% trans "Full Date/Time" %}</em></td>
         <td align="left">---</td>
         <td align="left">---</td>
     </tr>
-
-    {#              <tr valign="middle">#}
-    {#               <td align="left"><i>c</i></td>#}
-    {##}
-    {#               <td align="left">ISO 8601 date (added in PHP 5)</td>#}
-    {#               <td align="left">2004-02-12T15:19:21+00:00</td>#}
-    {#              </tr>#}
 
     <tr valign="middle">
         <td align="left"><i>r</i></td>
-        <td align="left"><a class="link external" href="http://www.faqs.org/rfcs/rfc2822">» RFC 2822</a> formatted date
-        </td>
-
-        <td align="left">Example: <i>Thu, 21 Dec 2000 16:01:07 +0200</i></td>
+        <td align="left">{% trans "Formatted date" %} <a class="link external" href="http://www.faqs.org/rfcs/rfc2822">» RFC 2822</a></td>
+        <td align="left">{% trans "Example: " %}<i>{% trans "Thu, 21 Dec 2000 16:01:07 +0200" %}</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>U</i></td>
-        <td align="left">Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)</td>
-        <td align="left">See also <span class="function"><a class="function" href="function.time.php">time()</a></span>
+        <td align="left">{% trans "Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)" %}</td>
+        <td align="left">{% trans "See also" %} <span class="function">
+          <a class="function" href="function.time.php">time()</a></span>
         </td>
 
     </tr>
-    {% endif  %}
-    {% if LANGUAGE_CODE == 'fr' %}
-    <caption><strong>
-         Les caractères suivants sont reconnus dans le paramètre
-         <code class="parameter">format</code>
-        </strong></caption>
-
-         <thead>
-          <tr>
-           <th>Caractères pour le paramètre <code class="parameter">format</code></th>
-           <th>Description</th>
-           <th>Exemple de valeurs retournées</th>
-          </tr>
-
-         </thead>
-
-         <tbody class="tbody">
-          <tr>
-           <td style="text-align: center;"><em class="emphasis">Jour</em></td>
-           <td>---</td>
-           <td>---</td>
-          </tr>
-
-          <tr>
-           <td><em>d</em></td>
-           <td>Jour du mois, sur deux chiffres (avec un zéro initial)</td>
-           <td><em>01</em> à <em>31</em></td>
-          </tr>
-
-          <tr>
-           <td><em>D</em></td>
-           <td>Jour de la semaine, en trois lettres (et en anglais - par défaut : en anglais, ou sinon, dans la langue locale du serveur)</td>
-           <td><em>Mon</em> à <em>Sun</em></td>
-          </tr>
-
-          <tr>
-           <td><em>j</em></td>
-           <td>Jour du mois sans les zéros initiaux</td>
-           <td><em>1</em> à <em>31</em></td>
-          </tr>
-
-          <tr>
-           <td><em>l</em> (&#039;L&#039; minuscule)</td>
-           <td>Jour de la semaine, textuel, version longue, en anglais</td>
-           <td><em>Sunday</em> à <em>Saturday</em></td>
-          </tr>
-
-          {#              <tr>#}
-          {#               <td><em>N</em></td>#}
-          {#               <td>Représentation numérique ISO-8601 du jour de la semaine (ajouté en PHP 5.1.0)</td>#}
-          {#               <td><em>1</em> (pour Lundi) à <em>7</em> (pour Dimanche)</td>#}
-          {#              </tr>#}
-
-          <tr>
-           <td><em>S</em></td>
-           <td>Suffixe ordinal d&#039;un nombre pour le jour du mois, en anglais, sur deux lettres</td>
-           <td>
-            <em>st</em>, <em>nd</em>, <em>rd</em> ou
-            <em>th</em>.  Fonctionne bien avec <em>j</em>
-           </td>
-          </tr>
-
-          <tr>
-           <td><em>w</em></td>
-           <td>Jour de la semaine au format numérique</td>
-           <td><em>0</em> (pour dimanche) à <em>6</em> (pour samedi)</td>
-          </tr>
-
-          <tr>
-           <td><em>z</em></td>
-           <td>Jour de l&#039;année</td>
-           <td><em>0</em> à <em>365</em></td>
-          </tr>
-
-          <tr>
-           <td style="text-align: center;"><em class="emphasis">Semaine</em></td>
-           <td>---</td>
-           <td>---</td>
-          </tr>
-
-          <tr>
-           <td><em>W</em></td>
-           <td>Numéro de semaine dans l&#039;année ISO-8601, les semaines commencent
-            le lundi</td>
-           <td>Exemple : <em>42</em> (la 42ème semaine de l&#039;année)</td>
-          </tr>
-
-          <tr>
-           <td style="text-align: center;"><em class="emphasis">Mois</em></td>
-           <td>---</td>
-           <td>---</td>
-          </tr>
-
-          <tr>
-           <td><em>F</em></td>
-           <td>Mois, textuel, version longue; en anglais, comme
-            <em>January</em> ou <em>December</em></td>
-           <td><em>January</em> à <em>December</em></td>
-          </tr>
-
-          <tr>
-           <td><em>m</em></td>
-           <td>Mois au format numérique, avec zéros initiaux</td>
-           <td><em>01</em> à <em>12</em></td>
-          </tr>
-
-          <tr>
-           <td><em>M</em></td>
-           <td>Mois, en trois lettres, en anglais</td>
-           <td><em>Jan</em> à <em>Dec</em></td>
-          </tr>
-
-          <tr>
-           <td><em>n</em></td>
-           <td>Mois sans les zéros initiaux</td>
-           <td><em>1</em> à <em>12</em></td>
-          </tr>
-
-          <tr>
-           <td><em>t</em></td>
-           <td>Nombre de jours dans le mois</td>
-           <td><em>28</em> à <em>31</em></td>
-          </tr>
-
-          <tr>
-           <td style="text-align: center;"><em class="emphasis">Année</em></td>
-           <td>---</td>
-           <td>---</td>
-          </tr>
-
-          <tr>
-           <td><em>L</em></td>
-           <td>Est ce que l&#039;année est bissextile</td>
-           <td><em>1</em> si bissextile, <em>0</em> sinon.</td>
-          </tr>
-
-          {#              <tr>#}
-          {#               <td><em>o</em></td>#}
-          {#               <td>La numérotation de semaine dans l&#039;année ISO-8601. C&#039;est la même valeur que#}
-          {#                <em>Y</em>, excepté si le numéro de la semaine ISO#}
-          {#                (<em>W</em>) appartient à l&#039;année précédente ou suivante,#}
-          {#                cette année sera utilisé à la place. (ajouté en PHP 5.1.0)</td>#}
-          {#               <td>Exemples : <em>1999</em> ou <em>2003</em></td>#}
-          {#              </tr>#}
-
-          <tr>
-           <td><em>Y</em></td>
-           <td>Année sur 4 chiffres</td>
-           <td>Exemples : <em>1999</em> ou <em>2003</em></td>
-          </tr>
-
-          <tr>
-           <td><em>y</em></td>
-           <td>Année sur 2 chiffres</td>
-           <td>Exemples : <em>99</em> ou <em>03</em></td>
-          </tr>
-
-          <tr>
-           <td style="text-align: center;"><em class="emphasis">Heure</em></td>
-           <td>---</td>
-           <td>---</td>
-          </tr>
-
-          <tr>
-           <td><em>a</em></td>
-           <td>Ante meridiem et Post meridiem en minuscules</td>
-           <td><em>am</em> ou <em>pm</em></td>
-          </tr>
-
-          <tr>
-           <td><em>A</em></td>
-           <td>Ante meridiem et Post meridiem en majuscules</td>
-           <td><em>AM</em> ou <em>PM</em></td>
-          </tr>
-
-          <tr>
-           <td><em>B</em></td>
-           <td>Heure Internet Swatch</td>
-           <td><em>000</em> à <em>999</em></td>
-          </tr>
-
-          <tr>
-           <td><em>g</em></td>
-           <td>Heure, au format 12h, sans les zéros initiaux</td>
-           <td><em>1</em> à <em>12</em></td>
-          </tr>
-
-          <tr>
-           <td><em>G</em></td>
-           <td>Heure, au format 24h, sans les zéros initiaux</td>
-           <td><em>0</em> à <em>23</em></td>
-          </tr>
-
-          <tr>
-           <td><em>h</em></td>
-           <td>Heure, au format 12h, avec les zéros initiaux</td>
-           <td><em>01</em> à <em>12</em></td>
-          </tr>
-
-          <tr>
-           <td><em>H</em></td>
-           <td>Heure, au format 24h, avec les zéros initiaux</td>
-           <td><em>00</em> à <em>23</em></td>
-          </tr>
-
-          <tr>
-           <td><em>i</em></td>
-           <td>Minutes avec les zéros initiaux</td>
-           <td><em>00</em> à <em>59</em></td>
-          </tr>
-
-          <tr>
-           <td><em>s</em></td>
-           <td>Secondes, avec zéros initiaux</td>
-           <td><em>00</em> à <em>59</em></td>
-          </tr>
-
-          {#              <tr>#}
-          {#               <td><em>u</em></td>#}
-          {#               <td>#}
-          {#                Microsecondes (ajouté en PHP 5.2.2). Notez que la fonction#}
-          {#                <span class="function"><strong>date()</strong></span> génèrera toujours#}
-          {#                <em>000000</em> vu qu&#039;elle prend un paramètre de type#}
-          {#                entier, alors que la méthode <span class="methodname"><a href="datetime.format.php" class="methodname">DateTime::format()</a></span>#}
-          {#                supporte les microsecondes si <a href="class.datetime.php" class="classname">DateTime</a> a#}
-          {#                été créée avec des microsecondes.#}
-          {#               </td>#}
-          {#               <td>Exemple : <em>654321</em></td>#}
-          {#              </tr>#}
-
-          {#              <tr>#}
-          {#               <td><em>v</em></td>#}
-          {#               <td>#}
-          {#                Millisecondes (ajouté dans PHP 7.0.0). Même note que pour#}
-          {#                <em>u</em>.#}
-          {#               </td>#}
-          {#               <td>Exemple: <em>654</em></td>#}
-          {#              </tr>#}
-
-          <tr>
-           <td style="text-align: center;"><em class="emphasis">Fuseau horaire</em></td>
-           <td>---</td>
-           <td>---</td>
-          </tr>
-
-          {#              <tr>#}
-          {#               <td><em>e</em></td>#}
-          {#               <td>L&#039;identifiant du fuseau horaire (ajouté en PHP 5.1.0)</td>#}
-          {#               <td>Exemples : <em>UTC</em>, <em>GMT</em>, <em>Atlantic/Azores</em></td>#}
-          {#              </tr>#}
-
-          <tr>
-           <td><em>I</em> (i majuscule)</td>
-           <td>L&#039;heure d&#039;été est activée ou pas</td>
-           <td><em>1</em> si oui, <em>0</em> sinon.</td>
-          </tr>
-
-          <tr>
-           <td><em>O</em></td>
-           <td>Différence d&#039;heures avec l&#039;heure de Greenwich (GMT), exprimée en heures</td>
-           <td>Exemple : <em>+0200</em></td>
-          </tr>
-
-          {#              <tr>#}
-          {#               <td><em>P</em></td>#}
-          {#               <td>Différence avec l&#039;heure Greenwich (GMT) avec un deux-points#}
-          {#                entre les heures et les minutes (ajouté dans PHP 5.1.3)</td>#}
-          {#               <td>Exemple : <em>+02:00</em></td>#}
-          {#              </tr>#}
-
-          <tr>
-           <td><em>T</em></td>
-           <td>Abréviation du fuseau horaire</td>
-           <td>Exemples : <em>EST</em>, <em>MDT</em> ...</td>
-          </tr>
-
-          <tr>
-           <td><em>Z</em></td>
-           <td>Décalage horaire en secondes. Le décalage des zones à l&#039;ouest
-            de la zone UTC est négative, et à l&#039;est, il est positif.</td>
-           <td><em>-43200</em> à <em>50400</em></td>
-          </tr>
-
-          <tr>
-           <td style="text-align: center;"><em class="emphasis">Date et Heure complète</em></td>
-           <td>---</td>
-           <td>---</td>
-          </tr>
-
-          {#              <tr>#}
-          {#               <td><em>c</em></td>#}
-          {#               <td>Date au format ISO 8601  (ajouté en PHP 5)</td>#}
-          {#               <td>2004-02-12T15:19:21+00:00</td>#}
-          {#              </tr>#}
-
-          <tr>
-           <td><em>r</em></td>
-           <td>Format de date <a href="http://www.faqs.org/rfcs/rfc2822" class="link external">&raquo;&nbsp;RFC 2822</a></td>
-           <td>Exemple : <em>Thu, 21 Dec 2000 16:01:07 +0200</em></td>
-          </tr>
-
-          <tr>
-           <td><em>U</em></td>
-           <td>Secondes depuis l&#039;époque Unix (1er Janvier 1970,  0h00 00s GMT)</td>
-           {#               <td>Voir aussi <span class="function"><a href="function.time.php" class="function">time()</a></span></td>#}
-          </tr>
-    {% endif  %}
 
     </tbody>
 

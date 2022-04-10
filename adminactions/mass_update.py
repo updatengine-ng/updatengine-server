@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import datetime
 import json
 import re
 from collections import OrderedDict as SortedDict, defaultdict
-
 from django import forms
 from django.contrib import messages
 from django.contrib.admin import helpers
@@ -13,18 +11,18 @@ from django.db.transaction import atomic
 from django.forms import fields as ff
 from django.forms.models import (InlineForeignKeyField,
                                  ModelMultipleChoiceField, construct_instance,
-                                 modelform_factory, )
+                                 modelform_factory,)
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
-from .compat import curry, get_field_by_name
 from .exceptions import ActionInterrupted
 from .forms import GenericActionForm
-from .models import get_permission_codename
+from .perms import get_permission_codename
 from .signals import adminaction_end, adminaction_requested, adminaction_start
+from .utils import curry, get_field_by_name
 
 DO_NOT_MASS_UPDATE = 'do_NOT_mass_UPDATE'
 
@@ -42,7 +40,7 @@ disable_if_not_nullable = lambda field: field.null
 disable_if_unique = lambda field: not field.unique
 
 
-class OperationManager(object):
+class OperationManager:
     """
     Operate like a dictionary where the key are django.form.Field classes
     and value are tuple of function, param_allowed, enabler, description
@@ -87,47 +85,38 @@ class OperationManager(object):
 
 
 OPERATIONS = OperationManager({
-    df.CharField: [('upper', (str.upper, False, True, "convert to uppercase")),
-                   ('lower', (str.lower, False, True, "convert to lowercase")),
-                   ('capitalize', (str.capitalize, False, True, "capitalize first character")),
-                   # ('capwords', (string.capwords, False, True, "capitalize each word")),
-                   # ('swapcase', (string.swapcase, False, True, "")),
-                   ('trim', (str.strip, False, True, "leading and trailing whitespace"))],
-    df.IntegerField: [('add percent', (add_percent, True, True, "add <arg> percent to existing value")),
+    df.CharField: [('upper', (str.upper, False, True, _("convert to uppercase"))),
+                   ('lower', (str.lower, False, True, _("convert to lowercase"))),
+                   ('capitalize', (str.capitalize, False, True, _("capitalize first character"))),
+                   ('trim', (str.strip, False, True, _("leading and trailing whitespace")))],
+    df.IntegerField: [('add percent', (add_percent, True, True, _("add <arg> percent to existing value"))),
                       ('sub percent', (sub_percent, True, True, "")),
                       ('sub', (sub_percent, True, True, "")),
                       ('add', (add, True, True, ""))],
     df.BooleanField: [('swap', (negate, False, True, ""))],
     df.NullBooleanField: [('swap', (negate, False, True, ""))],
     df.EmailField: [('change domain', (change_domain, True, True, "")),
-                    ('upper', (str.upper, False, True, "convert to uppercase")),
-                    ('lower', (str.lower, False, True, "convert to lowercase"))],
+                    ('upper', (str.upper, False, True, _("convert to uppercase"))),
+                    ('lower', (str.lower, False, True, _("convert to lowercase")))],
     df.URLField: [('change protocol', (change_protocol, True, True, ""))]
 })
 
 
 class MassUpdateForm(GenericActionForm):
-    #_clean = forms.BooleanField(label='clean()',
-    #                            required=False,
-    #                            help_text=_("adminactions|if checked calls obj.clean()"))
+    _clean = forms.BooleanField(label='clean()', widget=forms.HiddenInput(),
+                                required=False,
+                                help_text=_("if checked calls obj.clean()"))
 
-    _validate = forms.BooleanField(label=_('adminactions|Validate'),
-                                   help_text=_("adminactions|if checked use obj.save() instead of manager.update()"))
-
-    # _unique_transaction = forms.BooleanField(label='Unique transaction',
-    # required=False,
-    # help_text="If checked create one transaction for the whole update. "
-    #                                                    "If any record cannot be updated everything will be rolled-back")
+    _validate = forms.BooleanField(label=_('Validate'),
+                                   required=False,
+                                   help_text=_("if checked use obj.save() instead of manager.update()"))
 
     def __init__(self, *args, **kwargs):
-        super(MassUpdateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._errors = None
 
-    # def is_valid(self):
-    #    return super(MassUpdateForm, self).is_valid()
-
     def _get_validation_exclusions(self):
-        exclude = super(MassUpdateForm, self)._get_validation_exclusions()
+        exclude = super()._get_validation_exclusions()
         for name, field in list(self.fields.items()):
             function = self.data.get('func_id_%s' % name, False)
             if function:
@@ -160,7 +149,6 @@ class MassUpdateForm(GenericActionForm):
                     enabler = 'chk_id_%s' % name
                     function = self.data.get('func_id_%s' % name, False)
                     if self.data.get(enabler, False):
-                        # field_object, model, direct, m2m = self._meta.model._meta.get_field_by_name(name)
                         field_object, model, direct, m2m = get_field_by_name(self._meta.model, name)
                         value = field.clean(raw_value)
                         if function:
@@ -203,7 +191,7 @@ def mass_update(modeladmin, request, queryset):  # noqa
     """
 
     def not_required(field, **kwargs):
-        """force all fields as not required and return modeladmin field"""
+        """ force all fields as not required"""
         kwargs['required'] = False
         kwargs['request'] = request
         return modeladmin.formfield_for_dbfield(field, **kwargs)
@@ -235,11 +223,13 @@ def mass_update(modeladmin, request, queryset):  # noqa
                     old_value = getattr(record, field_name)
                     setattr(record, field_name, value_or_func(old_value))
                 else:
-                    try:
+                    changed_attr = getattr(record, field_name, None)
+
+                    if changed_attr.__class__.__name__ == 'ManyRelatedManager':
+                        changed_attr.set(value_or_func)
+                    else:
                         setattr(record, field_name, value_or_func)
-                    except:
-                        cls = getattr(record, field_name)
-                        cls.set(value_or_func)
+
             if clean:
                 record.clean()
             record.save()
@@ -259,7 +249,8 @@ def mass_update(modeladmin, request, queryset):  # noqa
                              updated=updated)
 
     opts = modeladmin.model._meta
-    perm = "{0}.{1}".format(opts.app_label, get_permission_codename('adminactions_massupdate', opts))
+    perm = "{0}.{1}".format(opts.app_label,
+                            get_permission_codename(mass_update.base_permission, opts))
     if not request.user.has_perm(perm):
         messages.error(request, _('Sorry you do not have rights to execute this action'))
         return
@@ -281,11 +272,10 @@ def mass_update(modeladmin, request, queryset):  # noqa
     mass_update_exclude = getattr(modeladmin, 'mass_update_exclude', ['pk']) or []
     if 'pk' not in mass_update_exclude:
         mass_update_exclude.append('pk')
-    mass_update_hints = getattr(modeladmin, 'mass_update_hints',
-                                [f.name for f in modeladmin.model._meta.fields])
+    mass_update_hints = getattr(modeladmin, 'mass_update_hints', [])
 
     if mass_update_fields and mass_update_exclude:
-        raise Exception("Cannot set both 'mass_update_exclude' and 'mass_update_fields'")
+        raise BaseException("Cannot set both 'mass_update_exclude' and 'mass_update_fields'")
     MForm = modelform_factory(modeladmin.model, form=mass_update_form,
                               exclude=mass_update_exclude,
                               fields=mass_update_fields,
@@ -322,10 +312,10 @@ def mass_update(modeladmin, request, queryset):  # noqa
                 values = {}
                 for field_name, value in list(form.cleaned_data.items()):
                     if isinstance(form.fields[field_name], ModelMultipleChoiceField):
-                        messages.error(request, "Unable no mass update ManyToManyField without 'validate'")
+                        messages.error(request, _("Unable no mass update ManyToManyField without 'validate'"))
                         return HttpResponseRedirect(request.get_full_path())
                     elif callable(value):
-                        messages.error(request, "Unable no mass update using operators without 'validate'")
+                        messages.error(request, _("Unable no mass update using operators without 'validate'"))
                         return HttpResponseRedirect(request.get_full_path())
                     elif field_name not in ['_selected_action', '_validate', 'select_across', 'action',
                                             '_unique_transaction', '_clean']:
@@ -391,3 +381,4 @@ def mass_update(modeladmin, request, queryset):  # noqa
 
 
 mass_update.short_description = _("Mass update")
+mass_update.base_permission = 'adminactions_massupdate'
