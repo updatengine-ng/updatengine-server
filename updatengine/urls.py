@@ -40,8 +40,8 @@ urlpatterns = [
     re_path(r'^post/', post),
     re_path(r'^adminactions/', include('adminactions.urls')),
     re_path(r'^i18n/', include('django.conf.urls.i18n')),
-    re_path(r'^', admin.site.urls),
     re_path(r'^check_version/$', check_version, name='latest_version'),
+    re_path(r'', admin.site.urls),
 ]
 # Use lines below only during development if you want django
 # to server static files

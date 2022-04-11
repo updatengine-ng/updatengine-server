@@ -16,7 +16,7 @@ def check_version(request):
         version = get_latest_release_version(url_release)
         data = {
             'version' : version,
-            'url' : url + '/tag/' + version,
+            'url' : url + '/releases/tag/' + version,
         }
         return JsonResponse(data)
     except:
