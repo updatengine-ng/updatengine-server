@@ -906,7 +906,7 @@ msgstr "package"
 
 #: deploy/models.py:309
 msgid "impex|date"
-msgstr "date"
+msgstr "last connection"
 
 #: deploy/models.py:310
 msgid "impex|entity"
@@ -1149,7 +1149,7 @@ msgstr "period profile"
 
 #: inventory/models.py:125
 msgid "machine|lastsave"
-msgstr "last save"
+msgstr "last connection"
 
 #: inventory/models.py:126
 msgid "machine|typemachine"

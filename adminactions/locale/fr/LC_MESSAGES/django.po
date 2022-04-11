@@ -229,7 +229,7 @@ msgstr "Valeurs existantes"
 
 #: src/adminactions/templates/adminactions/mass_update.html:65
 msgid "(sample)"
-msgstr "Exemple"
+msgstr "(Exemple)"
 
 #: src/adminactions/templates/adminactions/mass_update.html:90
 msgid "Update"

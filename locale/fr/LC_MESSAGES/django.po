@@ -708,7 +708,7 @@ msgstr "paquet"
 
 #: deploy/models.py:344
 msgid "impex|date"
-msgstr "Date de dernière sauvegarde"
+msgstr "Date de dernière connexion"
 
 #: deploy/models.py:345
 msgid "impex|entity"
@@ -961,7 +961,7 @@ msgstr "période de déploiement"
 
 #: inventory/models.py:131
 msgid "machine|lastsave"
-msgstr "dernière sauvegarde"
+msgstr "dernière connexion"
 
 #: inventory/models.py:132
 msgid "machine|typemachine"
