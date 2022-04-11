@@ -17,32 +17,22 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 ## Project features
 
-* Python 3.8 / Django 2.2 LTS project
+* Python 3.8 / Django 3.2 LTS project
 * Tested with Debian 10, Ubuntu 18.04, Debian 11, Ubuntu 20.04
 
 
 ## Install latest stable
 
-A Debian/Ubuntu installation script is located in the 'install' folder. Customize your settings in this file (Installation directories, URL, database, SMTP...) then run it !
+A Debian/Ubuntu installation script is located in the 'install' folder. Customize your settings in this file (Installation directories, URL, database, SMTP...) and run it !
 
 The script automaticaly update the python settings, the apache.conf and create auto-signed SSL certfificat.
  
 See old **[2.1.1 installation documentation](https://updatengine-ng.com/)** for details
 
 
-## Update
+## Upgrade
 
-To update an existing version do :
-
-```
-su -
-export INST_DIR=/var/www/UE-environment
-cd ${INST_DIR}/updatengine-server/
-git checkout --track origin/master
-git pull
-bin/python ${INST_DIR}/updatengine-server/manage.py migrate
-sudo service apache2 restart
-```
+A Debian/Ubuntu upgrade script is located in the 'install' folder. Customize and run it !
 
 ## Examples of deployment packages
 

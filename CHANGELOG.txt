@@ -2,6 +2,12 @@
 # UpdatEngine-server #
 ######################
 
+5.0.0:
+- Upgrade to Django 3.2 LTS
+- Upgrade adminactions module to 1.15 version
+- Add debian upgrade script
+- Reorder the inventory columns
+
 4.1.0:
 - Update last release version using json
 - Add debian installation script and new apache config
