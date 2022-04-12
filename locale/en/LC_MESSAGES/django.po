@@ -21,9 +21,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-02 22:59+0200\n"
+"POT-Creation-Date: 2022-04-12 07:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Yves Guimard <yves.guimard@gmail.com>\n"
+"Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -31,1313 +31,1193 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 
-#: adminactions/export.py:30 adminactions/export.py:212
-#: adminactions/export.py:289 adminactions/merge.py:79
-#, python-format
-msgid "Sorry you do not have rights to execute this action (%s)"
-msgstr ""
-
-#: adminactions/export.py:111 adminactions/export.py:116
-msgid "Export as CSV"
-msgstr ""
-
-#: adminactions/export.py:123 adminactions/export.py:128
-msgid "Export as XLS"
-msgstr ""
-
-#: adminactions/export.py:265
-msgid "Export as Fixture"
-msgstr ""
-
-#: adminactions/export.py:278
-msgid "Export as fixture"
-msgstr ""
-
-#: adminactions/export.py:351
-msgid "Export Delete Tree"
-msgstr ""
-
-#: adminactions/export.py:364
-msgid "Export delete tree"
-msgstr ""
-
-#: adminactions/forms.py:37
-msgid "adminactions|Header"
-msgstr "header"
-
-#: adminactions/forms.py:38
-msgid "adminactions|Delimiter"
-msgstr "delimiter"
-
-#: adminactions/forms.py:39
-msgid "adminactions|Quotechar"
-msgstr "quotechar"
-
-#: adminactions/forms.py:41
-msgid "adminactions|Quoting"
-msgstr "quoting"
-
-#: adminactions/forms.py:42
-msgid "adminactions|All"
-msgstr "%s"
-
-#: adminactions/forms.py:43
-msgid "adminactions|Minimal"
-msgstr "Minimal"
-
-#: adminactions/forms.py:44
-msgid "adminactions|None"
-msgstr "None"
-
-#: adminactions/forms.py:45
-msgid "adminactions|Non Numeric"
-msgstr "Non Numeric"
-
-#: adminactions/forms.py:47
-msgid "adminactions|Escapechar"
-msgstr "escapechar"
-
-#: adminactions/forms.py:48
-msgid "adminactions|Datetime format"
-msgstr "Datetime format"
-
-#: adminactions/forms.py:49
-msgid "adminactions|Date format"
-msgstr "Date format"
-
-#: adminactions/forms.py:50
-msgid "adminactions|Time format"
-msgstr "Time format"
-
-#: adminactions/forms.py:51
-msgid "adminactions|Columns"
-msgstr "%s"
-
-#: adminactions/mass_update.py:128
-msgid "adminactions|Validate"
-msgstr "Validate"
-
-#: adminactions/mass_update.py:129
-msgid "adminactions|if checked use obj.save() instead of manager.update()"
-msgstr "if checked use obj.save() instead of manager.update()"
-
-#: adminactions/mass_update.py:214
-msgid "Sorry you do not have rights to execute this action"
-msgstr "Sorry you do not have rights to execute this action"
-
-#: adminactions/mass_update.py:233
-#, python-format
-msgid "Updated %s records"
-msgstr ""
-
-#: adminactions/merge.py:32
-msgid "Dependencies"
-msgstr ""
-
-#: adminactions/merge.py:33
-msgid "Move"
-msgstr ""
-
-#: adminactions/merge.py:33
-msgid "Delete"
-msgstr ""
-
-#: adminactions/merge.py:152
-msgid "Please select exactly 2 records"
-msgstr ""
-
-#: adminactions/merge.py:176
-#, python-format
-msgid "Merge selected %(verbose_name_plural)s"
-msgstr ""
-
-#: adminactions/templates/adminactions/any_model.html:26
-#: adminactions/templates/adminactions/charts.html:18
-#: adminactions/templates/adminactions/export_csv.html:46
-#: adminactions/templates/adminactions/export_fixture.html:6
-#: adminactions/templates/adminactions/export_xls.html:19
-#: adminactions/templates/adminactions/mass_update.html:26
-#: adminactions/templates/adminactions/merge.html:5
-#: adminactions/templates/adminactions/merge_preview.html:5
-#: updatengine/templates/admin/base.html:213
-msgid "Home"
-msgstr ""
-
-#: adminactions/templates/adminactions/export_csv.html:50
-msgid "CSV Export Options"
-msgstr ""
-
-#: adminactions/templates/adminactions/export_csv.html:69
-msgid "Export"
-msgstr ""
-
-#: adminactions/templates/adminactions/mass_update.html:29
-msgid "adminactions|Mass Update"
-msgstr "Mass Update"
-
-#: adminactions/templates/adminactions/mass_update.html:61
-msgid "adminactions|field name"
-msgstr "field name"
-
-#: adminactions/templates/adminactions/mass_update.html:62
-msgid "adminactions|update"
-msgstr "update"
-
-#: adminactions/templates/adminactions/mass_update.html:63
-msgid "adminactions|function"
-msgstr "function"
-
-#: adminactions/templates/adminactions/mass_update.html:64
-msgid "adminactions|new value"
-msgstr "new value"
-
-#: adminactions/templates/adminactions/mass_update.html:65
-msgid "adminactions|existing values"
-msgstr "existing value"
-
-#: adminactions/templates/adminactions/mass_update.html:66
-msgid "adminactions|(sample)"
-msgstr "(sample)"
-
-#: adminactions/templates/adminactions/mass_update.html:90
-msgid "adminactions|Update records"
-msgstr "Update records"
-
-#: adminactions/templates/adminactions/merge.html:8
-#: adminactions/templates/adminactions/merge_preview.html:8
-msgid "Merge records"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:35
-msgid "Field"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:36
-msgid "Master"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:36
-msgid "This will be preserved"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:38
-msgid "swap"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:39
-msgid "Result"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:41
-msgid "Other"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:41
-msgid "This will be removed"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge.html:70
-#: adminactions/templates/adminactions/merge_preview.html:9
-msgid "Preview"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge_preview.html:18
-msgid "Key"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge_preview.html:23
-msgid "Original"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge_preview.html:24
-msgid "After Merging"
-msgstr ""
-
-#: adminactions/templates/adminactions/merge_preview.html:39
-msgid "Merge"
-msgstr ""
-
-#: configuration/admin.py:79 configuration/admin.py:88
+#: configuration/admin.py:99 configuration/admin.py:108
 msgid "Personal info"
 msgstr ""
 
-#: configuration/admin.py:81 configuration/admin.py:90
+#: configuration/admin.py:101 configuration/admin.py:110
 msgid "Permissions"
 msgstr ""
 
-#: configuration/admin.py:82 configuration/admin.py:91
+#: configuration/admin.py:102 configuration/admin.py:111
 msgid "Important dates"
 msgstr ""
 
-#: configuration/admin.py:83 configuration/admin.py:92
+#: configuration/admin.py:103 configuration/admin.py:112
 msgid "Groups and permissions"
 msgstr ""
 
-#: configuration/models.py:29 deploy/filters.py:139 deploy/filters.py:211
-#: inventory/filters.py:12 inventory/models.py:28 inventory/models.py:111
-#: inventory/models.py:184 inventory/models.py:205 inventory/models.py:225
+#: configuration/apps.py:7 updatengine/dashboard.py:59
+#: updatengine/templates/admin/base.html:182
+msgid "header|Configuration"
+msgstr "Configuration"
+
+#: configuration/models.py:32 configuration/models.py:57 deploy/filters.py:130
+#: deploy/filters.py:202 inventory/filters.py:13 inventory/models.py:29
+#: inventory/models.py:117 inventory/models.py:194 inventory/models.py:214
+#: inventory/models.py:233
 msgid "yes"
 msgstr "yes"
 
-#: configuration/models.py:30 deploy/filters.py:127 deploy/filters.py:199
-#: inventory/filters.py:21 inventory/models.py:29 inventory/models.py:112
-#: inventory/models.py:185 inventory/models.py:206 inventory/models.py:226
+#: configuration/models.py:33 configuration/models.py:58 deploy/filters.py:118
+#: deploy/filters.py:190 inventory/filters.py:22 inventory/models.py:30
+#: inventory/models.py:118 inventory/models.py:195 inventory/models.py:215
+#: inventory/models.py:234
 msgid "no"
 msgstr "no"
 
-#: configuration/models.py:32
+#: configuration/models.py:35
 msgid "deployconfig|name"
 msgstr "Configuration name"
 
-#: configuration/models.py:33
+#: configuration/models.py:36
 msgid "deployconfig|activate_deploy"
 msgstr "Activate deployement"
 
-#: configuration/models.py:34
+#: configuration/models.py:37
 msgid "deployconfig|activate_time_deploy"
 msgstr "Activate a global deployment period"
 
-#: configuration/models.py:35
+#: configuration/models.py:38
 msgid "deployconfig|start_time"
 msgstr "Start of deployment period"
 
-#: configuration/models.py:36
+#: configuration/models.py:39
 msgid "deployconfig|end_time"
 msgstr "End of deployment period"
 
-#: configuration/models.py:37
+#: configuration/models.py:40
 msgid "deployconfig|entity"
 msgstr "Entity for new machines"
 
-#: configuration/models.py:39
+#: configuration/models.py:43
 msgid "deployconfig|package profile"
 msgstr "Software profile for new machines"
 
-#: configuration/models.py:39 inventory/models.py:123
+#: configuration/models.py:43 inventory/models.py:129
 msgid "machine|packages profile help text"
 msgstr ""
 "Software profile defines wich software must be installer on a host. Software "
 "profile are independent of software packages choose below."
 
-#: configuration/models.py:40
+#: configuration/models.py:44
 msgid "deployconfig|time deploy profile"
 msgstr "Time profile for new machines"
 
-#: configuration/models.py:43
+#: configuration/models.py:47
 msgid "deployconfig|deployconfig"
 msgstr "deployment configuration"
 
-#: configuration/models.py:44 updatengine/templates/admin/base.html:150
+#: configuration/models.py:48 updatengine/templates/admin/base.html:186
 msgid "deployconfig|deployconfigs"
 msgstr "Deployment configurations"
 
-#: configuration/models.py:52 inventory/models.py:46
-msgid "entity|entity"
-msgstr "entity"
-
-#: configuration/models.py:55
+#: configuration/models.py:60
 msgid "globalconfig|name"
 msgstr "Configuration name"
 
-#: configuration/models.py:56
+#: configuration/models.py:61
 msgid "globalconfig|show_warning"
 msgstr "Show history warnings"
 
-#: configuration/models.py:56
+#: configuration/models.py:61
 msgid "globalconfig|show_warning help text"
 msgstr ""
-"In deployment history, hide or show the warning messages "
-"('Warning...') indicating that a condition is not satisfied. "
-"These messages indicate that the software is already installed."
+"In deployment history, hide or show the warning messages ('Warning...') "
+"indicating that a condition is not satisfied. These messages indicate that "
+"the software is already installed."
 
-#: configuration/models.py:57
+#: configuration/models.py:62
 msgid "globalconfig|remove_duplicate"
 msgstr "Remove duplicated machines"
 
-#: configuration/models.py:57
+#: configuration/models.py:62
 msgid "globalconfig|remove_duplicate help text"
 msgstr ""
-"The duplicate machine deletion process is performed at each inventory update. "
-"In case of a machine with the same name, the old configuration profile values "
-"and deployment period are retrieved."
+"The duplicate machine deletion process is performed at each inventory "
+"update. In case of a machine with the same name, the old configuration "
+"profile values and deployment period are retrieved."
 
-#: configuration/models.py:60
+#: configuration/models.py:65 updatengine/templates/admin/base.html:190
 msgid "globalconfig|globalconfig"
 msgstr "General configuration"
 
-#: configuration/models.py:61
+#: configuration/models.py:66
 msgid "globalconfig|globalconfigs"
 msgstr "General configuration"
 
-#: configuration/models.py:72 configuration/models.py:73
+#: configuration/models.py:75 inventory/models.py:48
+msgid "entity|entity"
+msgstr "entity"
+
+#: configuration/models.py:78 configuration/models.py:79
 msgid "subuser|entity"
 msgstr ""
 
-#: deploy/admin.py:74
+#: deploy/admin.py:78
 msgid "package|general information"
 msgstr "general information"
 
-#: deploy/admin.py:75
+#: deploy/admin.py:79
 msgid "package|package edition"
 msgstr "package edition"
 
-#: deploy/admin.py:76 deploy/admin.py:189 deploy/admin.py:268
-#: deploy/admin.py:351
+#: deploy/admin.py:80 deploy/admin.py:197 deploy/admin.py:279
+#: deploy/admin.py:364
 msgid "package|permissions"
 msgstr "permissions"
 
-#: deploy/admin.py:84
+#: deploy/admin.py:88
 msgid ""
 "Warning: you will not be able to update a package that you didn't create if "
 "exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:188
+#: deploy/admin.py:196
 msgid "packageprofile|general information"
 msgstr "general information"
 
-#: deploy/admin.py:197
+#: deploy/admin.py:205
 msgid ""
 "Warning: you will not be able to update a profile that you didn't create if "
 "exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:267
+#: deploy/admin.py:278
 msgid "timeprofile|general information"
 msgstr "general information"
 
-#: deploy/admin.py:276
+#: deploy/admin.py:287
 msgid ""
 "timeprofile|Warning: you will not be able to update a wake on lan task that "
 "you didn't create if exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:350
+#: deploy/admin.py:363
 msgid "packagewakeonlan|general information"
 msgstr "general information"
 
-#: deploy/admin.py:359
+#: deploy/admin.py:372
 msgid ""
 "packagewakeonlan|Warning: you will not be able to update a wake on lan task "
 "that you didn't create if exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:431
+#: deploy/admin.py:447
 msgid "packagecondition|general information"
 msgstr "general information"
 
-#: deploy/admin.py:432
+#: deploy/admin.py:448
 msgid "packagecondition|permissions"
 msgstr "permissions"
 
-#: deploy/admin.py:439
+#: deploy/admin.py:455
 msgid ""
 "packagecondition|Warning: you will not be able to update a condition that "
 "you didn't create if exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:513
+#: deploy/admin.py:532
 msgid "impex|general information"
 msgstr "general information"
 
-#: deploy/filters.py:11 deploy/filters.py:101 deploy/filters.py:173
-#: inventory/filters.py:150
+#: deploy/apps.py:6 updatengine/dashboard.py:50
+#: updatengine/templates/admin/base.html:146
+msgid "header|Deploy"
+msgstr "Deployment"
+
+#: deploy/filters.py:12 deploy/filters.py:92 deploy/filters.py:164
+#: inventory/filters.py:156
 msgid "entity"
 msgstr "entity"
 
-#: deploy/filters.py:30 inventory/filters.py:372
+#: deploy/filters.py:31 inventory/filters.py:389
 msgid "hostFilter"
 msgstr ""
 
-#: deploy/filters.py:47
+#: deploy/filters.py:48
 msgid "statusFilter"
 msgstr ""
 
-#: deploy/filters.py:66
+#: deploy/filters.py:70
 msgid "package"
 msgstr "no"
 
-#: deploy/filters.py:120
+#: deploy/filters.py:111
 msgid "only my packages"
 msgstr ""
 
-#: deploy/filters.py:152
+#: deploy/filters.py:143
 msgid "packagecondition"
 msgstr "conditions"
 
-#: deploy/filters.py:192
+#: deploy/filters.py:183
 msgid "only my conditions"
 msgstr ""
 
-#: deploy/models.py:41 deploy/models.py:72 deploy/models.py:207
-#: deploy/models.py:254 deploy/models.py:280 deploy/models.py:301
+#: deploy/models.py:47 deploy/models.py:106 deploy/models.py:244
+#: deploy/models.py:293 deploy/models.py:320 deploy/models.py:342
 msgid "package|yes"
 msgstr "yes"
 
-#: deploy/models.py:42 deploy/models.py:73 deploy/models.py:208
-#: deploy/models.py:255 deploy/models.py:281 deploy/models.py:302
+#: deploy/models.py:48 deploy/models.py:107 deploy/models.py:245
+#: deploy/models.py:294 deploy/models.py:321 deploy/models.py:343
 msgid "package|no"
 msgstr "no"
 
-#: deploy/models.py:45
+#: deploy/models.py:51
 msgid "installed"
 msgstr "Software / version installed"
 
-#: deploy/models.py:46
+#: deploy/models.py:52
 msgid "notinstalled"
 msgstr "Software / version not installed"
 
-#: deploy/models.py:47
+#: deploy/models.py:53
 msgid "lower"
 msgstr "Software not installed or version lower than"
 
-#: deploy/models.py:48
+#: deploy/models.py:54
 msgid "higher"
 msgstr "Software installed and version upper than"
 
-#: deploy/models.py:49
+#: deploy/models.py:55
 msgid "operating_system_is"
 msgstr "Operating system is"
 
-#: deploy/models.py:49
+#: deploy/models.py:56
 msgid "operating_system_not"
 msgstr "Operating system is not"
 
-#: deploy/models.py:50
+#: deploy/models.py:57
 msgid "is_W64_bits"
 msgstr "Windows 64bits computer"
 
-#: deploy/models.py:51
+#: deploy/models.py:58
 msgid "is_W32_bits"
 msgstr "Windows 32 bits computer"
 
-#: deploy/models.py:52
+#: deploy/models.py:59
 msgid "language_is"
 msgstr "Operating system language is"
 
-#: deploy/models.py
+#: deploy/models.py:60
 msgid "hostname_in"
 msgstr "Hostname is"
 
-#: deploy/models.py
+#: deploy/models.py:61
 msgid "hostname_not"
 msgstr "Hostname is not"
 
-#: deploy/models.py
+#: deploy/models.py:62
 msgid "username_in"
 msgstr "Username is"
 
-#: deploy/models.py
+#: deploy/models.py:63
 msgid "username_not"
 msgstr "Username is not"
 
-#: deploy/models.py
+#: deploy/models.py:64
 msgid "ipaddr_in"
 msgstr "IP address is"
 
-#: deploy/models.py
+#: deploy/models.py:65
 msgid "ipaddr_not"
 msgstr "IP address is not"
 
-#: deploy/models.py
+#: deploy/models.py:66
+msgid "vendor_in"
+msgstr "Machine vendor is"
+
+#: deploy/models.py:67
+msgid "vendor_not"
+msgstr "Machine vendor is not"
+
+#: deploy/models.py:68
+msgid "product_in"
+msgstr "Machine product is"
+
+#: deploy/models.py:69
+msgid "product_not"
+msgstr "Machine product is not"
+
+#: deploy/models.py:70
+msgid "type_in"
+msgstr "Machine type is"
+
+#: deploy/models.py:71
+msgid "type_not"
+msgstr "Machine type is not"
+
+#: deploy/models.py:72
 msgid "isfile"
 msgstr "File exists"
 
-#: deploy/models.py
+#: deploy/models.py:73
 msgid "notisfile"
 msgstr "File does not exist"
 
-#: deploy/models.py
+#: deploy/models.py:74
 msgid "isdir"
 msgstr "Directory exists"
 
-#: deploy/models.py
+#: deploy/models.py:75
 msgid "notisdir"
 msgstr "Directory does not exist"
 
-#: deploy/models.py
+#: deploy/models.py:76
 msgid "isfiledir"
 msgstr "File or directory exists"
 
-#: deploy/models.py
+#: deploy/models.py:77
 msgid "notisfiledir"
 msgstr "File or directory does not exist"
 
-#: deploy/models.py
+#: deploy/models.py:78
 msgid "hashis"
 msgstr "The SHA-256 hash of the file is"
 
-#: deploy/models.py
+#: deploy/models.py:79
 msgid "hashnot"
 msgstr "The SHA-256 hash of the file is not"
 
-#: deploy/models.py
+#: deploy/models.py:80
 msgid "exitcodeis"
 msgstr "The command exit code is"
 
-#: deploy/models.py
+#: deploy/models.py:81
 msgid "exitcodenot"
 msgstr "The command exit code is not"
 
-#: deploy/models.py:54
+#: deploy/models.py:83
 msgid "packagecondition|name"
 msgstr "condition name"
 
-#: deploy/models.py:55
+#: deploy/models.py:84
 msgid "packagecondition|depends"
 msgstr "Condition to check:"
 
-#: deploy/models.py:55
+#: deploy/models.py:84
 msgid "packagecondition|depends help text"
 msgstr ""
-"<u>Warning</u>: For the clients < 3.0, the extended conditions such as the existence "
-"of files and directories, the hash and the exit code command are ignored "
-"and the affected deployment package is never installed."
+"<u>Warning</u>: For the clients < 3.0, the extended conditions such as the "
+"existence of files and directories, the hash and the exit code command are "
+"ignored and the affected deployment package is never installed."
 
-#: deploy/models.py:56
+#: deploy/models.py:85
 msgid "packagecondition|softwarename"
-msgstr "software name, host name, file name, IP address or command"
+msgstr "software name, host name, file name, IP address, vendor, product, type or command"
 
-#: deploy/models.py:56
+#: deploy/models.py:85
 msgid "packagecondition|softwarename help text"
 msgstr ""
-"In all software, hostname and username conditions, the '*' character is used to "
-"replace 0 or more characters (e.g. 'Java * Update * (64-bit)', "
-"'host1,host-2*').<br>"
-"For operating system condition, this field must contain the name of the "
-"operating system.<br>"
-"For 'Hostname', 'Username' and 'IP address' conditions, it can be a list of values separated by commas.<br>"
-"For the 'IP address' condition, it is possible to specify an IP address or a network address "
+"In all software, hostname, username, vendor, product, type of machine conditions, "
+"the '*' character is used to replace 0 or more characters (e.g. 'Java * Update "
+"* (64-bit)', 'host1,host-2*').<br>For operating system condition, this field must "
+"contain the name of the operating system.<br>For 'Hostname', 'Username', 'IP "
+"address', 'Vendor', 'Product' and 'Type of machine' conditions, it can be a list "
+"of values separated by commas.<br>For the 'IP address' condition, it is possible "
+"to specify an IP address or a network address "
 "(e.g. '192.168.1.10', '192.168.1.10/32', '192.168.1.0/24')."
 
-#: deploy/models.py:57
+#: deploy/models.py:86
 msgid "packagecondition|softwareversion"
 msgstr "version, hash or exit code"
 
-#: deploy/models.py:57
+#: deploy/models.py:86
 msgid "packagecondition|softwareversion help text"
 msgstr ""
 "For operating system condition, this field must contain the version of the "
 "operating system. You can use undefined (default) if you don't care about "
-"the operating system version (Service pack etc...).<br>"
-"For software conditions 'not installed or lower' and 'installed and upper', "
-"leave empty to check only the name of the software."
+"the operating system version (Service pack etc...).<br>For software "
+"conditions 'not installed or lower' and 'installed and upper', leave empty "
+"to check only the name of the software."
 
-#: deploy/models.py:58
+#: deploy/models.py:87
 msgid "packagecondition|entity"
 msgstr "entity"
 
-#: deploy/models.py:59
+#: deploy/models.py:88
 msgid "packagecondition| condition last editor"
 msgstr "Last editor"
 
-#: deploy/models.py:60
+#: deploy/models.py:89
 msgid "packagecondition|exclusive editor"
 msgstr "exclusive editor"
 
-#: deploy/models.py:63
+#: deploy/models.py:92
 msgid "packagecondition|package condition"
 msgstr "package software condition"
 
-#: deploy/models.py:64 updatengine/templates/admin/base.html:122
+#: deploy/models.py:93 updatengine/templates/admin/base.html:158
 msgid "packagecondition|packages conditions"
 msgstr "  Packages software conditions"
 
-#: deploy/models.py:75
+#: deploy/models.py:109
 msgid "package|name"
 msgstr "name"
 
-#: deploy/models.py:76
+#: deploy/models.py:110
 msgid "package|description"
 msgstr "description"
 
-#: deploy/models.py:77
+#: deploy/models.py:111
 msgid "package|conditions"
 msgstr "conditions"
 
-#: deploy/models.py:78
+#: deploy/models.py:112
 msgid "package|command"
 msgstr "command"
 
-#: deploy/models.py:78
+#: deploy/models.py:112
 msgid "package|command help text"
 msgstr ""
 "Command will be launched from extraction temporary directory will use "
 "environment variables"
 
-#: deploy/models.py:79
+#: deploy/models.py:113
 msgid "package|packagesum"
 msgstr "md5 sum"
 
-#: deploy/models.py:80
+#: deploy/models.py:114
 msgid "package|filename"
 msgstr "file"
 
-#: deploy/models.py:81
+#: deploy/models.py:115
 msgid "package|ignore deploy period"
 msgstr "ignore deployment period"
 
-#: deploy/models.py:82
+#: deploy/models.py:116
 msgid "package| public package"
 msgstr "public package"
 
-#: deploy/models.py:83
+#: deploy/models.py:117
 msgid "package|entity"
 msgstr "entity"
 
-#: deploy/models.py:84
+#: deploy/models.py:118
 msgid "package| package last editor"
 msgstr "    Last editor"
 
-#: deploy/models.py:85
+#: deploy/models.py:119
 msgid "package|exclusive editor"
 msgstr "exclusive editor"
 
-#: deploy/models.py:88
+#: deploy/models.py:122
 msgid "package|deployment package"
 msgstr "deployment package"
 
-#: deploy/models.py:89 updatengine/templates/admin/base.html:118
+#: deploy/models.py:123 updatengine/templates/admin/base.html:154
 msgid "package|deployment packages"
 msgstr "   Deployment packages"
 
-#: deploy/models.py:95
+#: deploy/models.py:130
 msgid "packageAdmin|get_conditions"
 msgstr "conditions"
 
-#: deploy/models.py:186
+#: deploy/models.py:223
 msgid "packagehistory|name"
 msgstr "name"
 
-#: deploy/models.py:187
+#: deploy/models.py:224
 msgid "packagehistory|description"
 msgstr "description"
 
-#: deploy/models.py:188
+#: deploy/models.py:225
 msgid "packagehistory|command"
 msgstr "command"
 
-#: deploy/models.py:189
+#: deploy/models.py:226
 msgid "packagehistory|packagesum"
 msgstr "md5 sum"
 
-#: deploy/models.py:190
+#: deploy/models.py:227
 msgid "packagehistory|filename"
 msgstr "file"
 
-#: deploy/models.py:191
+#: deploy/models.py:228
 msgid "packagehistory|machine"
 msgstr "machine"
 
-#: deploy/models.py:192
+#: deploy/models.py:229
 msgid "packagehistory|package"
 msgstr "package"
 
-#: deploy/models.py:193
+#: deploy/models.py:230
 msgid "packagehistory|status"
 msgstr "status"
 
-#: deploy/models.py:194
+#: deploy/models.py:231
 msgid "packagehistory|date"
 msgstr "date"
 
-#: deploy/models.py:197
+#: deploy/models.py:234
 msgid "packagehistory|package history"
 msgstr "deployment history"
 
-#: deploy/models.py:198 updatengine/templates/admin/base.html:114
+#: deploy/models.py:235 updatengine/templates/admin/base.html:150
 msgid "packagehistory|packages history"
 msgstr "Deployment history"
 
-#: deploy/models.py:210
+#: deploy/models.py:247
 msgid "packageprofile|name"
 msgstr "name"
 
-#: deploy/models.py:211
+#: deploy/models.py:248
 msgid "packageprofile|description"
 msgstr "description"
 
-#: deploy/models.py:212
+#: deploy/models.py:249
 msgid "packageprofile|packages"
 msgstr "packages"
 
-#: deploy/models.py:213
+#: deploy/models.py:250
 msgid "packageprofile|parent"
 msgstr "Profile's parent"
 
-#: deploy/models.py:214
+#: deploy/models.py:251
 msgid "packageprofile|entity"
 msgstr "entity"
 
-#: deploy/models.py:215
+#: deploy/models.py:252
 msgid "packageprofile| condition last editor"
 msgstr "last editor"
 
-#: deploy/models.py:216
+#: deploy/models.py:253
 msgid "packageprofile|exclusive editor"
 msgstr "exclusive editor"
 
-#: deploy/models.py:219
+#: deploy/models.py:256
 msgid "packageprofile|package profile"
 msgstr "software profile configuration"
 
-#: deploy/models.py:220 updatengine/templates/admin/base.html:126
+#: deploy/models.py:257 updatengine/templates/admin/base.html:162
 msgid "packageprofile|packages profiles"
 msgstr " Software packages profiles"
 
-#: deploy/models.py:250
+#: deploy/models.py:288
 msgid "packageAdmin|get_packages"
 msgstr "Software packages"
 
-#: deploy/models.py:258
+#: deploy/models.py:297
 msgid "packagewakeonlan|Programmed"
 msgstr "Programmed"
 
-#: deploy/models.py:259
+#: deploy/models.py:298
 msgid "packagewakeonlan|Completed"
 msgstr "Completed"
 
-#: deploy/models.py:261
+#: deploy/models.py:300
 msgid "packagewakeonlan|name"
 msgstr "Name"
 
-#: deploy/models.py:261
+#: deploy/models.py:300
 msgid "packagewakeonlan|packagewakeonlan help text"
 msgstr ""
 "Warning: this function can only be used on the lan of the updatengine server"
 
-#: deploy/models.py:262
+#: deploy/models.py:301
 msgid "packagewakeonlan|description"
 msgstr "description"
 
-#: deploy/models.py:263
+#: deploy/models.py:302
 msgid "packagewakeonlan|machines to start"
 msgstr "machines to wake up"
 
-#: deploy/models.py:264
+#: deploy/models.py:303
 msgid "packagewakeonlan|start_time"
 msgstr "date and time of start"
 
-#: deploy/models.py:265
+#: deploy/models.py:304
 msgid "packagewakeonlan|status"
 msgstr "status"
 
-#: deploy/models.py:266
+#: deploy/models.py:305
 msgid "packagewakonelan|entity"
 msgstr "entity"
 
-#: deploy/models.py:267
+#: deploy/models.py:306
 msgid "packagewakonelan| condition last editor"
 msgstr "last editor"
 
-#: deploy/models.py:268
+#: deploy/models.py:307
 msgid "packagewakonelan|exclusive editor"
 msgstr "exclusive editor"
 
-#: deploy/models.py:271
+#: deploy/models.py:310
 msgid "packagewakeonlan|package wakeonlan"
 msgstr "wake on lan planning"
 
-#: deploy/models.py:272 updatengine/templates/admin/base.html:134
+#: deploy/models.py:311 updatengine/templates/admin/base.html:170
 msgid "packagewakeonlan|packages wakeonlan"
 msgstr "Wake on lan planning"
 
-#: deploy/models.py:283
+#: deploy/models.py:323
 msgid "timeprofile|name"
 msgstr "profile name"
 
-#: deploy/models.py:283
+#: deploy/models.py:323
 msgid "timeprofile|timeprofile help text"
 msgstr ""
 "Warning: a deployment period can be override by a global configuration (see "
 "configuration menu) or if a package is configured to ignore them."
 
-#: deploy/models.py:284
+#: deploy/models.py:324
 msgid "timeprofile|description"
 msgstr "description"
 
-#: deploy/models.py:285
+#: deploy/models.py:325
 msgid "timeprofile|start_time"
 msgstr "Start of period"
 
-#: deploy/models.py:286
+#: deploy/models.py:326
 msgid "timeprofile|end_time"
 msgstr "End of period"
 
-#: deploy/models.py:287
+#: deploy/models.py:327
 msgid "timeprofile|entity"
 msgstr "entity"
 
-#: deploy/models.py:288
+#: deploy/models.py:328
 msgid "timeprofile| condition last editor"
 msgstr "last editor"
 
-#: deploy/models.py:289
+#: deploy/models.py:329
 msgid "timeprofile|exclusive editor"
 msgstr "exclusive editor"
 
-#: deploy/models.py:292
+#: deploy/models.py:332
 msgid "timeprofile|time profile"
 msgstr "Deployment period"
 
-#: deploy/models.py:293 updatengine/templates/admin/base.html:130
+#: deploy/models.py:333 updatengine/templates/admin/base.html:166
 msgid "timeprofile|time profiles"
 msgstr "Deployment periods"
 
-#: deploy/models.py:304
+#: deploy/models.py:345
 msgid "impex|name"
 msgstr "Name"
 
-#: deploy/models.py:305
+#: deploy/models.py:346
 msgid "impex|description"
 msgstr "description"
 
-#: deploy/models.py:306
+#: deploy/models.py:347
 msgid "impex|packagesum"
 msgstr "md5 sum"
 
-#: deploy/models.py:307
+#: deploy/models.py:348
 msgid "impex|filename"
 msgstr "file name"
 
-#: deploy/models.py:308
+#: deploy/models.py:349
 msgid "impex|package"
 msgstr "package"
 
-#: deploy/models.py:309
+#: deploy/models.py:350
 msgid "impex|date"
 msgstr "last connection"
 
-#: deploy/models.py:310
+#: deploy/models.py:351
 msgid "impex|entity"
 msgstr "entity"
 
-#: deploy/models.py:311
+#: deploy/models.py:352
 msgid "impex| condition last editor"
 msgstr ""
 
-#: deploy/models.py:312
+#: deploy/models.py:353
 msgid "impex|exclusive editor"
 msgstr "exclusive editor"
 
-#: deploy/models.py:321
+#: deploy/models.py:361
 msgid "impex|filename_link"
 msgstr "export's file"
 
-#: deploy/models.py:323
+#: deploy/models.py:364
 msgid "impex|import/export"
 msgstr "import/export"
 
-#: deploy/models.py:324
+#: deploy/models.py:365
 msgid "impex|imports/exports"
 msgstr "Imports/Exports"
 
-#: inventory/admin.py:151
+#: inventory/admin.py:158
 msgid "operating_system"
 msgstr "Operating system"
 
-#: inventory/admin.py:155
+#: inventory/admin.py:170
 msgid "force_wakeup"
 msgstr "Wake up now"
 
-#: inventory/admin.py:160
+#: inventory/admin.py:175
 msgid "force_inventory"
 msgstr "Force inventory now"
 
-#: inventory/filters.py:8
+#: inventory/apps.py:7 updatengine/dashboard.py:42
+#: updatengine/templates/admin/base.html:118
+msgid "header|Inventory"
+msgstr "Inventory"
+
+#: inventory/filters.py:9
 msgid "Activate advanced filter"
 msgstr "Activate advanced filter"
 
-#: inventory/filters.py:33
+#: inventory/filters.py:35
 msgid "As software or not?"
 msgstr "Search condition"
 
-#: inventory/filters.py:38
+#: inventory/filters.py:40
 msgid "as_not_software"
 msgstr "Machine don't have"
 
-#: inventory/filters.py:49
+#: inventory/filters.py:51
 msgid "as_software"
 msgstr "Machine have"
 
-#: inventory/filters.py:63
+#: inventory/filters.py:66
 msgid "software"
 msgstr "name"
 
-#: inventory/filters.py:115
+#: inventory/filters.py:119
 msgid "softversion"
 msgstr "version"
 
-#: inventory/filters.py:172
+#: inventory/filters.py:179
 msgid "domain"
 msgstr "domain"
 
-#: inventory/filters.py:193
+#: inventory/filters.py:201
 msgid "username"
 msgstr "username"
 
-#: inventory/filters.py:214
+#: inventory/filters.py:223
 msgid "language"
 msgstr "Operating system language is:"
 
-#: inventory/filters.py:235
+#: inventory/filters.py:245
 msgid "typemachine"
 msgstr "type"
 
-#: inventory/filters.py:256
+#: inventory/filters.py:267
 msgid "osdistribution"
 msgstr "OS name"
 
-#: inventory/filters.py:277
+#: inventory/filters.py:289
 msgid "timeprofile"
 msgstr "time profile"
 
-#: inventory/filters.py:298
+#: inventory/filters.py:311
 msgid "packageprofile"
 msgstr "package profile"
 
-#: inventory/filters.py:317
+#: inventory/filters.py:331
 msgid "osname"
 msgstr "os name"
 
-#: inventory/filters.py:334
+#: inventory/filters.py:349
 msgid "osversion"
 msgstr "os version"
 
-#: inventory/filters.py:351
+#: inventory/filters.py:367
 msgid "osarch"
 msgstr "os arch"
 
-#: inventory/filters.py:389
+#: inventory/filters.py:407
 msgid "commentFilter"
 msgstr "comments"
 
-#: inventory/models.py:31
+#: inventory/models.py:32
 msgid "entity|name"
 msgstr "name"
 
-#: inventory/models.py:32
+#: inventory/models.py:33
 msgid "entity|description"
 msgstr "description"
 
-#: inventory/models.py:33
+#: inventory/models.py:34
 msgid "entity|parent"
 msgstr "parent"
 
-#: inventory/models.py:34
+#: inventory/models.py:35
 msgid "entity|package profile"
 msgstr "Software configuration profile"
 
-#: inventory/models.py:34
+#: inventory/models.py:35
 msgid "entity|packages profile help text"
 msgstr ""
 "Software profile defines wich software must be installer on a host. Software "
 "profile are independent of software packages choose below."
 
-#: inventory/models.py:35
+#: inventory/models.py:36
 msgid "entity|old package profile"
 msgstr "Old software configuration profile"
 
-#: inventory/models.py:35
+#: inventory/models.py:36
 msgid "entity|old packages profile help text"
 msgstr ""
 "Software profile defines wich software must be installer on a host. Software "
 "profile are independent of software packages choose below."
 
-#: inventory/models.py:36
+#: inventory/models.py:37
 msgid "entity|force_packageprofile"
 msgstr "Force software configuration profile?"
 
-#: inventory/models.py:37
+#: inventory/models.py:38
 msgid "entity|time profile"
 msgstr "Deployment period"
 
-#: inventory/models.py:37
+#: inventory/models.py:38
 msgid "entity|time profile help text"
 msgstr ""
 "Warning: a deployment period can be override by a global configuration (see "
 "configuration menu) or if a package is configured to ignore them."
 
-#: inventory/models.py:38
+#: inventory/models.py:39
 msgid "entity|old time profile"
 msgstr "Deployment period"
 
-#: inventory/models.py:38
+#: inventory/models.py:39
 msgid "entity|old time profile help text"
 msgstr ""
 "Warning: a deployment period can be override by a global configuration (see "
 "configuration menu) or if a package is configured to ignore them."
 
-#: inventory/models.py:39
+#: inventory/models.py:40
 msgid "entity|force_timeprofile"
 msgstr "Force deployment period?"
 
-#: inventory/models.py:40
+#: inventory/models.py:41
 msgid "entity|redistrib_url"
 msgstr "Path to the redistribution server"
 
-#: inventory/models.py:41
+#: inventory/models.py:42
 msgid "entity|ip_range"
 msgstr "Force auto assignment for IP networks"
 
-#: inventory/models.py:41
+#: inventory/models.py:42
 msgid "entity|ip range help text"
 msgstr ""
-"List of comma separated IP addresses. Ex:192.168.1.0/24,192.168.2.1<br>"
-"Warning: Requires a default entity for new machines or an entity defined "
-"on existing machines to apply"
+"List of comma separated IP addresses. "
+"Ex:192.168.1.0/24,192.168.2.1<br>Warning: Requires a default entity for new "
+"machines or an entity defined on existing machines to apply"
 
-#: inventory/models.py:47 updatengine/templates/admin/base.html:90
+#: inventory/models.py:49 updatengine/templates/admin/base.html:126
 msgid "entity|entities"
 msgstr "   Entities"
 
-#: inventory/models.py:102
+#: inventory/models.py:105
 msgid "typemachine|name"
 msgstr "name"
 
-#: inventory/models.py:106
+#: inventory/models.py:111
 msgid "typemachine|typemachine"
 msgstr "type of machine"
 
-#: inventory/models.py:107
+#: inventory/models.py:112
 msgid "typemachine|typesofmachines"
 msgstr "types of machines"
 
-#: inventory/models.py:114
+#: inventory/models.py:120
 msgid "machine|serial"
 msgstr "serial number"
 
-#: inventory/models.py:115
+#: inventory/models.py:121
 msgid "machine|name"
 msgstr "name"
 
-#: inventory/models.py:116
+#: inventory/models.py:122
 msgid "machine|vendor"
 msgstr "vendor"
 
-#: inventory/models.py:117
+#: inventory/models.py:123
 msgid "machine|product"
 msgstr "model"
 
-#: inventory/models.py:118
+#: inventory/models.py:124
 msgid "machine|domain"
 msgstr "domain"
 
-#: inventory/models.py:119
+#: inventory/models.py:125
 msgid "machine|uuid"
 msgstr "UUID"
 
-#: inventory/models.py:120
+#: inventory/models.py:126
 msgid "machine|username"
 msgstr "username"
 
-#: inventory/models.py:121
+#: inventory/models.py:127
 msgid "machine|language"
 msgstr "language"
 
-#: inventory/models.py:122
+#: inventory/models.py:128
 msgid "machine|entity"
 msgstr "entity"
 
-#: inventory/models.py:123
+#: inventory/models.py:129
 msgid "machine|package profile"
 msgstr "software configuration profile"
 
-#: inventory/models.py:124
+#: inventory/models.py:130
 msgid "machine|time deploy profile"
 msgstr "period profile"
 
-#: inventory/models.py:125
+#: inventory/models.py:131
 msgid "machine|lastsave"
 msgstr "last connection"
 
-#: inventory/models.py:126
+#: inventory/models.py:132
 msgid "machine|typemachine"
 msgstr "type of machine"
 
-#: inventory/models.py:127
+#: inventory/models.py:133
 msgid "machine|netsum"
 msgstr "netsum"
 
-#: inventory/models.py:128
+#: inventory/models.py:134
 msgid "machine|ossum"
 msgstr "ossum"
 
-#: inventory/models.py:129
+#: inventory/models.py:135
 msgid "machine|softsum"
 msgstr "softsum"
 
-#: inventory/models.py:130
+#: inventory/models.py:136
 msgid "machine|packages"
 msgstr "software to install manualy"
 
-#: inventory/models.py:131
+#: inventory/models.py:137
 msgid "machine|manualy_created"
 msgstr "manualy created machine"
 
-#: inventory/models.py:132
+#: inventory/models.py:138
 msgid "machine|comment"
 msgstr "comment"
 
-#: inventory/models.py:135
+#: inventory/models.py:141
 msgid "machine|machine"
 msgstr "machine"
 
-#: inventory/models.py:136 updatengine/templates/admin/base.html:86
+#: inventory/models.py:142 updatengine/templates/admin/base.html:122
 msgid "machine|machines"
 msgstr "    Machines"
 
-#: inventory/models.py:187
+#: inventory/models.py:197
 msgid "osdistribution|name"
 msgstr "OS name"
 
-#: inventory/models.py:188
+#: inventory/models.py:198
 msgid "osdistribution|version"
 msgstr "version"
 
-#: inventory/models.py:189
+#: inventory/models.py:199
 msgid "osdistribution|arch"
 msgstr "architecture"
 
-#: inventory/models.py:190
+#: inventory/models.py:200
 msgid "osdistribution|systemdrive"
 msgstr "system drive"
 
-#: inventory/models.py:191
+#: inventory/models.py:201
 msgid "osdistribution|host"
 msgstr "machine"
 
-#: inventory/models.py:192
+#: inventory/models.py:202
 msgid "osdistribution|manualy_created"
 msgstr "system created manualy"
 
-#: inventory/models.py:198
+#: inventory/models.py:208
 msgid "osdistribution|osdistribution"
 msgstr "system and architecture"
 
-#: inventory/models.py:199 updatengine/templates/admin/base.html:102
+#: inventory/models.py:209 updatengine/templates/admin/base.html:138
 msgid "osdistribution|osdistributions"
 msgstr "Systems and architectures"
 
-#: inventory/models.py:208
+#: inventory/models.py:217
 msgid "net|ip"
 msgstr "IP adress"
 
-#: inventory/models.py:209
+#: inventory/models.py:218
 msgid "net|mask"
 msgstr "netmask"
 
-#: inventory/models.py:210
+#: inventory/models.py:219
 msgid "net|mac"
 msgstr "Mac address"
 
-#: inventory/models.py:211
+#: inventory/models.py:220
 msgid "net|host"
 msgstr "machine"
 
-#: inventory/models.py:212
+#: inventory/models.py:221
 msgid "net|manualy_created"
 msgstr "network created manualy"
 
-#: inventory/models.py:218
+#: inventory/models.py:227
 msgid "net|network"
 msgstr "network"
 
-#: inventory/models.py:219 updatengine/templates/admin/base.html:98
+#: inventory/models.py:228 updatengine/templates/admin/base.html:134
 msgid "net|networks"
 msgstr " Networks"
 
-#: inventory/models.py:228
+#: inventory/models.py:236
 msgid "software|name"
 msgstr "name"
 
-#: inventory/models.py:229
+#: inventory/models.py:237
 msgid "software|version"
 msgstr "version"
 
-#: inventory/models.py:230
+#: inventory/models.py:238
 msgid "software|uninstall"
 msgstr "uninstall"
 
-#: inventory/models.py:231
+#: inventory/models.py:239
 msgid "software|host"
 msgstr "machine"
 
-#: inventory/models.py:232
+#: inventory/models.py:240
 msgid "software|manualy_created"
 msgstr "software created manualy"
 
-#: inventory/models.py:239
+#: inventory/models.py:247
 msgid "software|software"
 msgstr "software"
 
-#: inventory/models.py:240 updatengine/templates/admin/base.html:94
+#: inventory/models.py:248 updatengine/templates/admin/base.html:130
 msgid "software|softwares"
 msgstr "  Software packages"
 
-#: updatengine/dashboard.py:70
+#: updatengine/dashboard.py:69
 msgid "Recent Actions"
 msgstr "Recent actions"
 
-#: updatengine/dashboard.py:78
+#: updatengine/dashboard.py:77
 msgid "ModelList: Administration"
 msgstr "Rights confguration"
 
-#: updatengine/dashboard.py:95
+#: updatengine/dashboard.py:84
 msgid "ModelList: Links"
 msgstr "Links"
 
-#: updatengine/settings.py:84
+#: updatengine/output.py:42 updatengine/settings.py:42
 msgid "french"
 msgstr "french"
 
-#: updatengine/settings.py:85
+#: updatengine/output.py:43 updatengine/settings.py:43
 msgid "english"
 msgstr "english"
 
 #: updatengine/templates/admin/base.html:70
+#: updatengine/templates/admin/base.html:85
 msgid "header|Latest stable"
 msgstr "Latest stable"
 
-#: updatengine/templates/admin/base.html:82
-msgid "header|Inventory"
-msgstr "Inventory"
-
-#: updatengine/templates/admin/base.html:110
-msgid "header|Deploy"
-msgstr "Deployment"
-
-#: updatengine/templates/admin/base.html:138
+#: updatengine/templates/admin/base.html:174
 msgid "impex|impex title"
 msgstr "imports/exports"
 
-#: updatengine/templates/admin/base.html:146
-msgid "header|Configuration"
-msgstr "Configuration"
-
-#: updatengine/templates/admin/base.html:158
+#: updatengine/templates/admin/base.html:198
 msgid "header|Auth"
 msgstr "Users and groups"
 
-#: updatengine/templates/admin/base.html:162
+#: updatengine/templates/admin/base.html:202
 msgid "groups"
 msgstr "groups"
 
-#: updatengine/templates/admin/base.html:166
+#: updatengine/templates/admin/base.html:206
 msgid "users"
 msgstr "users"
 
-#: updatengine/templates/admin/base.html:183
+#: updatengine/templates/admin/base.html:223
 msgid "Change password"
 msgstr "Change password"
 
-#: updatengine/templates/admin/base.html:191
+#: updatengine/templates/admin/base.html:231
 msgid "Log out"
 msgstr "Log out"
+
+#: updatengine/templates/admin/base.html:254
+msgid "Home"
+msgstr ""
 
 #: updatengine/templates/grappelli/dashboard/dashboard.html:22
 msgid "Choose_language"
 msgstr "Choose language"
 
-msgid "Mass update"
-msgstr "Mass Update"
+#~ msgid "adminactions|Header"
+#~ msgstr "header"
+
+#~ msgid "adminactions|Delimiter"
+#~ msgstr "delimiter"
+
+#~ msgid "adminactions|Quotechar"
+#~ msgstr "quotechar"
+
+#~ msgid "adminactions|Quoting"
+#~ msgstr "quoting"
+
+#~ msgid "adminactions|All"
+#~ msgstr "%s"
+
+#~ msgid "adminactions|Minimal"
+#~ msgstr "Minimal"
+
+#~ msgid "adminactions|None"
+#~ msgstr "None"
+
+#~ msgid "adminactions|Non Numeric"
+#~ msgstr "Non Numeric"
+
+#~ msgid "adminactions|Escapechar"
+#~ msgstr "escapechar"
+
+#~ msgid "adminactions|Datetime format"
+#~ msgstr "Datetime format"
+
+#~ msgid "adminactions|Date format"
+#~ msgstr "Date format"
+
+#~ msgid "adminactions|Time format"
+#~ msgstr "Time format"
+
+#~ msgid "adminactions|Columns"
+#~ msgstr "%s"
+
+#~ msgid "adminactions|Validate"
+#~ msgstr "Validate"
+
+#~ msgid "adminactions|if checked use obj.save() instead of manager.update()"
+#~ msgstr "if checked use obj.save() instead of manager.update()"
+
+#~ msgid "Sorry you do not have rights to execute this action"
+#~ msgstr "Sorry you do not have rights to execute this action"
+
+#~ msgid "adminactions|Mass Update"
+#~ msgstr "Mass Update"
+
+#~ msgid "adminactions|field name"
+#~ msgstr "field name"
+
+#~ msgid "adminactions|update"
+#~ msgstr "update"
+
+#~ msgid "adminactions|function"
+#~ msgstr "function"
+
+#~ msgid "adminactions|new value"
+#~ msgstr "new value"
+
+#~ msgid "adminactions|existing values"
+#~ msgstr "existing value"
+
+#~ msgid "adminactions|(sample)"
+#~ msgstr "(sample)"
+
+#~ msgid "adminactions|Update records"
+#~ msgstr "Update records"
+
+#~ msgid "Mass update"
+#~ msgstr "Mass Update"

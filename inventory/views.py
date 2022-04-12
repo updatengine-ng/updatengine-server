@@ -387,6 +387,126 @@ def check_conditions(m, pack, xml=None):
             except:
                 pass
 
+    # Vendor is in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='vendor_in'):
+            try:
+                # Check the list
+                vendors = condition.softwarename.split(',')
+                for vendor in vendors:
+                    if not vendor:
+                        continue
+                    nameregex = '^'+re.escape(vendor).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.vendor, re.IGNORECASE):
+                        install = True
+                        break
+                    else:
+                        install = False
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
+    # Vendor is NOT in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='vendor_not'):
+            try:
+                # Check the list
+                vendors = condition.softwarename.split(',')
+                for vendor in vendors:
+                    if not vendor:
+                        continue
+                    nameregex = '^'+re.escape(vendor).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.vendor, re.IGNORECASE):
+                        install = False
+                        break
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
+    # Product is in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='product_in'):
+            try:
+                # Check the list
+                products = condition.softwarename.split(',')
+                for product in products:
+                    if not product:
+                        continue
+                    nameregex = '^'+re.escape(product).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.product, re.IGNORECASE):
+                        install = True
+                        break
+                    else:
+                        install = False
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
+    # Product is NOT in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='product_not'):
+            try:
+                # Check the list
+                products = condition.softwarename.split(',')
+                for product in products:
+                    if not product:
+                        continue
+                    nameregex = '^'+re.escape(product).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.product, re.IGNORECASE):
+                        install = False
+                        break
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
+    # Machine type is in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='type_in'):
+            try:
+                # Check the list
+                typemachines = condition.softwarename.split(',')
+                for typemachine in typemachines:
+                    if not typemachine:
+                        continue
+                    nameregex = '^'+re.escape(typemachine).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.typemachine, re.IGNORECASE):
+                        install = True
+                        break
+                    else:
+                        install = False
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
+    # Machine type is NOT in the list (comma separated list, wildcards can be used for condition name)
+    if install is True:
+        for condition in pack.conditions.filter(depends='type_not'):
+            try:
+                # Check the list
+                typemachines = condition.softwarename.split(',')
+                for typemachine in typemachines:
+                    if not typemachine:
+                        continue
+                    nameregex = '^'+re.escape(typemachine).replace('\*', '.*')+'$'
+                    if re.match(nameregex, m.typemachine, re.IGNORECASE):
+                        install = False
+                        break
+                # Do not test this condition type again if the last check failed
+                if install is False:
+                    break
+            except:
+                pass
+
     # Basic check to avoid asking client for unnecessary extended conditions
     if xml == b'BASIC_CHECK':
         return install;
