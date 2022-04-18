@@ -124,9 +124,10 @@ class package(models.Model):
         ordering = ['name']
 
     def get_conditions(self):
-        retval = mark_safe('<br/>- '.join([c.name for c in self.conditions.all()]))
-        if len(retval): retval = mark_safe('- ' + retval)
-        return retval
+        retval = ''
+        for c in self.conditions.all():
+            retval += '<a href="%s/deploy/packagecondition/%s/change/">- %s</a><br>' % (settings.PROJECT_URL, c.id, c.name)
+        return mark_safe(retval[:-4])
     get_conditions.short_description = _('packageAdmin|get_conditions')
 
     def save(self, *args, **kwargs):
