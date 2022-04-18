@@ -28,6 +28,7 @@ from inventory.models import entity, machine
 from django.utils.translation import gettext_lazy as _
 from django.forms import ModelForm
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 
 
 class ueAdmin(admin.ModelAdmin):
@@ -68,7 +69,7 @@ class packageForm(ModelForm):
 
 
 class packageAdmin(ueAdmin):
-    list_display = ('name','description','command','filename','get_conditions','ignoreperiod','public','editor','exclusive_editor')
+    list_display = ('name','description','get_command','filename','get_conditions','ignoreperiod','public','editor','exclusive_editor')
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
@@ -81,7 +82,11 @@ class packageAdmin(ueAdmin):
                     'classes': ('grp-collapse grp-closed',),
                     'fields': ('entity','editor', 'exclusive_editor')}),
                 )
-
+    def get_command(self, obj):
+        return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
+    get_command.short_description = _('package|command')
+    get_command.admin_order_field = 'command'
+    
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
         if not request.user.is_superuser:
