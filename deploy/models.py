@@ -35,6 +35,7 @@ from django.conf import settings
 from inventory.models import entity
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 
 def random_directory(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
@@ -93,6 +94,13 @@ class packagecondition(models.Model):
         verbose_name_plural = _('packagecondition|packages conditions')
         ordering = ['name']
 
+    def get_condition_packages(self):
+        retval = ''
+        for c in package.objects.filter(conditions=self.id):
+            retval += '<a href="%s">%s</a><br/>' % (reverse('admin:deploy_package_change', args=[c.id]), c.name)
+        return mark_safe(retval[:-5])
+    get_condition_packages.short_description = _('package|deployment packages')
+
     def __str__(self):
         return self.name
 
@@ -126,8 +134,8 @@ class package(models.Model):
     def get_conditions(self):
         retval = ''
         for c in self.conditions.all():
-            retval += '<a href="%s/deploy/packagecondition/%s/change/">- %s</a><br>' % (settings.PROJECT_URL, c.id, c.name)
-        return mark_safe(retval[:-4])
+            retval += '<a href="%s">%s</a><br/>' % (reverse('admin:deploy_packagecondition_change', args=[c.id]), c.name)
+        return mark_safe(retval[:-5])
     get_conditions.short_description = _('packageAdmin|get_conditions')
 
     def save(self, *args, **kwargs):

@@ -444,7 +444,7 @@ class packageconditionForm(ModelForm):
 
 
 class packageconditionAdmin(ueAdmin):
-    list_display = ('name','depends','softwarename','softwareversion','editor','exclusive_editor')
+    list_display = ('name','depends','softwarename','softwareversion','editor','exclusive_editor','get_condition_packages')
     filter_horizontal = ('entity',)
     list_filter = (conditionEntityFilter, myConditionsFilter)
     form = packageconditionForm
