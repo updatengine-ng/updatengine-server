@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-12 07:57-0400\n"
+"POT-Creation-Date: 2022-04-19 08:51-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -156,20 +156,24 @@ msgstr "entité"
 msgid "subuser|entity"
 msgstr "Droits récurssifs sur les entités"
 
-#: deploy/admin.py:78
+#: deploy/admin.py:79
 msgid "package|general information"
 msgstr "Général"
 
-#: deploy/admin.py:79
+#: deploy/admin.py:80
 msgid "package|package edition"
 msgstr "Edition du paquet"
 
-#: deploy/admin.py:80 deploy/admin.py:197 deploy/admin.py:279
-#: deploy/admin.py:364
+#: deploy/admin.py:81 deploy/admin.py:202 deploy/admin.py:284
+#: deploy/admin.py:369
 msgid "package|permissions"
 msgstr "Permissions"
 
-#: deploy/admin.py:88
+#: deploy/admin.py:87 deploy/models.py:120
+msgid "package|command"
+msgstr "commande"
+
+#: deploy/admin.py:93
 msgid ""
 "Warning: you will not be able to update a package that you didn't create if "
 "exclusive editor is set to yes for this package"
@@ -177,11 +181,11 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer un paquet que vous n'avez pas crée si "
 "il est verrouillé en 'éditeur exclusif'"
 
-#: deploy/admin.py:196
+#: deploy/admin.py:201
 msgid "packageprofile|general information"
 msgstr "Général"
 
-#: deploy/admin.py:205
+#: deploy/admin.py:210
 msgid ""
 "Warning: you will not be able to update a profile that you didn't create if "
 "exclusive editor is set to yes for this package"
@@ -189,11 +193,11 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer un profil que vous n'avez pas crée si "
 "il est verrouillé en 'éditeur exclusif'"
 
-#: deploy/admin.py:278
+#: deploy/admin.py:283
 msgid "timeprofile|general information"
 msgstr "Général"
 
-#: deploy/admin.py:287
+#: deploy/admin.py:292
 msgid ""
 "timeprofile|Warning: you will not be able to update a wake on lan task that "
 "you didn't create if exclusive editor is set to yes for this package"
@@ -201,11 +205,11 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer un profil horaire que vous n'avez pas "
 "crée si il est verrouillé en 'éditeur exclusif'"
 
-#: deploy/admin.py:363
+#: deploy/admin.py:368
 msgid "packagewakeonlan|general information"
 msgstr "Général"
 
-#: deploy/admin.py:372
+#: deploy/admin.py:377
 msgid ""
 "packagewakeonlan|Warning: you will not be able to update a wake on lan task "
 "that you didn't create if exclusive editor is set to yes for this package"
@@ -213,15 +217,15 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer une tâche de wake on lan que vous "
 "n'avez pas créée si elle est verrouillée en 'éditeur exclusif'"
 
-#: deploy/admin.py:447
+#: deploy/admin.py:452
 msgid "packagecondition|general information"
 msgstr "Général"
 
-#: deploy/admin.py:448
+#: deploy/admin.py:453
 msgid "packagecondition|permissions"
 msgstr "Permissions"
 
-#: deploy/admin.py:455
+#: deploy/admin.py:460
 msgid ""
 "packagecondition|Warning: you will not be able to update a condition that "
 "you didn't create if exclusive editor is set to yes for this package"
@@ -229,7 +233,7 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer une condition que vous n'avez pas créée "
 "si elle est verrouillée en 'éditeur exclusif'"
 
-#: deploy/admin.py:532
+#: deploy/admin.py:537
 msgid "impex|general information"
 msgstr "Général"
 
@@ -267,149 +271,149 @@ msgstr "conditions"
 msgid "only my conditions"
 msgstr ""
 
-#: deploy/models.py:47 deploy/models.py:106 deploy/models.py:244
-#: deploy/models.py:293 deploy/models.py:320 deploy/models.py:342
+#: deploy/models.py:48 deploy/models.py:114 deploy/models.py:253
+#: deploy/models.py:302 deploy/models.py:329 deploy/models.py:351
 msgid "package|yes"
 msgstr "oui"
 
-#: deploy/models.py:48 deploy/models.py:107 deploy/models.py:245
-#: deploy/models.py:294 deploy/models.py:321 deploy/models.py:343
+#: deploy/models.py:49 deploy/models.py:115 deploy/models.py:254
+#: deploy/models.py:303 deploy/models.py:330 deploy/models.py:352
 msgid "package|no"
 msgstr "non"
 
-#: deploy/models.py:51
+#: deploy/models.py:52
 msgid "installed"
 msgstr "Logiciel / version est installé"
 
-#: deploy/models.py:52
+#: deploy/models.py:53
 msgid "notinstalled"
 msgstr "Logiciel / version n'est pas installé"
 
-#: deploy/models.py:53
+#: deploy/models.py:54
 msgid "lower"
 msgstr "Logiciel non installé ou version inférieure à"
 
-#: deploy/models.py:54
+#: deploy/models.py:55
 msgid "higher"
 msgstr "Logiciel installé et version supérieure à"
 
-#: deploy/models.py:55
+#: deploy/models.py:56
 msgid "operating_system_is"
 msgstr "Système d'exploitation est"
 
-#: deploy/models.py:56
+#: deploy/models.py:57
 msgid "operating_system_not"
 msgstr "Système d'exploitation n'est pas"
 
-#: deploy/models.py:57
+#: deploy/models.py:58
 msgid "is_W64_bits"
 msgstr "Poste Windows 64 bits"
 
-#: deploy/models.py:58
+#: deploy/models.py:59
 msgid "is_W32_bits"
 msgstr "Poste Windows 32 bits"
 
-#: deploy/models.py:59
+#: deploy/models.py:60
 msgid "language_is"
 msgstr "Langue du système est"
 
-#: deploy/models.py:60
+#: deploy/models.py:61
 msgid "hostname_in"
 msgstr "Le nom d'hôte est"
 
-#: deploy/models.py:61
+#: deploy/models.py:62
 msgid "hostname_not"
 msgstr "Le nom d'hôte n'est pas"
 
-#: deploy/models.py:62
+#: deploy/models.py:63
 msgid "username_in"
 msgstr "Le nom d'utilisateur est"
 
-#: deploy/models.py:63
+#: deploy/models.py:64
 msgid "username_not"
 msgstr "Le nom d'utilisateur n'est pas"
 
-#: deploy/models.py:64
+#: deploy/models.py:65
 msgid "ipaddr_in"
 msgstr "L'adresse IP est"
 
-#: deploy/models.py:65
+#: deploy/models.py:66
 msgid "ipaddr_not"
 msgstr "L'adresse IP n'est pas"
 
-#: deploy/models.py:66
+#: deploy/models.py:67
 msgid "vendor_in"
 msgstr "La marque de machine est"
 
-#: deploy/models.py:67
+#: deploy/models.py:68
 msgid "vendor_not"
 msgstr "La marque de machine n'est pas"
 
-#: deploy/models.py:68
+#: deploy/models.py:69
 msgid "product_in"
 msgstr "Le modèle de machine est"
 
-#: deploy/models.py:69
+#: deploy/models.py:70
 msgid "product_not"
 msgstr "Le modèle de machine n'est pas"
 
-#: deploy/models.py:70
+#: deploy/models.py:71
 msgid "type_in"
 msgstr "Le type de machine est"
 
-#: deploy/models.py:71
+#: deploy/models.py:72
 msgid "type_not"
 msgstr "Le type de machine n'est pas"
 
-#: deploy/models.py:72
+#: deploy/models.py:73
 msgid "isfile"
 msgstr "Le fichier existe"
 
-#: deploy/models.py:73
+#: deploy/models.py:74
 msgid "notisfile"
 msgstr "Le fichier n'existe pas"
 
-#: deploy/models.py:74
+#: deploy/models.py:75
 msgid "isdir"
 msgstr "Le répertoire existe"
 
-#: deploy/models.py:75
+#: deploy/models.py:76
 msgid "notisdir"
 msgstr "Le répertoire n'existe pas"
 
-#: deploy/models.py:76
+#: deploy/models.py:77
 msgid "isfiledir"
 msgstr "Le fichier ou le répertoire existe"
 
-#: deploy/models.py:77
+#: deploy/models.py:78
 msgid "notisfiledir"
 msgstr "Le fichier ou le répertoire n'existe pas"
 
-#: deploy/models.py:78
+#: deploy/models.py:79
 msgid "hashis"
 msgstr "Le hachage SHA-256 du fichier est"
 
-#: deploy/models.py:79
+#: deploy/models.py:80
 msgid "hashnot"
 msgstr "Le hachage SHA-256 du fichier n'est pas"
 
-#: deploy/models.py:80
+#: deploy/models.py:81
 msgid "exitcodeis"
 msgstr "Le code de retour de la commande est"
 
-#: deploy/models.py:81
+#: deploy/models.py:82
 msgid "exitcodenot"
 msgstr "Le code de retour de la commande n'est pas"
 
-#: deploy/models.py:83
+#: deploy/models.py:84
 msgid "packagecondition|name"
 msgstr "nom de la condition"
 
-#: deploy/models.py:84
+#: deploy/models.py:85
 msgid "packagecondition|depends"
 msgstr "Condition à vérifier:"
 
-#: deploy/models.py:84
+#: deploy/models.py:85
 msgid "packagecondition|depends help text"
 msgstr ""
 "<u>Attention</u> : Pour les clients < 3.0, les conditions étendues telles "
@@ -417,28 +421,31 @@ msgstr ""
 "commande sont ignorées et le paquet de déploiement concerné n'est jamais "
 "installé."
 
-#: deploy/models.py:85
+#: deploy/models.py:86
 msgid "packagecondition|softwarename"
-msgstr "nom de logiciel, d'hôte, de fichier, adresse IP, marque, type, modèle ou commande"
+msgstr ""
+"nom de logiciel, d'hôte, de fichier, adresse IP, marque, type, modèle ou "
+"commande"
 
-#: deploy/models.py:85
+#: deploy/models.py:86
 msgid "packagecondition|softwarename help text"
 msgstr ""
 "Dans toutes les conditions qui concernent les logiciels, le nom d'hôte ou "
 "d'utilisateur, la marque, le modèle, le type de machine, le caractère '*' "
-"permet de remplacer 0 ou plusieurs caratères (ex: 'Java * Update * (64-bit)', "
-"'host1,host-2*'). <br>Pour une condition concernant le système d'exploitation, "
-"indiquer le nom du système concerné.<br>Pour les conditions 'Nom d'hôte', "
-"'Nom d'utilisateur', 'Adresse IP', 'Marque', 'Modèle', 'Type de machine', ce "
-"peut être une liste de valeurs séparées par des virgules.<br>Pour la condition "
-"'Adresse IP', il est possible de spécifier une adresse IP ou une adresse réseau "
-"(ex: '192.168.1.10', '192.168.1.10/32', '192.168.1.0/24')."
+"permet de remplacer 0 ou plusieurs caratères (ex: 'Java * Update * (64-"
+"bit)', 'host1,host-2*'). <br>Pour une condition concernant le système "
+"d'exploitation, indiquer le nom du système concerné.<br>Pour les conditions "
+"'Nom d'hôte', 'Nom d'utilisateur', 'Adresse IP', 'Marque', 'Modèle', 'Type "
+"de machine', ce peut être une liste de valeurs séparées par des virgules."
+"<br>Pour la condition 'Adresse IP', il est possible de spécifier une adresse "
+"IP ou une adresse réseau (ex: '192.168.1.10', '192.168.1.10/32', "
+"'192.168.1.0/24')."
 
-#: deploy/models.py:86
+#: deploy/models.py:87
 msgid "packagecondition|softwareversion"
 msgstr "version, hachage ou code de retour"
 
-#: deploy/models.py:86
+#: deploy/models.py:87
 msgid "packagecondition|softwareversion help text"
 msgstr ""
 "Pour une condition concernant le système d'exploitation, indiquer la version "
@@ -447,315 +454,312 @@ msgstr ""
 "et 'installé et supérieure', laisser vide pour de ne vérifier que le nom du "
 "logiciel.<br>"
 
-#: deploy/models.py:87
+#: deploy/models.py:88
 msgid "packagecondition|entity"
 msgstr "Entités"
 
-#: deploy/models.py:88
+#: deploy/models.py:89
 msgid "packagecondition| condition last editor"
 msgstr "Dernier éditeur"
 
-#: deploy/models.py:89
+#: deploy/models.py:90
 msgid "packagecondition|exclusive editor"
 msgstr "Editeur exclusif"
 
-#: deploy/models.py:92
+#: deploy/models.py:93
 msgid "packagecondition|package condition"
 msgstr "condition d'installation de logiciel"
 
-#: deploy/models.py:93 updatengine/templates/admin/base.html:158
+#: deploy/models.py:94 updatengine/templates/admin/base.html:158
 msgid "packagecondition|packages conditions"
 msgstr "Conditions d'installations"
 
-#: deploy/models.py:109
+#: deploy/models.py:102 deploy/models.py:131
+#: updatengine/templates/admin/base.html:154
+msgid "package|deployment packages"
+msgstr "Paquets de déploiements"
+
+#: deploy/models.py:117
 msgid "package|name"
 msgstr "nom"
 
-#: deploy/models.py:110
+#: deploy/models.py:118
 msgid "package|description"
 msgstr "description"
 
-#: deploy/models.py:111
+#: deploy/models.py:119
 msgid "package|conditions"
 msgstr "conditions"
 
-#: deploy/models.py:112
-msgid "package|command"
-msgstr "commande"
-
-#: deploy/models.py:112
+#: deploy/models.py:120
 msgid "package|command help text"
 msgstr ""
 "La commande sera lancée depuis le répertoire d'extraction du paquet "
 "(répertoire temporaire découvert \tvia les variables d'environnement."
 
-#: deploy/models.py:113
+#: deploy/models.py:121
 msgid "package|packagesum"
 msgstr "somme md5"
 
-#: deploy/models.py:114
+#: deploy/models.py:122
 msgid "package|filename"
 msgstr "fichier"
 
-#: deploy/models.py:115
+#: deploy/models.py:123
 msgid "package|ignore deploy period"
 msgstr "ignorer les horaires de déploiement"
 
-#: deploy/models.py:116
+#: deploy/models.py:124
 msgid "package| public package"
 msgstr "Paquet public"
 
-#: deploy/models.py:117
+#: deploy/models.py:125
 msgid "package|entity"
 msgstr "Entité"
 
-#: deploy/models.py:118
+#: deploy/models.py:126
 msgid "package| package last editor"
 msgstr "Dernier éditeur"
 
-#: deploy/models.py:119
+#: deploy/models.py:127
 msgid "package|exclusive editor"
 msgstr "Editeur exclusif"
 
-#: deploy/models.py:122
+#: deploy/models.py:130
 msgid "package|deployment package"
 msgstr "paquet de déploiement"
 
-#: deploy/models.py:123 updatengine/templates/admin/base.html:154
-msgid "package|deployment packages"
-msgstr "Paquets de déploiements"
-
-#: deploy/models.py:130
+#: deploy/models.py:139
 msgid "packageAdmin|get_conditions"
 msgstr "conditions"
 
-#: deploy/models.py:223
+#: deploy/models.py:232
 msgid "packagehistory|name"
 msgstr "nom"
 
-#: deploy/models.py:224
+#: deploy/models.py:233
 msgid "packagehistory|description"
 msgstr "description"
 
-#: deploy/models.py:225
+#: deploy/models.py:234
 msgid "packagehistory|command"
 msgstr "commande"
 
-#: deploy/models.py:226
+#: deploy/models.py:235
 msgid "packagehistory|packagesum"
 msgstr "somme md5"
 
-#: deploy/models.py:227
+#: deploy/models.py:236
 msgid "packagehistory|filename"
 msgstr "fichier"
 
-#: deploy/models.py:228
+#: deploy/models.py:237
 msgid "packagehistory|machine"
 msgstr "machine"
 
-#: deploy/models.py:229
+#: deploy/models.py:238
 msgid "packagehistory|package"
 msgstr "paquet"
 
-#: deploy/models.py:230
+#: deploy/models.py:239
 msgid "packagehistory|status"
 msgstr "statut"
 
-#: deploy/models.py:231
+#: deploy/models.py:240
 msgid "packagehistory|date"
 msgstr "date"
 
-#: deploy/models.py:234
+#: deploy/models.py:243
 msgid "packagehistory|package history"
 msgstr "historique de déploiement"
 
-#: deploy/models.py:235 updatengine/templates/admin/base.html:150
+#: deploy/models.py:244 updatengine/templates/admin/base.html:150
 msgid "packagehistory|packages history"
 msgstr "Historique des déploiements"
 
-#: deploy/models.py:247
+#: deploy/models.py:256
 msgid "packageprofile|name"
 msgstr "nom"
 
-#: deploy/models.py:248
+#: deploy/models.py:257
 msgid "packageprofile|description"
 msgstr "description"
 
-#: deploy/models.py:249
+#: deploy/models.py:258
 msgid "packageprofile|packages"
 msgstr "paquets"
 
-#: deploy/models.py:250
+#: deploy/models.py:259
 msgid "packageprofile|parent"
 msgstr "profile parent"
 
-#: deploy/models.py:251
+#: deploy/models.py:260
 msgid "packageprofile|entity"
 msgstr "Entité"
 
-#: deploy/models.py:252
+#: deploy/models.py:261
 msgid "packageprofile| condition last editor"
 msgstr "Dernier éditeur"
 
-#: deploy/models.py:253
+#: deploy/models.py:262
 msgid "packageprofile|exclusive editor"
 msgstr "Editeur exclusif"
 
-#: deploy/models.py:256
+#: deploy/models.py:265
 msgid "packageprofile|package profile"
 msgstr "profil de configuration logicielle"
 
-#: deploy/models.py:257 updatengine/templates/admin/base.html:162
+#: deploy/models.py:266 updatengine/templates/admin/base.html:162
 msgid "packageprofile|packages profiles"
 msgstr "Profils de configurations"
 
-#: deploy/models.py:288
+#: deploy/models.py:297
 msgid "packageAdmin|get_packages"
 msgstr "Paquets inclus"
 
-#: deploy/models.py:297
+#: deploy/models.py:306
 msgid "packagewakeonlan|Programmed"
 msgstr "Tâche programmée"
 
-#: deploy/models.py:298
+#: deploy/models.py:307
 msgid "packagewakeonlan|Completed"
 msgstr "Tâche terminée"
 
-#: deploy/models.py:300
+#: deploy/models.py:309
 msgid "packagewakeonlan|name"
 msgstr "Nom"
 
-#: deploy/models.py:300
+#: deploy/models.py:309
 msgid "packagewakeonlan|packagewakeonlan help text"
 msgstr ""
 "Attention: Dans cette version cette tâche ne peut être utile que sur le sous-"
 "réseau \td'installation du serveur updatengine ou sur les vlans \"environnant"
 "\" \t(nécessite le paramétrage de vos équipements.)"
 
-#: deploy/models.py:301
+#: deploy/models.py:310
 msgid "packagewakeonlan|description"
 msgstr "description"
 
-#: deploy/models.py:302
+#: deploy/models.py:311
 msgid "packagewakeonlan|machines to start"
 msgstr "machines à démarrer"
 
-#: deploy/models.py:303
+#: deploy/models.py:312
 msgid "packagewakeonlan|start_time"
 msgstr "date et heure de démarrage"
 
-#: deploy/models.py:304
+#: deploy/models.py:313
 msgid "packagewakeonlan|status"
 msgstr "statut"
 
-#: deploy/models.py:305
+#: deploy/models.py:314
 msgid "packagewakonelan|entity"
 msgstr "Entité"
 
-#: deploy/models.py:306
+#: deploy/models.py:315
 msgid "packagewakonelan| condition last editor"
 msgstr "Dernier éditeur"
 
-#: deploy/models.py:307
+#: deploy/models.py:316
 msgid "packagewakonelan|exclusive editor"
 msgstr "Editeur exclusif"
 
-#: deploy/models.py:310
+#: deploy/models.py:319
 msgid "packagewakeonlan|package wakeonlan"
 msgstr "tâche de wake on lan"
 
-#: deploy/models.py:311 updatengine/templates/admin/base.html:170
+#: deploy/models.py:320 updatengine/templates/admin/base.html:170
 msgid "packagewakeonlan|packages wakeonlan"
 msgstr "Tâches de wake on lan"
 
-#: deploy/models.py:323
+#: deploy/models.py:332
 msgid "timeprofile|name"
 msgstr "nom du profil"
 
-#: deploy/models.py:323
+#: deploy/models.py:332
 msgid "timeprofile|timeprofile help text"
 msgstr ""
 "Attention les périodes de déploiement peuvent être ignorées si une période "
 "globale est activée \t(menu configuration) ou si un paquet est configuré "
 "pour ignorer ces périodes."
 
-#: deploy/models.py:324
+#: deploy/models.py:333
 msgid "timeprofile|description"
 msgstr "description"
 
-#: deploy/models.py:325
+#: deploy/models.py:334
 msgid "timeprofile|start_time"
 msgstr "Heure de début de période"
 
-#: deploy/models.py:326
+#: deploy/models.py:335
 msgid "timeprofile|end_time"
 msgstr "Heure de fin de période"
 
-#: deploy/models.py:327
+#: deploy/models.py:336
 msgid "timeprofile|entity"
 msgstr "Entité"
 
-#: deploy/models.py:328
+#: deploy/models.py:337
 msgid "timeprofile| condition last editor"
 msgstr "Dernier éditeur"
 
-#: deploy/models.py:329
+#: deploy/models.py:338
 msgid "timeprofile|exclusive editor"
 msgstr "Editeur exclusif"
 
-#: deploy/models.py:332
+#: deploy/models.py:341
 msgid "timeprofile|time profile"
 msgstr "Période de déploiement"
 
-#: deploy/models.py:333 updatengine/templates/admin/base.html:166
+#: deploy/models.py:342 updatengine/templates/admin/base.html:166
 msgid "timeprofile|time profiles"
 msgstr "Périodes de déploiement"
 
-#: deploy/models.py:345
+#: deploy/models.py:354
 msgid "impex|name"
 msgstr "Nom de l'import/export"
 
-#: deploy/models.py:346
+#: deploy/models.py:355
 msgid "impex|description"
 msgstr "description"
 
-#: deploy/models.py:347
+#: deploy/models.py:356
 msgid "impex|packagesum"
 msgstr "somme md5"
 
-#: deploy/models.py:348
+#: deploy/models.py:357
 msgid "impex|filename"
 msgstr "fichier"
 
-#: deploy/models.py:349
+#: deploy/models.py:358
 msgid "impex|package"
 msgstr "paquet"
 
-#: deploy/models.py:350
+#: deploy/models.py:359
 msgid "impex|date"
 msgstr "Date de dernière connexion"
 
-#: deploy/models.py:351
+#: deploy/models.py:360
 msgid "impex|entity"
 msgstr "Entité"
 
-#: deploy/models.py:352
+#: deploy/models.py:361
 msgid "impex| condition last editor"
 msgstr "Dernier éditeur"
 
-#: deploy/models.py:353
+#: deploy/models.py:362
 msgid "impex|exclusive editor"
 msgstr "Editeur exclusif"
 
-#: deploy/models.py:361
+#: deploy/models.py:370
 msgid "impex|filename_link"
 msgstr "fichier d'export"
 
-#: deploy/models.py:364
+#: deploy/models.py:373
 msgid "impex|import/export"
 msgstr "import/export"
 
-#: deploy/models.py:365
+#: deploy/models.py:374
 msgid "impex|imports/exports"
 msgstr "Imports/Exports"
 
@@ -1124,11 +1128,11 @@ msgstr "Gestion des droits"
 msgid "ModelList: Links"
 msgstr "Liens"
 
-#: updatengine/output.py:42 updatengine/settings.py:42
+#: updatengine/settings.py:42
 msgid "french"
 msgstr "français"
 
-#: updatengine/output.py:43 updatengine/settings.py:43
+#: updatengine/settings.py:43
 msgid "english"
 msgstr "anglais"
 
@@ -1168,3 +1172,12 @@ msgstr "Accueil"
 #: updatengine/templates/grappelli/dashboard/dashboard.html:22
 msgid "Choose_language"
 msgstr "Langue de l'interface"
+
+#: Fix unexplained grappelli translation on delete confirmation
+#: python3.8/site-packages/grappelli/templates/admin/delete_confirmation.html
+msgid "Yes, I'm sure"
+msgstr "Oui, je suis sûr"
+
+msgid "Cancel"
+msgstr "Annuler"
+
