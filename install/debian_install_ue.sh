@@ -74,8 +74,12 @@ pip install --upgrade pip setuptools
 pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
 ## Create database
-mysqladmin create updatengine
-mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost' IDENTIFIED by '${DB_PASSWORD}' WITH GRANT OPTION;"
+mysqladmin create "${DB_NAME}"
+mysql -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost' IDENTIFIED by '${DB_PASSWORD}';"
+if [ $? -ne 0 ]; then
+mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED by '${DB_PASSWORD}';"
+mysql -e "GRANT ALL ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';"
+fi
 mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 service mysql restart
 
