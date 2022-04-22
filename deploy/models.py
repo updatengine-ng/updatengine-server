@@ -95,10 +95,11 @@ class packagecondition(models.Model):
         ordering = ['name']
 
     def get_condition_packages(self):
-        retval = ''
-        for c in package.objects.filter(conditions=self.id):
-            retval += '<a href="%s">%s</a><br/>' % (reverse('admin:deploy_package_change', args=[c.id]), c.name)
-        return mark_safe(retval[:-5])
+        retval = '<ul class="grp-list-options">'
+        for p in package.objects.filter(conditions=self.id):
+            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_package_change', args=[p.id]), p.name)
+        retval += '</ul>'
+        return mark_safe(retval)
     get_condition_packages.short_description = _('package|deployment packages')
 
     def __str__(self):
@@ -132,10 +133,11 @@ class package(models.Model):
         ordering = ['name']
 
     def get_conditions(self):
-        retval = ''
+        retval = '<ul class="grp-list-options">'
         for c in self.conditions.all():
-            retval += '<a href="%s">%s</a><br/>' % (reverse('admin:deploy_packagecondition_change', args=[c.id]), c.name)
-        return mark_safe(retval[:-5])
+            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_packagecondition_change', args=[c.id]), c.name)
+        retval += '</ul>'
+        return mark_safe(retval)
     get_conditions.short_description = _('packageAdmin|get_conditions')
 
     def save(self, *args, **kwargs):
@@ -291,9 +293,11 @@ class packageprofile(models.Model):
         return sorted(packlist, key=lambda package: package.name)
 
     def get_packages(self):
-        retval = mark_safe('<br/>- '.join([p.name for p in self.get_soft()]))
-        if len(retval): retval = mark_safe('- ' + retval)
-        return retval
+        retval = '<ul class="grp-list-options">'
+        for p in self.get_soft():
+            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_packagecondition_change', args=[p.id]), p.name)
+        retval += '</ul>'
+        return mark_safe(retval)
     get_packages.short_description = _('packageAdmin|get_packages')
 
 
