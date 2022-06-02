@@ -295,7 +295,7 @@ class packageprofile(models.Model):
     def get_packages(self):
         retval = '<ul class="grp-list-options">'
         for p in self.get_soft():
-            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_packagecondition_change', args=[p.id]), p.name)
+            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_package_change', args=[p.id]), p.name)
         retval += '</ul>'
         return mark_safe(retval)
     get_packages.short_description = _('packageAdmin|get_packages')
