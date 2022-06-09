@@ -82,11 +82,12 @@ class packageAdmin(ueAdmin):
                     'classes': ('grp-collapse grp-closed',),
                     'fields': ('entity','editor', 'exclusive_editor')}),
                 )
+
     def get_command(self, obj):
         return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
     get_command.short_description = _('package|command')
     get_command.admin_order_field = 'command'
-    
+
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
         if not request.user.is_superuser:
@@ -134,20 +135,26 @@ class packageAdmin(ueAdmin):
 
 
 class packagehistoryAdmin(ueAdmin):
-    list_display = ('date','machine','status','name','description','command','filename','package')
+    list_display = ('date','machine','status','name','description','get_command','filename','package')
     search_fields = ('status','name','description','command')
     list_filter = (entityFilter, machineFilter,packageHistoryFilter,statusFilter,
             ('date', DateFieldListFilter))
     ordering =('-date',)
+
     def has_add_permission(self, request):
         return False
+
     def has_delete_permission(self, request, obj=None):
         return True
 
     def __init__(self, *args, **kwargs):
         super(packagehistoryAdmin, self).__init__(*args, **kwargs)
-        #self.list_display_links = (None, )
         self.list_display_links = ()
+
+    def get_command(self, obj):
+        return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
+    get_command.short_description = _('package|command')
+    get_command.admin_order_field = 'command'
 
     def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
