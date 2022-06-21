@@ -148,6 +148,9 @@ class packagehistoryAdmin(ueAdmin):
     def has_delete_permission(self, request, obj=None):
         return True
 
+    def has_change_permission(self, request, obj=None):
+        return False
+
     def __init__(self, *args, **kwargs):
         super(packagehistoryAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = ()
