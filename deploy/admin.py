@@ -29,6 +29,7 @@ from django.utils.translation import gettext_lazy as _
 from django.forms import ModelForm
 from django.contrib import messages
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 
 class ueAdmin(admin.ModelAdmin):
@@ -135,7 +136,7 @@ class packageAdmin(ueAdmin):
 
 
 class packagehistoryAdmin(ueAdmin):
-    list_display = ('date','machine','status','name','description','get_command','filename','package')
+    list_display = ('date','get_machine','status','name','description','get_command','filename','get_package')
     search_fields = ('status','name','description','command')
     list_filter = (entityFilter, machineFilter,packageHistoryFilter,statusFilter,
             ('date', DateFieldListFilter))
@@ -155,6 +156,20 @@ class packagehistoryAdmin(ueAdmin):
         return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
     get_command.short_description = _('package|command')
     get_command.admin_order_field = 'command'
+
+    def get_machine(self, obj):
+        if obj.machine is not None:
+          retval = '<a href="%s">%s</a>' % (reverse('admin:inventory_machine_change', args=[obj.machine.id]), obj.machine.name)
+          return mark_safe(retval)
+    get_machine.short_description = _('machine')
+    get_machine.admin_order_field = 'machine'
+
+    def get_package(self, obj):
+        if obj.package is not None:
+          retval = '<a href="%s">%s</a>' % (reverse('admin:deploy_package_change', args=[obj.package.id]), obj.package.name)
+          return mark_safe(retval)
+    get_package.short_description = _('package')
+    get_package.admin_order_field = 'package'
 
     def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
