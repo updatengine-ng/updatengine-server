@@ -6,7 +6,15 @@
 - Upgrade to Django 3.2 LTS
 - Upgrade adminactions module to 1.15 version
 - Add debian upgrade script
-- Reorder the inventory columns
+- Reorder the inventory columns (hostname in the first one)
+- Add conditions vendor,product,type
+- Display package command on several lines
+- Add direct link to conditions on the packages page
+- Add direct link to packages on the conditions page
+- Add direct link to machines and packages on the history page
+- Apply bulleted list style to 'packages' and 'conditions' on the deployment page
+- Apply bulleted list style to 'packages' on the packageprofile page
+- Fix version check
 
 4.1.0:
 - Update last release version using json
