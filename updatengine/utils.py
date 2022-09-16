@@ -10,5 +10,5 @@ def get_latest_release_version(url):
         releases = json.loads(html)
         retval = releases[0]['tag_name']
     except Exception as e:
-        retval = str(e)                                                                                                                                                                                                                       
+        retval = 'undefined'
     return retval
