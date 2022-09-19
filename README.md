@@ -4,9 +4,8 @@ UpdatEngine Server is a web app allowing people to inventory computer and server
 
 * [History](#history)
 * [Project features](#project-features)
-* [Compatiblity](#Compatiblity)
 * [Install](#install-latest-stable)
-* [Update](#update)
+* [Upgrade](#upgrade)
 * [Examples](#examples-of-deployment-packages)
 * [Links](#links)
 * [License](#license)
@@ -17,8 +16,8 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 ## Project features
 
-* Python 3.8 / Django 3.2 LTS project
-* Tested with Debian 10, Ubuntu 18.04, Debian 11, Ubuntu 20.04
+* Python 3.10 / Django 3.2 LTS project
+* Tested with Debian 10/11, Ubuntu 18.04/20.04/22.04
 
 
 ## Install latest stable
@@ -207,5 +206,6 @@ If cancelling then UpdatEngine-client will check and ask again on next inventory
 ## License
 
 GPL-2.0
+
 
 
