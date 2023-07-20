@@ -1,6 +1,6 @@
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import gettext_lazy as _
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from inventory.models import software
 from inventory.models import entity, machine, software, osdistribution
 
@@ -23,7 +23,7 @@ class enableFilter(SimpleListFilter):
         }
         for lookup, title in self.lookup_choices:
             yield {
-                'selected': self.value() == force_text(lookup),
+                'selected': self.value() == force_str(lookup),
                 'query_string': cl.get_query_string({
                     self.parameter_name: lookup,
                 }, []),
@@ -52,7 +52,7 @@ class as_or_notFilter(SimpleListFilter):
         }
         for lookup, title in self.lookup_choices:
             yield {
-                'selected': self.value() == force_text(lookup),
+                'selected': self.value() == force_str(lookup),
                 'query_string': cl.get_query_string({
                     self.parameter_name: lookup,
                 }, []),

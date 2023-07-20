@@ -2,7 +2,7 @@ from django.contrib.admin import SimpleListFilter
 from django.utils.translation import gettext_lazy as _
 from inventory.models import entity
 from deploy.models import packagehistory, packagecondition
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from configuration.models import globalconfig
 
 # Filter dedicate to packagehistory pages
@@ -119,7 +119,7 @@ class myPackagesFilter(SimpleListFilter):
         }
         for lookup, title in self.lookup_choices:
             yield {
-                'selected': self.value() == force_text(lookup),
+                'selected': self.value() == force_str(lookup),
                 'query_string': cl.get_query_string({
                     self.parameter_name: lookup,
                 }, []),
@@ -191,7 +191,7 @@ class myConditionsFilter(SimpleListFilter):
         }
         for lookup, title in self.lookup_choices:
             yield {
-                'selected': self.value() == force_text(lookup),
+                'selected': self.value() == force_str(lookup),
                 'query_string': cl.get_query_string({
                     self.parameter_name: lookup,
                 }, []),
