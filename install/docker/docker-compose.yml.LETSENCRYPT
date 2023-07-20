@@ -1,0 +1,88 @@
+version: "3"
+
+services:
+  db:
+    image: mariadb:latest
+    container_name: 'updatengine-db'
+    restart: always
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_DATABASE: '$DB_NAME'
+      MYSQL_USER: '$DB_USER'
+      MYSQL_PASSWORD: '$DB_PASSWORD'
+      MYSQL_ROOT_PASSWORD: '$DB_ROOTPASSWORD'
+    volumes:
+      - 'db:/var/lib/mysql'
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  redis:
+    image: 'redis:3.2.0'
+    container_name: 'updatengine-redis'
+    restart: always
+    ports:
+      - '6378:6379'
+    volumes:
+      - 'redisdata:/data'
+
+  memcached:
+    image: 'memcached:latest'
+    container_name: 'updatengine-memcached'
+    restart: always
+    ports:
+      - "11212:11211"
+
+  web:
+    build: .
+    container_name: 'updatengine-server'
+    restart: always
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    volumes:
+      - static_volume:/app/updatengine/static
+      - media_volume:/app/updatengine/media
+    expose:
+      - 8000
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: curl -XGET http://127.0.0.1:8000
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  nginx:
+    build: ./install/docker/nginx
+    container_name: 'updatengine-nginx'
+    restart: always
+    volumes:
+      - static_volume:/app/updatengine/static
+      - media_volume:/app/updatengine/media
+      - ./install/docker/custom/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./install/docker/custom/certbot/www/:/var/www/certbot/:ro
+      - ./install/docker/custom/certbot/conf/:/etc/nginx/ssl/:ro
+    ports:
+      - $PORT:443
+      - 80:80
+    depends_on:
+      web:
+        condition: service_healthy
+
+    certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./install/docker/custom/certbot/www/:/var/www/certbot/:rw
+      - ./install/docker/custom/certbot/conf/:/etc/letsencrypt/:rw
+
+volumes:
+  redisdata:
+  db:
+  static_volume:
+  media_volume:

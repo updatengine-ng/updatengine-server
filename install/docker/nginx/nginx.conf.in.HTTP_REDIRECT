@@ -1,0 +1,37 @@
+upstream updatengine {
+    server web:8000;
+}
+
+server {
+    listen 80;
+    server_name $SERVER_NAME;
+    server_tokens off;
+
+    location / {
+        return 301 https://${DOLLAR}host:${PORT}${DOLLAR}request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name ${SERVER_NAME};
+    server_tokens off;
+
+    ssl_certificate /etc/ssl/certs/site.crt;
+    ssl_certificate_key /etc/ssl/private/site.key;
+
+    location / {
+        proxy_pass http://updatengine;
+        proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_redirect off;
+    }
+
+    location /static/ {
+        alias /app/updatengine/static/;
+    }
+
+    location /media/ {
+        alias /app/updatengine/media/;
+    }
+}
