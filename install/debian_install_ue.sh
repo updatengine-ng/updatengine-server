@@ -110,7 +110,7 @@ for i in "${PARAMS[@]}"; do
 done
 
 ## Set apache configuration
-envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf 
+envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf
 
 ## Generate SSL certificat
 a2ensite apache-updatengine
@@ -126,6 +126,9 @@ python manage.py migrate
 python manage.py runscript db_convert_utf8
 python manage.py loaddata initial_data/configuration_initial_data.yaml
 python manage.py loaddata initial_data/groups_initial_data.yaml
+
+# Collects the static files
+python manage.py collectstatic
 
 ## Set directory owner
 chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/static/

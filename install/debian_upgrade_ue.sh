@@ -53,5 +53,8 @@ fi
 # Apply migration
 python manage.py migrate
 
+# Collects the static files
+python manage.py collectstatic
+
 # Restart apache
 service apache2 restart
