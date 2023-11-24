@@ -18,8 +18,10 @@ echo "Create settings.py"
 envsubst < ./install/docker/settings.py.in > ./updatengine/settings.py
 
 # If settings_local.py exists, add it
-if [ -f ./install/docker/updatengine/settings_local.py ]; then
-    cp ./install/docker/updatengine/settings_local.py ./updatengine/settings_local.py
+if [ -f ./install/docker/custom/settings_local.py ]; then
+    cp ./install/docker/custom/settings_local.py ./updatengine/settings_local.py
+elif [ -f ./updatengine/settings_local.py ]; then
+    rm ./updatengine/settings_local.py
 fi
 
 # Collect static files
