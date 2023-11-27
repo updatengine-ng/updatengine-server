@@ -23,6 +23,10 @@ if [ "$EUID" -ne 0 ]; then
     exit
 fi
 
+# By default, the installer uses UE git branch 'master'. User can define
+# another branch by declaring it in environment variable.
+[ -z ${GIT_BRANCH} ] && GIT_BRANCH=master
+
 ################################################
 ###  -- UE server installation settings --   ###
 ################################################
@@ -34,7 +38,7 @@ if [ ! -f ./custom/.env ]; then
     echo "################"
     echo "WARNING: The installer will used default site settings. Edit the 'custom/.env' file with your own settings."
     echo "################"
-    wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/dev_v6/install/debian/.env.default > /dev/null 2>&1
+    wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/${GIT_BRANCH}/install/debian/.env.default > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       echo "Error: Unable to download the default environment settings ." >&2
       exit 1
@@ -82,7 +86,7 @@ cd ${INST_DIR}
 
 # Download or update UE-Server files
 if [ ! -d "${INST_DIR}/updatengine-server" ]; then
-    git clone https://github.com/updatengine-ng/updatengine-server
+    git clone https://github.com/updatengine-ng/updatengine-server -b ${GIT_BRANCH}
 else
     git pull
 fi
