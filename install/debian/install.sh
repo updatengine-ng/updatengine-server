@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2023/11/27
+## 2024/03/27
 ################################################
 #
 #             /!\ WARNING /!\
@@ -73,7 +73,10 @@ fi
 
 ## Install linux packages and python modules
 apt update
-apt install git apache2 python3 python3-dev python3-venv python3-pip python3-distutils libapache2-mod-wsgi-py3 git mariadb-server libmariadb-dev build-essential libxml2-dev libxslt-dev -y
+apt install git apache2 python3 python3-dev python3-venv python3-pip \
+    python3-distutils libapache2-mod-wsgi-py3 git mariadb-server \
+    libmariadb-dev build-essential libxml2-dev libxslt-dev \
+    libldap2-dev libsasl2-dev -y
 
 # Create directories
 if [ ! -d "${VENV_DIR}" ]; then

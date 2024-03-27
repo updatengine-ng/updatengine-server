@@ -19,7 +19,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
 ###############################################################################
 
-from configuration.models import deployconfig, subuser, globalconfig
+from configuration.models import deployconfig, subuser, globalconfig, userauth
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -29,8 +29,10 @@ from django.conf import settings
 
 class deployconfigAdmin(admin.ModelAdmin):
     actions = None
-    list_display = ('name', 'activate_deploy', 'activate_time_deploy', 'start_time', 'end_time', 'entity', 'packageprofile', 'timeprofile')
-    list_editable = ('activate_deploy', 'activate_time_deploy', 'start_time', 'end_time', 'entity', 'packageprofile', 'timeprofile')
+    list_display = ('name', 'activate_deploy', 'activate_time_deploy', 'start_time', 'end_time', 'entity',
+                    'packageprofile', 'timeprofile')
+    list_editable = ('activate_deploy', 'activate_time_deploy', 'start_time', 'end_time', 'entity', 'packageprofile',
+                     'timeprofile')
     list_display_links = ('name',)
 
     readonly_fields = ('name',)
@@ -70,22 +72,41 @@ class subuserInline(admin.TabularInline):
         return True
 
 
+class userauthInline(admin.TabularInline):
+    model = userauth
+    can_delete = False
+    readonly_fields = ('ldap_auth',)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+
 class UserAdmin(UserAdmin):
-    # redefine get_form method to display subuserInline only on edit page
-    def get_form(self, request, obj=None, **kwargs):
-        '''
-        Use special form during user creation
-        '''
-        defaults = {}
+    # Display ldap_auth field only if LDAP backend is enabled
+    if 'auth.backends.LDAPBackend' in settings.AUTHENTICATION_BACKENDS:
+        list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'ldap_auth')
+
+        def ldap_auth(self, instance):
+            return instance.userauth.ldap_auth
+
+        ldap_auth.short_description = _('LDAP')
+        ldap_auth.boolean = True
+        ldap_auth.admin_order_field = 'userauth__ldap_auth'
+
+    # Override get_inlines method to display subuserInline inline only on edit page and userauthInline
+    # based on enabled backends
+    def get_inlines(self, request, obj):
         if not obj:
-            defaults.update({
-                'form': self.add_form,
-                'fields': admin.options.flatten_fieldsets(self.add_fieldsets),
-            })
-        else:
-            self.inlines = (subuserInline,)
-        defaults.update(kwargs)
-        return super(UserAdmin, self).get_form(request, obj, **defaults)
+            return []
+        if not 'auth.backends.LDAPBackend' in settings.AUTHENTICATION_BACKENDS:
+            return [subuserInline]
+        return [userauthInline, subuserInline]
 
     def save_model(self, request, obj, form, change):
         if obj.is_active:
@@ -99,7 +120,7 @@ class UserAdmin(UserAdmin):
             (None, {'fields': ('username', 'password')}),
             (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
             # is_staff is automaticly set to True if is_active
-            (_('Permissions'), {'fields': ('is_active', 'is_superuser', )}),
+            (_('Permissions'), {'fields': ('is_active', 'is_superuser',)}),
             (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
             (_('Groups and permissions'), {'fields': ('groups', 'user_permissions')}),
         )
@@ -108,7 +129,7 @@ class UserAdmin(UserAdmin):
             (None, {'fields': ('username', 'password')}),
             (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
             # is_staff is automaticly set to True if is_active
-            (_('Permissions'), {'fields': ('is_active', 'is_superuser', )}),
+            (_('Permissions'), {'fields': ('is_active', 'is_superuser',)}),
             (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
             (_('Groups and permissions'), {'fields': ('groups',)}),
         )

@@ -30,7 +30,7 @@ PROJECT_URL = 'https://${SERVER_NAME}:${PORT}'
 
 # List of host/domain names that this Django site can serve
 # Add your ip and/or domain else you will have a "Bad Request (400)" error
-ALLOWED_HOSTS = ['${SERVER_NAME}']
+ALLOWED_HOSTS = ['127.0.0.1','${SERVER_NAME}']
 
 # List of trusted origins
 CSRF_TRUSTED_ORIGINS = ['https://${SERVER_NAME}:${PORT}']
@@ -87,7 +87,6 @@ SECRET_KEY = '${SECRET_KEY}'
 
 # EMAIL
 ADMINS = (${ADMINS})
-# DJANGO_ADMINS=Blake:blake@cyb.org,Alice:alice@cyb.org
 MANAGERS = ADMINS
 DEFAULT_FROM_EMAIL = '${DEFAULT_FROM_EMAIL}'
 SERVER_EMAIL = '${SERVER_EMAIL}'
