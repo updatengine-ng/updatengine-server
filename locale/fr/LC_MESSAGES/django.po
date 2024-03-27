@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-27 15:30-0400\n"
+"POT-Creation-Date: 2024-03-28 05:25-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -161,10 +161,8 @@ msgid "subuser|entity"
 msgstr "Droits récurssifs sur les entités"
 
 #: configuration/models.py:132 configuration/models.py:133
-#, fuzzy
-#| msgid "entity|time profile"
 msgid "Authentication profile"
-msgstr "Période de déploiement"
+msgstr "Profil d'authentification"
 
 #: deploy/admin.py:80
 msgid "package|general information"
@@ -192,10 +190,8 @@ msgstr ""
 "il est verrouillé en 'éditeur exclusif'"
 
 #: deploy/admin.py:167
-#, fuzzy
-#| msgid "typemachine"
 msgid "machine"
-msgstr "Type"
+msgstr "Machine"
 
 #: deploy/admin.py:174 deploy/filters.py:70
 msgid "package"
@@ -1189,8 +1185,20 @@ msgstr "Accueil"
 msgid "Choose_language"
 msgstr "Langue de l'interface"
 
-#~ msgid "Yes, I'm sure"
-#~ msgstr "Oui, je suis sûr"
+#: Fix grappelli translations on delete confirmation
+#: python3.11/site-packages/grappelli/templates/admin/delete_confirmation.html
+msgid "Yes, I'm sure"
+msgstr "Oui, je suis sûr"
 
-#~ msgid "Cancel"
-#~ msgstr "Annuler"
+msgid "Cancel"
+msgstr "Annuler"
+
+#: Fix grappelli translations on password change
+#: python3.11/site-packages/grappelli/templates/registration/password_change_form.html
+msgid ""
+"Please enter your old password, for security's sake, and then enter "
+"your new password twice so we can verify you typed it in correctly."
+msgstr ""
+"Veuillez saisir votre ancien mot de passe, pour des raisons de "
+"sécurité, puis saisir votre nouveau mot de passe deux fois afin que "
+"nous puissions vérifier que vous l'avez saisi correctement."

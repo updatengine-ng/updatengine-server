@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-27 15:30-0400\n"
+"POT-Creation-Date: 2024-03-28 05:25-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,10 +159,8 @@ msgid "subuser|entity"
 msgstr ""
 
 #: configuration/models.py:132 configuration/models.py:133
-#, fuzzy
-#| msgid "entity|time profile"
 msgid "Authentication profile"
-msgstr "Deployment period"
+msgstr "Authentication profile"
 
 #: deploy/admin.py:80
 msgid "package|general information"
@@ -188,10 +186,8 @@ msgid ""
 msgstr ""
 
 #: deploy/admin.py:167
-#, fuzzy
-#| msgid "typemachine"
 msgid "machine"
-msgstr "type"
+msgstr "machine"
 
 #: deploy/admin.py:174 deploy/filters.py:70
 msgid "package"
