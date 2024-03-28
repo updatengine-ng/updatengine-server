@@ -1,4 +1,4 @@
-Django==4.2.7
+Django==4.2.11
 django-extensions==3.2.3
 django-grappelli==3.0.8
 django-utils-six==2.0
