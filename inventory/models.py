@@ -235,7 +235,7 @@ class software(models.Model):
     )
     name = models.CharField(max_length=300, verbose_name=_('software|name'))
     version = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('software|version'))
-    uninstall = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('software|uninstall'))
+    uninstall = models.CharField(max_length=800, null=True, blank=True, default='undefined', verbose_name=_('software|uninstall'))
     host = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('software|host'))
     manualy_created = models.CharField(max_length=3, choices=choice, default='yes', verbose_name=_('software|manualy_created'))
 
