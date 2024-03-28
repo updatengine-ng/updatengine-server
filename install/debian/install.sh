@@ -27,6 +27,11 @@ fi
 # another branch by declaring it in environment variable.
 [ -z ${GIT_BRANCH} ] && GIT_BRANCH=master
 
+# Set SCRIPT_DIR, custom directory must be there
+INITIAL_DIR=$( pwd )
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR
+
 ################################################
 ###  -- UE server installation settings --   ###
 ################################################
@@ -76,7 +81,7 @@ apt update
 apt install git apache2 python3 python3-dev python3-venv python3-pip \
     python3-distutils libapache2-mod-wsgi-py3 git mariadb-server \
     libmariadb-dev build-essential libxml2-dev libxslt-dev \
-    libldap2-dev libsasl2-dev -y
+    libldap2-dev libsasl2-dev pkg-config -y
 
 # Create directories
 if [ ! -d "${VENV_DIR}" ]; then
@@ -142,10 +147,10 @@ systemctl restart apache2
 echo "Create settings.py"
 envsubst < ${INST_DIR}/updatengine-server/updatengine/settings.py.in > ${INST_DIR}/updatengine-server/updatengine/settings.py
 
-# If settings_local.py exists, add it
-echo "Check if ./custom/settings_local.py exists, if so copy it"
-if [ -f ./custom/settings_local.py ]; then
-    cp ./custom/settings_local.py ./updatengine/settings_local.py
+# Add custom/settings_local.py if it exists
+if [ -f "${SCRIPT_DIR}/custom/settings_local.py" ]; then
+    echo "Copy settings_local.py to updatengine-server directory"
+    cp "${SCRIPT_DIR}/custom/settings_local.py" ./updatengine/settings_local.py
 fi
 
 # Collect static files
@@ -181,3 +186,6 @@ if [ "$?" = "0" ]; then
     echo "################"
     python manage.py createsuperuser
 fi
+
+# Back to initial directory
+cd "${INITIAL_DIR}"
