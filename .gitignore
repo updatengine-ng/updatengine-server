@@ -1,2 +1,7 @@
 *.pyc
 settings.py
+settings_local.py
+static/
+custom/
+.idea
+

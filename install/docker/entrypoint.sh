@@ -15,11 +15,14 @@ fi
 
 # Create settings.py using environment settings
 echo "Create settings.py"
-envsubst < ./install/docker/settings.py.in > ./updatengine/settings.py
+envsubst < ./updatengine/settings.py.in > ./updatengine/settings.py
+# Add 127.0.0.1 to avoid the error "Invalid HTTP_HOST header: '127.0.0.1:8000'. You may need 
+# to add '127.0.0.1' to ALLOWED_HOSTS"
+sed -i "s|^ALLOWED_HOSTS = \[|ALLOWED_HOSTS = \['127.0.0.1',|" ./updatengine/settings.py
 
 # If settings_local.py exists, add it
-if [ -f ./install/docker/custom/settings_local.py ]; then
-    cp ./install/docker/custom/settings_local.py ./updatengine/settings_local.py
+if [ -f ./install/docker/custom.dist/settings_local.py ]; then
+    cp ./install/docker/custom.dist/settings_local.py ./updatengine/settings_local.py
 elif [ -f ./updatengine/settings_local.py ]; then
     rm ./updatengine/settings_local.py
 fi

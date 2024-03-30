@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server docker installation script
-## 2023/11/24
+## 2024/03/29
 ################################################
 #
 ################################################
@@ -34,7 +34,7 @@ if [ ! -f ./custom/.env ]; then
   echo "################"
   echo "WARNING: The installer will used default site settings. Edit the 'custom/.env' file with your own settings."
   echo "################"
-  cp .env.default ./custom/.env
+  cp ./custom.dist/env.default ./custom/.env
   while true; do
       read -p "Do you wish to continue with the default settings (y/n) ? " yn
       case $yn in
