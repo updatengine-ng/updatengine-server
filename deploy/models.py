@@ -21,7 +21,7 @@
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save, pre_delete
 from django.db import models
-from django.db.models.signals import m2m_changed
+from django.db.models.signals import m2m_changed, post_migrate
 from django.dispatch import receiver
 from inventory.models import machine
 import hashlib
@@ -41,6 +41,7 @@ from django.urls import reverse
 def random_directory(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
     random_string = ''.join(random.choice(chars) for x in range(size))
     return prefix+random_string+suffix
+
 
 
 class packagecondition(models.Model):
@@ -109,6 +110,27 @@ class packagecondition(models.Model):
 def content_file_name(self, name):
     return random_directory(prefix='package-file/', suffix='/'+name)
 
+def md5_for_file(filefield, block_size=2**20):  # MD5 keep for client backward compatibility < 6.0.0
+    if filefield == '':
+        return 'nofile'
+    f = open(filefield.path, 'rb')
+    md5 = hashlib.md5()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        md5.update(data)
+    return md5.hexdigest()
+
+def sha512_for_file(filefield, block_size=2**20):
+    if filefield == '':
+        return 'nofile'
+    sha512 = hashlib.sha512()
+    with open(filefield.path, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            sha512.update(block)
+    return sha512.hexdigest()
+
 
 class package(models.Model):
     choice_yes_no = (
@@ -120,6 +142,7 @@ class package(models.Model):
     conditions = models.ManyToManyField('packagecondition', blank=True, verbose_name=_('package|conditions'))
     command = models.TextField(max_length=1000, verbose_name=_('package|command'), help_text=_('package|command help text'))
     packagesum = models.CharField(max_length=40, null=True, blank=True, verbose_name=_('package|packagesum'))
+    packagehash = models.CharField(max_length=128, null=True, blank=True, verbose_name=_('package|packagehash'))
     filename = models.FileField(upload_to=content_file_name, null=True, blank=True, verbose_name=_('package|filename'))
     ignoreperiod = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|ignore deploy period'))
     public = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package| public package'))
@@ -155,37 +178,39 @@ class package(models.Model):
             pass  # when new file then we do nothing, normal case
         super(package, self).save(*args, **kwargs)
 
-    def md5_for_file(self, block_size=2**20):
-        if self.filename == '':
-            return 'nofile'
-        f = open(self.filename.path, 'rb')
-        md5 = hashlib.md5()
-        while True:
-            data = f.read(block_size)
-            if not data:
-                break
-            md5.update(data)
-        return md5.hexdigest()
-
     def __str__(self):
         return self.name
 
+# Fill packagehash field if not set and filename exists
+@receiver(post_migrate)
+def update_packagehash(sender, *args, **kwargs):
+    if sender.name == 'deploy':
+        try:
+            for p in package.objects.filter(packagehash__isnull=True):
+                if p.filename != '' and p.packagehash is None:
+                    p.packagehash = sha512_for_file(p.filename)
+                p.save()
+        except:
+            pass
 
 # Add a post_save function to update packagesum after each save on
 # a package object
 @receiver(post_save, sender=package)
 def postcreate_package(sender, instance, created, **kwargs):
-    # Update of packagesum field
+    # Update of packagesum and packagehash fields
     if not instance.filename:
         instance.packagesum = 'nofile'
+        instance.packagehash = 'nofile'
     else:
-        instance.packagesum = instance.md5_for_file()
+        instance.packagesum = md5_for_file(instance.filename)
+        instance.packagehash = sha512_for_file(instance.filename)
     # Update of all package history wish are programmed
     for ph in packagehistory.objects.filter(package=instance, status='Programmed'):
         ph.name = instance.name
         ph.description = instance.description
         ph.command = instance.command
         ph.packagesum = instance.packagesum
+        ph.packagehash = instance.packagehash
         if instance.packagesum != 'nofile':
             ph.filename = instance.filename.path
         else:
@@ -218,6 +243,7 @@ def packages_changed(sender, action, instance, **kwargs):
             obj.description = package.description
             obj.command = package.command
             obj.packagesum = package.packagesum
+            obj.packagehash = package.packagehash
             if package.packagesum != 'nofile':
                 obj.filename = package.filename.path
             obj.save()
@@ -235,6 +261,7 @@ class packagehistory(models.Model):
     description = models.CharField(max_length=500, null=True, blank=True, verbose_name=_('packagehistory|description'))
     command = models.TextField(max_length=1000, null=True, blank=True, verbose_name=_('packagehistory|command'))
     packagesum = models.CharField(max_length=40, null=True, blank=True, verbose_name=_('packagehistory|packagesum'))
+    packagehash = models.CharField(max_length=128, null=True, blank=True, verbose_name=_('package|packagehash'))
     filename = models.CharField(max_length=500, null=True, blank=True, verbose_name=_('packagehistory|filename'))
     machine = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('packagehistory|machine'))
     package = models.ForeignKey(package, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_('packagehistory|package'))
@@ -358,6 +385,7 @@ class impex(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name=_('impex|name'))
     description = models.TextField(max_length=500, verbose_name=_('impex|description'))
     packagesum = models.CharField(max_length=40, null=True, blank=True, verbose_name=_('impex|packagesum'))
+    packagehash = models.CharField(max_length=128, null=True, blank=True, verbose_name=_('package|packagehash'))
     filename = models.FileField(upload_to=content_file_name, null=True, blank=True, default=None, verbose_name=_('impex|filename'))
     package = models.ForeignKey(package, null=True, blank=True, default=None, on_delete=models.SET_NULL, verbose_name=_('impex|package'))
     date = models.DateTimeField(auto_now=True, verbose_name=_('impex|date'))
@@ -387,18 +415,6 @@ class impex(models.Model):
         except:
             pass  # when new file then we do nothing, normal case
         super(impex, self).save(*args, **kwargs)
-
-    def md5_for_file(self, block_size=2**20):
-        if self.filename == '':
-            return 'nofile'
-        f = open(self.filename.path, 'rb')
-        md5 = hashlib.md5()
-        while True:
-            data = f.read(block_size)
-            if not data:
-                break
-            md5.update(data)
-        return md5.hexdigest()
 
     def __str__(self):
         return self.name
@@ -491,7 +507,8 @@ def postcreate_impex(sender, instance, created, **kwargs):
                 pack.conditions.add(cond)
             pack.save()
 
-    instance.packagesum = instance.md5_for_file()
+    instance.packagesum = md5_for_file(instance.filename)
+    instance.packagehash = sha512_for_file(instance.filename)
     post_save.disconnect(receiver=postcreate_impex, sender=impex)
     instance.save()
     post_save.connect(receiver=postcreate_impex, sender=impex)
