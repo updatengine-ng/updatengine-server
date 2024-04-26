@@ -36,6 +36,7 @@ from inventory.models import entity
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 
 def random_directory(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
@@ -149,6 +150,7 @@ class package(models.Model):
     entity = models.ManyToManyField(entity, blank=True, verbose_name=_('package|entity'))
     editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('package| package last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|exclusive editor'))
+    use_global_variables = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|global variables'), help_text=_('package|global variables help text'))
 
     class Meta:
         verbose_name = _('package|deployment package')
@@ -180,6 +182,35 @@ class package(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class packagecustomvar(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('name'), help_text=_('packagecustomvar|name help text'))
+    value = models.CharField(max_length=200, verbose_name=_('value'))
+    apply_on_commands = models.BooleanField(default=True, verbose_name=_('packagecustomvar|apply on commands'))
+    apply_on_conditions = models.BooleanField(default=True, verbose_name=_('packagecustomvar|apply on conditions'))
+    description = models.CharField(max_length=200, null=True, blank=True, verbose_name=_('description'))
+    package = models.ForeignKey(package, on_delete=models.CASCADE, verbose_name=_('package|deployment package'))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('package|deployment custom variable')
+        verbose_name_plural = _('package|deployment custom variables')
+        unique_together = ('name', 'package',)
+
+    def clean(self):
+        if self.name in ('username', 'hostname', 'domain'):
+            raise ValidationError(_('package|deployment reserved names'))
+        if self.apply_on_commands is False and self.apply_on_conditions is False:
+            raise ValidationError(_('package|deployment at least one scope'))
+
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
 
 # Fill packagehash field if not set and filename exists
 @receiver(post_migrate)

@@ -18,7 +18,8 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
 ###############################################################################
 
-from deploy.models import package, packagehistory, packageprofile, packagecondition, timeprofile, packagewakeonlan, impex
+from deploy.models import (package, packagehistory, packageprofile, packagecondition, timeprofile, packagewakeonlan,
+                           impex, packagecustomvar)
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
 from deploy.filters import entityFilter, machineFilter, statusFilter,\
@@ -30,6 +31,7 @@ from django.forms import ModelForm
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from updatengine.utils import FieldsetsInlineMixin
 
 
 class ueAdmin(admin.ModelAdmin):
@@ -40,6 +42,13 @@ class ueAdmin(admin.ModelAdmin):
 
     def get_export_as_csv_filename(self, request, queryset):
         return 'deploy'
+
+
+class customvarInline(admin.TabularInline):
+    model = packagecustomvar
+    max_num = 20
+    extra = 0
+    fields = ['name', 'value', 'apply_on_commands', 'apply_on_conditions', 'description']
 
 
 class packageForm(ModelForm):
@@ -69,20 +78,33 @@ class packageForm(ModelForm):
         return self.my_user
 
 
-class packageAdmin(ueAdmin):
+class packageAdmin(FieldsetsInlineMixin, ueAdmin):
+#class packageAdmin(ueAdmin):
     list_display = ('name','description','get_command','filename','get_conditions','ignoreperiod','public','editor','exclusive_editor')
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
     filter_horizontal = ('conditions','entity')
     form = packageForm
-    fieldsets = (
-                (_('package|general information'), {'fields': ('name', 'description')}),
-                (_('package|package edition'), {'fields': ('conditions', 'command', 'filename','public','ignoreperiod')}),
-                (_('package|permissions'), {
-                    'classes': ('grp-collapse grp-closed',),
-                    'fields': ('entity','editor', 'exclusive_editor')}),
-                )
+    # inlines = (variableInline,)
+    # readonly_fields = ('variableInline')
+    # fieldsets = (
+    #             (_('package|general information'), {'fields': ('name', 'description')}),
+    #             (_('package|package edition'), {'fields': ('conditions', 'command', 'filename','public','ignoreperiod')}),
+    #             (_('package|permissions'), {
+    #                 'classes': ('grp-collapse grp-closed',),
+    #                 'fields': ('entity','editor', 'exclusive_editor')}),
+    #             )
+
+    fieldsets_with_inlines = [
+        (_('package|general information'), {'fields': ('name', 'description')}),
+        customvarInline,
+        (_('package|package edition'), {'fields': ('use_global_variables', 'conditions', 'command', 'filename', 'public', 'ignoreperiod')}),
+        (_('package|permissions'), {
+            'classes': ('grp-collapse grp-closed',),
+            'fields': ('entity', 'editor', 'exclusive_editor')}),
+    ]
+
 
     def get_command(self, obj):
         return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
@@ -136,7 +158,7 @@ class packageAdmin(ueAdmin):
 
 
 class packagehistoryAdmin(ueAdmin):
-    list_display = ('date','get_machine','status','name','description','get_command','filename','get_package')
+    list_display = ('date','get_machine','get_status','name','description','get_command','filename','get_package')
     search_fields = ('status','name','description','command')
     list_filter = (entityFilter, machineFilter,packageHistoryFilter,statusFilter,
             ('date', DateFieldListFilter))
@@ -155,9 +177,14 @@ class packagehistoryAdmin(ueAdmin):
         super(packagehistoryAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = ()
 
+    def get_status(self, obj):
+        return mark_safe(obj.status.replace('\r', '').replace('\n', '<br>'))
+    get_status.short_description = _('packagehistory|status')
+    get_status.admin_order_field = 'status'
+
     def get_command(self, obj):
         return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
-    get_command.short_description = _('package|command')
+    get_command.short_description = _('packagehistory|command')
     get_command.admin_order_field = 'command'
 
     def get_machine(self, obj):
