@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2024/03/28
+## 2024/04/27
 ################################################
 #
 #             /!\ WARNING /!\
@@ -26,6 +26,7 @@ fi
 # By default, the installer uses UE git branch 'master'. User can define
 # another branch by declaring it in environment variable.
 [ -z ${GIT_BRANCH} ] && GIT_BRANCH=master
+echo "Using git branch ${GIT_BRANCH}"
 
 # Set SCRIPT_DIR, custom directory must be there
 INITIAL_DIR=$( pwd )
@@ -96,6 +97,11 @@ cd ${INST_DIR}
 if [ ! -d "${INST_DIR}/updatengine-server" ]; then
     git clone https://github.com/updatengine-ng/updatengine-server -b ${GIT_BRANCH}
 else
+    cd updatengine-server
+    git fetch --all
+    git reset --hard
+    git checkout ${GIT_BRANCH}
+    git reset --hard
     git pull
 fi
 
