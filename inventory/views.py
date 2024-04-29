@@ -44,7 +44,12 @@ def compare_versions(version1, version2):
         version2 = ''
     if version1 == version2:
         return 0
-    return -1 if version.parse(version1) < version.parse(version2) else 1
+    try:
+        return -1 if version.parse(version1) < version.parse(version2) else 1
+    except:
+        ver = [version1, version2]
+        ver.sort()
+        return -1 if ver[0] == version1 else 1
 
 
 def is_deploy_authorized(m, handling):
@@ -159,12 +164,12 @@ def check_conditions(m, pack, xml=None):
     '''This function check conditions of pack deployment package'''
     # Check custom package variables
     cv = {}
+    for customvar in packagecustomvar.objects.filter(package=pack, apply_on_conditions=True):
+        cv[customvar.name] = customvar.value
     if pack.use_global_variables == 'yes':
         cv['username'] = m.username.replace(' (not logged in)', '')
         cv['hostname'] = m.name
         cv['domain'] = m.domain
-    for customvar in packagecustomvar.objects.filter(package=pack, apply_on_conditions=True):
-        cv[customvar.name] = customvar.value
 
     # All types of conditions are checked one by one
     install = True
@@ -705,6 +710,8 @@ def check_conditions(m, pack, xml=None):
         if install is False:
             break
 
+    if condition.softwareversion is None:
+        condition.softwareversion = ''
     if install is False:
         status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(pack.id) + '</Pid><Status>Warning condition: ' +
                escape(
@@ -933,12 +940,12 @@ def inventory(xml):
                 for pack in sorted(package_to_deploy, key=lambda package: package.name):
                     if period_to_deploy or pack.ignoreperiod == 'yes':
                         cv = {}
+                        for customvar in packagecustomvar.objects.filter(package=pack, apply_on_commands=True):
+                            cv[customvar.name] = customvar.value
                         if pack.use_global_variables == 'yes':
                             cv['username'] = m.username.replace(' (not logged in)', '')
                             cv['hostname'] = m.name
                             cv['domain'] = m.domain
-                        for customvar in packagecustomvar.objects.filter(package=pack, apply_on_commands=True):
-                            cv[customvar.name] = customvar.value
                         if len(cv) > 0:
                             template = django_engine.from_string(pack.command)
                             pack.command = template.render(cv, request=None)
@@ -1018,12 +1025,12 @@ def inventory_extended(xml):
                 if period_to_deploy or pack.ignoreperiod == 'yes':
                     if check_conditions(m, pack, xml):
                         cv = {}
+                        for customvar in packagecustomvar.objects.filter(package=pack, apply_on_commands=True):
+                            cv[customvar.name] = customvar.value
                         if pack.use_global_variables == 'yes':
                             cv['username'] = m.username.replace(' (not logged in)', '')
                             cv['hostname'] = m.name
                             cv['domain'] = m.domain
-                        for customvar in packagecustomvar.objects.filter(package=pack, apply_on_commands=True):
-                            cv[customvar.name] = customvar.value
                         if len(cv) > 0:
                             template = django_engine.from_string(pack.command)
                             pack.command = template.render(cv, request=None)
@@ -1079,13 +1086,13 @@ def public_soft_list(pack=None):
         pack.name = encodeXMLText(pack.name)
         pack.description = encodeXMLText(pack.description)
         cv = {}
-        if pack.use_global_variables == 'yes':
+        for customvar in packagecustomvar.objects.filter(package=pack, apply_on_commands=True):
+            cv[customvar.name] = customvar.value
+        if pack.use_global_variables == 'yes':  # Ignored pack
             # cv['username'] = m.username.replace(' (not logged in)', '')
             # cv['hostname'] = m.name
             # cv['domain'] = m.domain
             continue
-        for customvar in packagecustomvar.objects.filter(package=pack, apply_on_commands=True):
-            cv[customvar.name] = customvar.value
         if len(cv) > 0:
             template = django_engine.from_string(pack.command)
             pack.command = template.render(cv, request=None)
