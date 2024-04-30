@@ -101,6 +101,16 @@ def status(xml):
         # Update packagehistory status:
         m = machine.objects.get(pk=mid)
         p = package.objects.get(pk=pid)
+        cv = {}
+        for customvar in packagecustomvar.objects.filter(package=p, apply_on_commands=True):
+            cv[customvar.name] = customvar.value
+        if pack.use_global_variables == 'yes':
+            cv['username'] = m.username.replace(' (not logged in)', '')
+            cv['hostname'] = m.name
+            cv['domain'] = m.domain
+        if len(cv) > 0:
+            template = django_engine.from_string(p.command)
+            p.command = template.render(cv, request=None)
         obj, created = packagehistory.objects.get_or_create(machine=m, package=p, command=p.command, status=status)
         obj.name = p.name
         obj.description = p.description
@@ -128,7 +138,7 @@ def get_extended_conditions(m, pack):
     for customvar in packagecustomvar.objects.filter(package=pack, apply_on_conditions=True):
         cv[customvar.name] = customvar.value
     if pack.use_global_variables == 'yes':
-        cv['username'] = m.username
+        cv['username'] = m.username.replace(' (not logged in)', '')
         cv['hostname'] = m.name
         cv['domain'] = m.domain
 
