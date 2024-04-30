@@ -101,7 +101,7 @@ else
     git fetch --all
     git reset --hard
     git checkout ${GIT_BRANCH}
-    git reset --hard
+    git reset --hard origin/${GIT_BRANCH}
     git pull
 fi
 
