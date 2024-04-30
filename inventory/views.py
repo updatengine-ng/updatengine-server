@@ -104,7 +104,7 @@ def status(xml):
         cv = {}
         for customvar in packagecustomvar.objects.filter(package=p, apply_on_commands=True):
             cv[customvar.name] = customvar.value
-        if pack.use_global_variables == 'yes':
+        if p.use_global_variables == 'yes':
             cv['username'] = m.username.replace(' (not logged in)', '')
             cv['hostname'] = m.name
             cv['domain'] = m.domain
