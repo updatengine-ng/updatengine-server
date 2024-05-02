@@ -350,9 +350,6 @@ def check_conditions(m, pack, xml=None):
                         break
                     else:
                         install = False
-                # Do not test this condition type again if the last check failed
-                if install is False:
-                    break
             except:
                 install = False
                 pass
