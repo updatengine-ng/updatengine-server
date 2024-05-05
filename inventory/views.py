@@ -899,7 +899,7 @@ def inventory(xml):
                                 if m.entity_id != entity_obj.id:
                                     host_previous_entity = entity.objects.filter(id=m.entity_id)[0]
                                     handling.append('<Info>Entity updated for %s from \'%s\' to \'%s\'</Info>' % (
-                                    m.name, host_previous_entity.name, entity_obj.name))
+                                        m.name, host_previous_entity.name, entity_obj.name))
                                     m.entity_id = entity_obj.id
                                     m.entity.redistrib_url = entity_obj.redistrib_url
                                     m.save()
@@ -907,7 +907,7 @@ def inventory(xml):
                                 break
                         except:
                             handling.append('<Error>Invalid network in ip range for entity \'%s\' : \'%s\'</Error>' % (
-                            entity_obj.name, network_range))
+                                entity_obj.name, network_range))
                             pass
                     if is_ip_matched:
                         break
@@ -959,8 +959,10 @@ def inventory(xml):
                         if check_conditions(m, pack):
                             if pack.command.find('no_break_on_error') != -1 and (
                                     clientversion == 'Unknown' or compare_versions(clientversion, '3.1') < 0):
-                                status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(
-                                    pack.id) + '</Pid><Status>Unsupported option for updatengine-client version \'' + clientversion + '\': Ignoring \'no_break_on_error\'</Status></Packagestatus>')
+                                status('<Packagestatus><Mid>' + str(m.id) + '</Mid>' +
+                                       '<Pid>' + str(pack.id) + '</Pid>' +
+                                       '<Status>Unsupported option for updatengine-client version \'' + clientversion + '\': Ignoring \'no_break_on_error\'</Status>' +
+                                       '</Packagestatus>')
                                 pack.command = re.sub('\r?\nno_break_on_error', '', pack.command)
                             if pack.packagesum != 'nofile':
                                 if m.entity is not None and m.entity.redistrib_url:
@@ -973,14 +975,15 @@ def inventory(xml):
                             pack.description = encodeXMLText(pack.description)
                             pack.command = encodeXMLText(pack.command)
                             handling.append('<Package>'
-                                            '<Id>' + str(m.id) + '</Id>'
-                                            '<Pid>' + str(pack.id) + '</Pid>'
-                                            '<Name>' + pack.name + '</Name>'
-                                            '<Description>' + pack.description + '</Description>'
-                                            '<Command>' + pack.command + '</Command>'
-                                            '<Packagesum>' + pack.packagesum + '</Packagesum>'
-                                            '<Url>' + packurl + '</Url>')
-                            handling.append('</Package>')
+                                            '<Id>' + str(m.id) + '</Id>' +
+                                            '<Pid>' + str(pack.id) + '</Pid>' +
+                                            '<Name>' + pack.name + '</Name>' +
+                                            '<Description>' + pack.description + '</Description>' +
+                                            '<Command>' + pack.command + '</Command>' +
+                                            '<Packagesum>' + pack.packagesum + '</Packagesum>' +
+                                            '<Packagehash>' + pack.packagehash + '</Packagehash>' +
+                                            '<Url>' + packurl + '</Url>' +
+                                            '</Package>')
         else:
             handling.append('<Info>Deployment function is not active</Info>')
     except:
@@ -1061,14 +1064,15 @@ def inventory_extended(xml):
                         pack.description = encodeXMLText(pack.description)
                         pack.command = encodeXMLText(pack.command)
                         handling.append('<Package>'
-                                        '<Id>' + str(m.id) + '</Id>'
-                                                             '<Pid>' + str(pack.id) + '</Pid>'
-                                                                                      '<Name>' + pack.name + '</Name>'
-                                                                                                             '<Description>' + pack.description + '</Description>'
-                                                                                                                                                  '<Command>' + pack.command + '</Command>'
-                                                                                                                                                                               '<Packagesum>' + pack.packagesum + '</Packagesum>'
-                                                                                                                                                                                                                  '<Url>' + packurl + '</Url>')
-                        handling.append('</Package>')
+                                        '<Id>' + str(m.id) + '</Id>' +
+                                        '<Pid>' + str(pack.id) + '</Pid>' +
+                                        '<Name>' + pack.name + '</Name>' +
+                                        '<Description>' + pack.description + '</Description>' +
+                                        '<Command>' + pack.command + '</Command>' +
+                                        '<Packagesum>' + pack.packagesum + '</Packagesum>' +
+                                        '<Packagehash>' + pack.packagehash + '</Packagehash>' +
+                                        '<Url>' + packurl + '</Url>' +
+                                        '</Package>')
         else:
             handling.append('<Info>Deployment function is not active</Info>')
     except:
@@ -1104,13 +1108,15 @@ def public_soft_list(pack=None):
             template = django_engine.from_string(pack.command)
             pack.command = template.render(cv, request=None)
         pack.command = encodeXMLText(pack.command)
-        handling.append('<Package>\
-            <Pid>' + str(pack.id) + '</Pid>\
-            <Name>' + pack.name + '</Name>\
-            <Description>' + pack.description + '</Description>\
-            <Command>' + pack.command + '</Command>\
-            <Packagesum>' + pack.packagesum + '</Packagesum>\
-            <Url>' + packurl + '</Url></Package>')
+        handling.append('<Package>' +
+                        '<Pid>' + str(pack.id) + '</Pid>' +
+                        '<Name>' + pack.name + '</Name>' +
+                        '<Description>' + pack.description + '</Description>' +
+                        '<Command>' + pack.command + '</Command>' +
+                        '<Packagesum>' + pack.packagesum + '</Packagesum>' +
+                        '<Packagehash>' + pack.packagehash + '</Packagehash>' +
+                        '<Url>' + packurl + '</Url>' +
+                        '</Package>')
     handling.append('</Response>')
     return handling
 
