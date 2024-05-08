@@ -52,14 +52,24 @@ def compare_versions(version1, version2):
         return -1 if ver[0] == version1 else 1
 
 
-def is_deploy_authorized(m, handling):
+def is_deploy_authorized(m, handling, p=None):
     '''Function that define if deploy is authorized or not'''
     # Loading configuration datas
     config = deployconfig.objects.get(pk=1)
     now = datetime.now().time()
     deploy_auth = False
+    # if a package time period is defined
+    if p is not None:
+        for period in p.timeprofiles.filter():
+            start = period.start_time
+            end = period.end_time
+            if (start <= now and now <= end) or (end <= start and (start <= now or now <= end)):
+                deploy_auth = True
+                break
+            else:
+                deploy_auth = False
     # if a global time period is defined
-    if config.activate_time_deploy == 'yes':
+    elif config.activate_time_deploy == 'yes':
         start = config.start_time
         end = config.end_time
         if (start <= now and now <= end) or \
@@ -68,7 +78,7 @@ def is_deploy_authorized(m, handling):
         else:
             deploy_auth = False
             handling.append('<Info>Not in deployment period (global configuration)</Info>')
-        # if a time period is defined for this machine
+    # if a time period is defined for this machine
     elif m.timeprofile is not None:
         start = m.timeprofile.start_time
         end = m.timeprofile.end_time
@@ -184,541 +194,555 @@ def check_conditions(m, pack, xml=None):
     # All types of conditions are checked one by one
     install = True
 
-    depends_filter = ['notinstalled', 'installed', 'is_W64_bits', 'is_W32_bits', 'system_is', 'system_not',
-                      'language_is', 'lower', 'higher', 'hostname_in', 'hostname_not', 'username_in', 'username_not',
-                      'ipaddr_in', 'ipaddr_not', 'vendor_in', 'vendor_not', 'product_in', 'product_not', 'type_in',
-                      'type_not']
-    for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
-        if len(cv) > 0:
-            template = django_engine.from_string(condition.softwarename)
-            condition.softwarename = template.render(cv, request=None)
-            template = django_engine.from_string(condition.softwareversion)
-            condition.softwareversion = template.render(cv, request=None)
+    # Check package deploy period
+    if not is_deploy_authorized(m, None, pack):
+        status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(
+            pack.id) + '</Pid><Status>Warning condition: Package not in its deployment period</Status></Packagestatus>')
+        return False
 
-        # Software not installed (wildcards can be used for condition name)
-        if condition.depends == 'notinstalled':
-            nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
-            # Empty softwareversion is allowed (else django filter error!)
-            if condition.softwareversion is None:
-                condition.softwareversion = ''
-            # Check name exists
-            if software.objects.filter(host_id=m.id, name__iregex=nameregex,
-                                       version=condition.softwareversion).exists():
-                install = False
+    # Check basic conditions
+    if install is True:
+        depends_filter = ['notinstalled', 'installed', 'is_W64_bits', 'is_W32_bits', 'system_is', 'system_not',
+                          'language_is', 'lower', 'higher', 'hostname_in', 'hostname_not', 'username_in', 'username_not',
+                          'ipaddr_in', 'ipaddr_not', 'vendor_in', 'vendor_not', 'product_in', 'product_not', 'type_in',
+                          'type_not']
+        for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
+            if len(cv) > 0:
+                template = django_engine.from_string(condition.softwarename)
+                condition.softwarename = template.render(cv, request=None)
+                template = django_engine.from_string(condition.softwareversion)
+                condition.softwareversion = template.render(cv, request=None)
 
-        # Software installed (wildcards can be used for condition name)
-        elif condition.depends == 'installed':
-            nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
-            # Empty softwareversion is allowed (else django filter error!)
-            if condition.softwareversion is None:
-                condition.softwareversion = ''
-            # Check name exists
-            if not software.objects.filter(host_id=m.id, name__iregex=nameregex,
-                                           version=condition.softwareversion).exists():
-                install = False
-
-        # OS architecture is Windows 64bits
-        elif condition.depends == 'is_W64_bits':
-            if not osdistribution.objects.filter(host_id=m.id, name__icontains='Windows',
-                                                 arch__contains='64').exists():
-                install = False
-
-        # OS architecture is Windows 32bits
-        elif condition.depends == 'is_W32_bits':
-            if not osdistribution.objects.filter(host_id=m.id, name__icontains='Windows',
-                                                 arch__contains='32').exists() and not osdistribution.objects.filter(
-                host_id=m.id, name__icontains='Windows', arch__contains='undefined').exists():
-                install = False
-
-        # System name is (wildcards can be used)
-        elif condition.depends == 'system_is':
-            nameregex = re.escape(condition.softwarename).replace('\*', '.*')
-            # Empty softwareversion is allowed to check an empty version
-            if condition.softwareversion is None:
-                condition.softwareversion = ''
-            # Check name + version
-            if condition.softwareversion != 'undefined':
-                if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex,
-                                                     version__icontains=condition.softwareversion).exists():
-                    install = False
-            # Check name
-            else:
-                if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
-                    install = False
-
-        # System name is not (wildcards can be used)
-        elif condition.depends == 'system_not':
-            nameregex = re.escape(condition.softwarename).replace('\*', '.*')
-            # Empty softwareversion is allowed to check an empty version
-            if condition.softwareversion is None:
-                condition.softwareversion = ''
-            # Check name + version
-            if condition.softwareversion != 'undefined':
-                if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex,
-                                                 version__icontains=condition.softwareversion).exists():
-                    install = False
-            # Check name
-            else:
-                if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
-                    install = False
-
-        # Default system language is (ex: fr_FR)
-        elif condition.depends == 'language_is':
-            if m.language.upper() != condition.softwarename.upper():
-                install = False
-
-        # Software not installed or version lower than (wildcards can be used for condition name)
-        elif condition.depends == 'lower':
-            nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
-            # Check if name exists
-            if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
-                # Empty softwareversion is useful to ignore the version and only check not installed
+            # Software not installed (wildcards can be used for condition name)
+            if condition.depends == 'notinstalled':
+                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                # Empty softwareversion is allowed (else django filter error!)
                 if condition.softwareversion is None:
+                    condition.softwareversion = ''
+                # Check name exists
+                if software.objects.filter(host_id=m.id, name__iregex=nameregex,
+                                           version=condition.softwareversion).exists():
                     install = False
+
+            # Software installed (wildcards can be used for condition name)
+            elif condition.depends == 'installed':
+                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                # Empty softwareversion is allowed (else django filter error!)
+                if condition.softwareversion is None:
+                    condition.softwareversion = ''
+                # Check name exists
+                if not software.objects.filter(host_id=m.id, name__iregex=nameregex,
+                                               version=condition.softwareversion).exists():
+                    install = False
+
+            # OS architecture is Windows 64bits
+            elif condition.depends == 'is_W64_bits':
+                if not osdistribution.objects.filter(host_id=m.id, name__icontains='Windows',
+                                                     arch__contains='64').exists():
+                    install = False
+
+            # OS architecture is Windows 32bits
+            elif condition.depends == 'is_W32_bits':
+                if not osdistribution.objects.filter(host_id=m.id, name__icontains='Windows',
+                                                     arch__contains='32').exists() and not osdistribution.objects.filter(
+                    host_id=m.id, name__icontains='Windows', arch__contains='undefined').exists():
+                    install = False
+
+            # System name is (wildcards can be used)
+            elif condition.depends == 'system_is':
+                nameregex = re.escape(condition.softwarename).replace('\*', '.*')
+                # Empty softwareversion is allowed to check an empty version
+                if condition.softwareversion is None:
+                    condition.softwareversion = ''
+                # Check name + version
+                if condition.softwareversion != 'undefined':
+                    if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex,
+                                                         version__icontains=condition.softwareversion).exists():
+                        install = False
+                # Check name
                 else:
-                    # Check if at least one of the versions is greater than condition
-                    softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
-                    for s in softtab:
-                        if compare_versions(s.version, condition.softwareversion) >= 0:
-                            install = False
-                            break
+                    if not osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                        install = False
 
-        # Software installed and version higher than (wildcards can be used for condition name)
-        elif condition.depends == 'higher':
-            nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
-            # Check if name exists
-            if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
-                # Empty softwareversion is useful to ignore the version and only check installed
-                if condition.softwareversion is not None:
-                    # Check if all of the versions are lower than condition
-                    softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
-                    for s in softtab:
-                        if compare_versions(s.version, condition.softwareversion) <= 0:
-                            install = False
-                        else:
-                            install = True
-                            break
-            else:
-                install = False
-                pass
+            # System name is not (wildcards can be used)
+            elif condition.depends == 'system_not':
+                nameregex = re.escape(condition.softwarename).replace('\*', '.*')
+                # Empty softwareversion is allowed to check an empty version
+                if condition.softwareversion is None:
+                    condition.softwareversion = ''
+                # Check name + version
+                if condition.softwareversion != 'undefined':
+                    if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex,
+                                                     version__icontains=condition.softwareversion).exists():
+                        install = False
+                # Check name
+                else:
+                    if osdistribution.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                        install = False
 
-        # Hostname is in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'hostname_in':
-            try:
-                # Check the list
-                hosts = condition.softwarename.split(',')
-                for hostname in hosts:
-                    if not hostname:
-                        continue
-                    nameregex = '^' + re.escape(hostname).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.name, re.IGNORECASE):
-                        install = True
-                        break
+            # Default system language is (ex: fr_FR)
+            elif condition.depends == 'language_is':
+                if m.language.upper() != condition.softwarename.upper():
+                    install = False
+
+            # Software not installed or version lower than (wildcards can be used for condition name)
+            elif condition.depends == 'lower':
+                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                # Check if name exists
+                if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                    # Empty softwareversion is useful to ignore the version and only check not installed
+                    if condition.softwareversion is None:
+                        install = False
                     else:
-                        install = False
-            except:
-                install = False
-                pass
+                        # Check if at least one of the versions is greater than condition
+                        softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
+                        for s in softtab:
+                            if compare_versions(s.version, condition.softwareversion) >= 0:
+                                install = False
+                                break
 
-        # Hostname is NOT in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'hostname_not':
-            try:
-                # Check the list
-                hosts = condition.softwarename.split(',')
-                for hostname in hosts:
-                    if not hostname:
-                        continue
-                    nameregex = '^' + re.escape(hostname).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.name, re.IGNORECASE):
-                        install = False
-                        break
-            except:
-                install = False
-                pass
+            # Software installed and version higher than (wildcards can be used for condition name)
+            elif condition.depends == 'higher':
+                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                # Check if name exists
+                if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
+                    # Empty softwareversion is useful to ignore the version and only check installed
+                    if condition.softwareversion is not None:
+                        # Check if all of the versions are lower than condition
+                        softtab = software.objects.filter(host_id=m.id, name__iregex=nameregex)
+                        for s in softtab:
+                            if compare_versions(s.version, condition.softwareversion) <= 0:
+                                install = False
+                            else:
+                                install = True
+                                break
+                else:
+                    install = False
+                    pass
 
-        # Username is in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'username_in':
-            try:
-                # Check the list
-                users = condition.softwarename.split(',')
-                for username in users:
-                    if not username:
-                        continue
-                    nameregex = '^' + re.escape(username).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.username, re.IGNORECASE):
-                        install = True
-                        break
-                    else:
-                        install = False
-            except:
-                install = False
-                pass
-
-        # Username is NOT in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'username_not':
-            try:
-                # Check the list
-                users = condition.softwarename.split(',')
-                for username in users:
-                    if not username:
-                        continue
-                    nameregex = '^' + re.escape(username).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.username, re.IGNORECASE):
-                        install = False
-                        break
-            except:
-                install = False
-                pass
-
-        # IP address is in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'ipaddr_in':
-            try:
-                host_ip = net.objects.filter(host_id=m.id).values_list('ip', flat=True)
-                for host_ip_addr in host_ip:
-                    host_ip_addr = ''.join(host_ip_addr)
-                    networks = condition.softwarename.split(',')
-                    for network in networks:
-                        if not network:
+            # Hostname is in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'hostname_in':
+                try:
+                    # Check the list
+                    hosts = condition.softwarename.split(',')
+                    for hostname in hosts:
+                        if not hostname:
                             continue
-                        if IPAddress(host_ip_addr) in IPNetwork(network):
+                        nameregex = '^' + re.escape(hostname).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.name, re.IGNORECASE):
                             install = True
                             break
                         else:
                             install = False
-                    if install is True:
-                        break
-            except:
-                install = False
-                pass
+                except:
+                    install = False
+                    pass
 
-        # IP address is NOT in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'ipaddr_not':
-            try:
-                host_ip = net.objects.filter(host_id=m.id).values_list('ip', flat=True)
-                for host_ip_addr in host_ip:
-                    host_ip_addr = ''.join(host_ip_addr)
-                    networks = condition.softwarename.split(',')
-                    for network in networks:
-                        if not network:
+            # Hostname is NOT in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'hostname_not':
+                try:
+                    # Check the list
+                    hosts = condition.softwarename.split(',')
+                    for hostname in hosts:
+                        if not hostname:
                             continue
-                        if IPAddress(host_ip_addr) in IPNetwork(network):
+                        nameregex = '^' + re.escape(hostname).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.name, re.IGNORECASE):
                             install = False
                             break
-                    if install is False:
-                        break
-            except:
-                install = False
-                pass
+                except:
+                    install = False
+                    pass
 
-        # Vendor is in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'vendor_in':
-            try:
-                # Check the list
-                vendors = condition.softwarename.split(',')
-                for vendor in vendors:
-                    if not vendor:
-                        continue
-                    nameregex = '^' + re.escape(vendor).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.vendor, re.IGNORECASE):
-                        install = True
-                        break
-                    else:
-                        install = False
-            except:
-                install = False
-                pass
+            # Username is in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'username_in':
+                try:
+                    # Check the list
+                    users = condition.softwarename.split(',')
+                    for username in users:
+                        if not username:
+                            continue
+                        nameregex = '^' + re.escape(username).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.username, re.IGNORECASE):
+                            install = True
+                            break
+                        else:
+                            install = False
+                except:
+                    install = False
+                    pass
 
-        # Vendor is NOT in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'vendor_not':
-            try:
-                # Check the list
-                vendors = condition.softwarename.split(',')
-                for vendor in vendors:
-                    if not vendor:
-                        continue
-                    nameregex = '^' + re.escape(vendor).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.vendor, re.IGNORECASE):
-                        install = False
-                        break
-            except:
-                install = False
-                pass
+            # Username is NOT in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'username_not':
+                try:
+                    # Check the list
+                    users = condition.softwarename.split(',')
+                    for username in users:
+                        if not username:
+                            continue
+                        nameregex = '^' + re.escape(username).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.username, re.IGNORECASE):
+                            install = False
+                            break
+                except:
+                    install = False
+                    pass
 
-        # Product is in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'product_in':
-            try:
-                # Check the list
-                products = condition.softwarename.split(',')
-                for product in products:
-                    if not product:
-                        continue
-                    nameregex = '^' + re.escape(product).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.product, re.IGNORECASE):
-                        install = True
-                        break
-                    else:
-                        install = False
-            except:
-                install = False
-                pass
+            # IP address is in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'ipaddr_in':
+                try:
+                    host_ip = net.objects.filter(host_id=m.id).values_list('ip', flat=True)
+                    for host_ip_addr in host_ip:
+                        host_ip_addr = ''.join(host_ip_addr)
+                        networks = condition.softwarename.split(',')
+                        for network in networks:
+                            if not network:
+                                continue
+                            if IPAddress(host_ip_addr) in IPNetwork(network):
+                                install = True
+                                break
+                            else:
+                                install = False
+                        if install is True:
+                            break
+                except:
+                    install = False
+                    pass
 
-        # Product is NOT in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'product_not':
-            try:
-                # Check the list
-                products = condition.softwarename.split(',')
-                for product in products:
-                    if not product:
-                        continue
-                    nameregex = '^' + re.escape(product).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.product, re.IGNORECASE):
-                        install = False
-                        break
-            except:
-                install = False
-                pass
+            # IP address is NOT in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'ipaddr_not':
+                try:
+                    host_ip = net.objects.filter(host_id=m.id).values_list('ip', flat=True)
+                    for host_ip_addr in host_ip:
+                        host_ip_addr = ''.join(host_ip_addr)
+                        networks = condition.softwarename.split(',')
+                        for network in networks:
+                            if not network:
+                                continue
+                            if IPAddress(host_ip_addr) in IPNetwork(network):
+                                install = False
+                                break
+                        if install is False:
+                            break
+                except:
+                    install = False
+                    pass
 
-        # Machine type is in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'type_in':
-            try:
-                # Check the list
-                typemachines = condition.softwarename.split(',')
-                for typemachine in typemachines:
-                    if not typemachine:
-                        continue
-                    nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.typemachine, re.IGNORECASE):
-                        install = True
-                        break
-                    else:
-                        install = False
-            except:
-                install = False
-                pass
+            # Vendor is in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'vendor_in':
+                try:
+                    # Check the list
+                    vendors = condition.softwarename.split(',')
+                    for vendor in vendors:
+                        if not vendor:
+                            continue
+                        nameregex = '^' + re.escape(vendor).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.vendor, re.IGNORECASE):
+                            install = True
+                            break
+                        else:
+                            install = False
+                except:
+                    install = False
+                    pass
 
-        # Machine type is NOT in the list (comma separated list, wildcards can be used for condition name)
-        elif condition.depends == 'type_not':
-            try:
-                # Check the list
-                typemachines = condition.softwarename.split(',')
-                for typemachine in typemachines:
-                    if not typemachine:
-                        continue
-                    nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
-                    if re.match(nameregex, m.typemachine, re.IGNORECASE):
-                        install = False
-                        break
-            except:
-                install = False
-                pass
+            # Vendor is NOT in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'vendor_not':
+                try:
+                    # Check the list
+                    vendors = condition.softwarename.split(',')
+                    for vendor in vendors:
+                        if not vendor:
+                            continue
+                        nameregex = '^' + re.escape(vendor).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.vendor, re.IGNORECASE):
+                            install = False
+                            break
+                except:
+                    install = False
+                    pass
 
-        if install is False:
-            break
+            # Product is in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'product_in':
+                try:
+                    # Check the list
+                    products = condition.softwarename.split(',')
+                    for product in products:
+                        if not product:
+                            continue
+                        nameregex = '^' + re.escape(product).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.product, re.IGNORECASE):
+                            install = True
+                            break
+                        else:
+                            install = False
+                except:
+                    install = False
+                    pass
+
+            # Product is NOT in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'product_not':
+                try:
+                    # Check the list
+                    products = condition.softwarename.split(',')
+                    for product in products:
+                        if not product:
+                            continue
+                        nameregex = '^' + re.escape(product).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.product, re.IGNORECASE):
+                            install = False
+                            break
+                except:
+                    install = False
+                    pass
+
+            # Machine type is in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'type_in':
+                try:
+                    # Check the list
+                    typemachines = condition.softwarename.split(',')
+                    for typemachine in typemachines:
+                        if not typemachine:
+                            continue
+                        nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.typemachine, re.IGNORECASE):
+                            install = True
+                            break
+                        else:
+                            install = False
+                except:
+                    install = False
+                    pass
+
+            # Machine type is NOT in the list (comma separated list, wildcards can be used for condition name)
+            elif condition.depends == 'type_not':
+                try:
+                    # Check the list
+                    typemachines = condition.softwarename.split(',')
+                    for typemachine in typemachines:
+                        if not typemachine:
+                            continue
+                        nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
+                        if re.match(nameregex, m.typemachine, re.IGNORECASE):
+                            install = False
+                            break
+                except:
+                    install = False
+                    pass
+
+            if install is False:
+                break
 
     # Basic check to avoid asking client for unnecessary extended conditions
     if xml == b'BASIC_CHECK':
         return install;
 
-    ## Extended conditions ##
+    # Check extended conditions
+    if install is True:
+        try:
+            root = etree.fromstring(xml)
+        except:
+            pass
+
+        depends_filter = ['isfile', 'notisfile', 'isdir', 'notisdir', 'isfiledir', 'notisfiledir', 'hashis', 'hashnot',
+                      'exitcodeis', 'exitcodenot']
+        for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
+            if len(cv) > 0:
+                template = django_engine.from_string(condition.softwarename)
+                condition.softwarename = template.render(cv, request=None)
+                template = django_engine.from_string(condition.softwareversion)
+                condition.softwareversion = template.render(cv, request=None)
+
+            # File exists
+            if condition.depends == 'isfile':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('File'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == 'False':
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # File NOT exists
+            elif condition.depends == 'notisfile':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('File'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == 'True':
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Directory exists
+            elif condition.depends == 'isdir':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('Dir'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == 'False':
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Directory NOT exists
+            elif condition.depends == 'notisdir':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('Dir'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == 'True':
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Directory or File exists
+            elif condition.depends == 'isfiledir':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('FileDir'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == 'False':
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Directory or File NOT exists
+            elif condition.depends == 'notisfiledir':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('FileDir'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == 'True':
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Hash file is (a non-existent file returns the value 'undefined')
+            elif condition.depends == 'hashis':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('Hash'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus != condition.softwareversion:
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Hash file is NOT (a non-existent file returns the value 'undefined')
+            elif condition.depends == 'hashnot':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('Hash'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == condition.softwareversion:
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Command exit code is
+            elif condition.depends == 'exitcodeis':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('ExitCode'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus != condition.softwareversion:
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            # Command exit code is NOT
+            elif condition.depends == 'exitcodenot':
+                if xml is None:  # check in the loop to be able to get condition name in status
+                    condition.name += ' (unsupported client)'
+                    install = False
+                else:
+                    try:
+                        for elem in root.findall('ExitCode'):
+                            elname = elem.find('Name').text
+                            elstatus = elem.find('Status').text
+                            if elname == condition.softwarename:
+                                if elstatus == condition.softwareversion:
+                                    install = False
+                                break
+                    except:
+                        condition.name += ' (malformed client response)'
+                        install = False
+
+            if install is False:
+                break
+
+    # Using try block because condition doesn't exist for package deployment period
     try:
-        root = etree.fromstring(xml)
+        if condition.softwareversion is None:
+            condition.softwareversion = ''
     except:
         pass
 
-    depends_filter = ['isfile', 'notisfile', 'isdir', 'notisdir', 'isfiledir', 'notisfiledir', 'hashis', 'hashnot',
-                      'exitcodeis', 'exitcodenot']
-    for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
-        if len(cv) > 0:
-            template = django_engine.from_string(condition.softwarename)
-            condition.softwarename = template.render(cv, request=None)
-            template = django_engine.from_string(condition.softwareversion)
-            condition.softwareversion = template.render(cv, request=None)
-
-        # File exists
-        if condition.depends == 'isfile':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('File'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == 'False':
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # File NOT exists
-        elif condition.depends == 'notisfile':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('File'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == 'True':
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Directory exists
-        elif condition.depends == 'isdir':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('Dir'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == 'False':
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Directory NOT exists
-        elif condition.depends == 'notisdir':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('Dir'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == 'True':
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Directory or File exists
-        elif condition.depends == 'isfiledir':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('FileDir'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == 'False':
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Directory or File NOT exists
-        elif condition.depends == 'notisfiledir':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('FileDir'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == 'True':
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Hash file is (a non-existent file returns the value 'undefined')
-        elif condition.depends == 'hashis':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('Hash'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus != condition.softwareversion:
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Hash file is NOT (a non-existent file returns the value 'undefined')
-        elif condition.depends == 'hashnot':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('Hash'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == condition.softwareversion:
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Command exit code is
-        elif condition.depends == 'exitcodeis':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('ExitCode'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus != condition.softwareversion:
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        # Command exit code is NOT
-        elif condition.depends == 'exitcodenot':
-            if xml is None:  # check in the loop to be able to get condition name in status
-                condition.name += ' (unsupported client)'
-                install = False
-            else:
-                try:
-                    for elem in root.findall('ExitCode'):
-                        elname = elem.find('Name').text
-                        elstatus = elem.find('Status').text
-                        if elname == condition.softwarename:
-                            if elstatus == condition.softwareversion:
-                                install = False
-                            break
-                except:
-                    condition.name += ' (malformed client response)'
-                    install = False
-
-        if install is False:
-            break
-
-    if condition.softwareversion is None:
-        condition.softwareversion = ''
     if install is False:
         status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(pack.id) + '</Pid><Status>Warning condition: ' +
                escape(
@@ -934,7 +958,7 @@ def inventory(xml):
             extended_conditions = list()
             if clientversion != 'Unknown':
                 for pack in sorted(package_to_deploy, key=lambda package: package.name):
-                    if period_to_deploy or pack.ignoreperiod == 'yes':
+                    if (period_to_deploy or pack.ignoreperiod == 'yes'):
                         if check_conditions(m, pack, b'BASIC_CHECK'):
                             extended_conditions += get_extended_conditions(m, pack)
                 if len(extended_conditions) > 0:

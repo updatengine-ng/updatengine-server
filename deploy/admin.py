@@ -84,7 +84,7 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
-    filter_horizontal = ('conditions','entity')
+    filter_horizontal = ('conditions','entity','timeprofiles')
     form = packageForm
     # inlines = (variableInline,)
     # readonly_fields = ('variableInline')
@@ -99,7 +99,7 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
     fieldsets_with_inlines = [
         (_('package|general information'), {'fields': ('name', 'description')}),
         customvarInline,
-        (_('package|package edition'), {'fields': ('use_global_variables', 'conditions', 'command', 'filename', 'public', 'ignoreperiod')}),
+        (_('package|package edition'), {'fields': ('use_global_variables', 'conditions', 'command', 'filename', 'public', 'ignoreperiod', 'timeprofiles')}),
         (_('package|permissions'), {
             'classes': ('grp-collapse grp-closed',),
             'fields': ('entity', 'editor', 'exclusive_editor')}),

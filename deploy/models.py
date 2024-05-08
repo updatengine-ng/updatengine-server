@@ -151,6 +151,7 @@ class package(models.Model):
     editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('package| package last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|exclusive editor'))
     use_global_variables = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|global variables'), help_text=_('package|global variables help text'))
+    timeprofiles = models.ManyToManyField('timeprofile', blank=True, verbose_name=_('package|time profiles'), help_text=_('package|time profiles help text'))
 
     class Meta:
         verbose_name = _('package|deployment package')
