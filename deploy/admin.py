@@ -80,7 +80,7 @@ class packageForm(ModelForm):
 
 class packageAdmin(FieldsetsInlineMixin, ueAdmin):
 #class packageAdmin(ueAdmin):
-    list_display = ('name','description','get_command','filename','get_conditions','ignoreperiod','public','editor','exclusive_editor')
+    list_display = ('name','description','get_command','filename','get_conditions','ignoreperiod','get_timeprofiles','public','editor','exclusive_editor')
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
@@ -105,11 +105,20 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
             'fields': ('entity', 'editor', 'exclusive_editor')}),
     ]
 
-
     def get_command(self, obj):
         return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
     get_command.short_description = _('package|command')
     get_command.admin_order_field = 'command'
+
+    def get_timeprofiles(self, obj):
+        if obj.timeprofiles is not None:
+            retval = '<ul class="grp-list-options">'
+            for timeprofile in obj.timeprofiles.order_by('name').filter():
+                retval += '<li><a href="%s">%s</a></li>' % (
+                reverse('admin:deploy_timeprofile_change', args=[timeprofile.id]), timeprofile.name)
+            retval += '</ul>'
+            return mark_safe(retval)
+    get_timeprofiles.short_description = _('package|time profiles')
 
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
