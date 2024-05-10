@@ -60,14 +60,16 @@ def is_deploy_authorized(m, handling, p=None):
     deploy_auth = False
     # if a package time period is defined
     if p is not None:
-        for period in p.timeprofiles.filter():
-            start = period.start_time
-            end = period.end_time
-            if (start <= now and now <= end) or (end <= start and (start <= now or now <= end)):
-                deploy_auth = True
-                break
-            else:
-                deploy_auth = False
+        periods = p.timeprofiles.filter()
+        if not periods:
+            deploy_auth = True
+        else:
+            for period in periods:
+                start = period.start_time
+                end = period.end_time
+                if (start <= now and now <= end) or (end <= start and (start <= now or now <= end)):
+                    deploy_auth = True
+                    break
     # if a global time period is defined
     elif config.activate_time_deploy == 'yes':
         start = config.start_time
@@ -76,7 +78,6 @@ def is_deploy_authorized(m, handling, p=None):
                 (end <= start and (start <= now or now <= end)):
             deploy_auth = True
         else:
-            deploy_auth = False
             handling.append('<Info>Not in deployment period (global configuration)</Info>')
     # if a time period is defined for this machine
     elif m.timeprofile is not None:
@@ -86,7 +87,6 @@ def is_deploy_authorized(m, handling, p=None):
                 (end <= start and (start <= now or now <= end)):
             deploy_auth = True
         else:
-            deploy_auth = False
             handling.append('<Info>Not in deployment period (timeprofile)</Info>')
     else:
         deploy_auth = True
