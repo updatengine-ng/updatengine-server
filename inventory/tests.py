@@ -1,5 +1,5 @@
 from django.test import TestCase
-from inventory.models import machine, software, osdistribution
+from inventory.models import machine, software, osdistribution, typemachine
 from deploy.models import package, packagecondition, packagecustomvar, timeprofile
 from inventory.views import *
 from configuration.models import deployconfig, globalconfig
@@ -23,8 +23,10 @@ class machineTestCase(TestCase):
                                       host=mlinux, manualy_created='no')
 
         # machine windows 11
+        typemw11 = typemachine.objects.create(name='Notebook')
         mw11 = machine.objects.create(serial='1234', name='machine_windows_11_64', language='fr_FR',
-                                      username='usertest')
+                                      typemachine=typemw11, username='usertest')
+
         #software.objects.create(name='mozilla', version='24.0.0', uninstall='bla', host=mw11, manualy_created='no')
         osdistribution.objects.create(name='Microsoft Windows 11 Pro', version='10.0.22621', arch='64bits',
                                       systemdrive='c', host=mw11, manualy_created='no')
@@ -294,6 +296,15 @@ class machineTestCase(TestCase):
         jpackage_MS11usernamenot.conditions.add(jcondition_MS11usernamenot)
         jpackage_MS11usernamenot.save()
 
+        # package with condition typemachine_in
+        package_MS11typein = package.objects.create(name='MS11typein',
+                                                        description='install if typemachine is Notebook', command='rem')
+        condition_MS11typein = packagecondition.objects.create(name='install if typemachine is Notebook',
+                                                                   softwarename='Notebook',
+                                                                   softwareversion='undefined', depends='type_in')
+        package_MS11typein.conditions.add(condition_MS11typein)
+        package_MS11typein.save()
+
         # package with custom variables
         package_customvariables = package.objects.create(name='customvariables',
                                                           description='install if {{name}} < {{version}}', command='rem')
@@ -456,6 +467,17 @@ class machineTestCase(TestCase):
         self.assertEqual(check_conditions(m32, usernamein), True)
         self.assertEqual(check_conditions(m64, usernamein), True)
         self.assertEqual(check_conditions(m11, usernamein), False)
+
+    def test_typemachine_in(self):
+        m32 = machine.objects.get(name='machine_windows_7_32')
+        m64 = machine.objects.get(name='machine_windows_7_64')
+        m11 = machine.objects.get(name='machine_windows_11_64')
+        typein = package.objects.get(name='MS11typein')
+        print(m11.typemachine)
+
+        self.assertEqual(check_conditions(m32, typein), False)
+        self.assertEqual(check_conditions(m64, typein), False)
+        self.assertEqual(check_conditions(m11, typein), True)
 
     def test_customvariables(self):
         m32 = machine.objects.get(name='machine_windows_7_32')

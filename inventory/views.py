@@ -505,7 +505,7 @@ def check_conditions(m, pack, xml=None):
                         if not typemachine:
                             continue
                         nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
-                        if re.match(nameregex, m.typemachine, re.IGNORECASE):
+                        if re.match(nameregex, str(m.typemachine), re.IGNORECASE):
                             install = True
                             break
                         else:
@@ -523,7 +523,7 @@ def check_conditions(m, pack, xml=None):
                         if not typemachine:
                             continue
                         nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
-                        if re.match(nameregex, m.typemachine, re.IGNORECASE):
+                        if re.match(nameregex, str(m.typemachine), re.IGNORECASE):
                             install = False
                             break
                 except:
