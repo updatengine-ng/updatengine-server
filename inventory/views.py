@@ -23,7 +23,7 @@ from lxml import etree
 from inventory.models import machine, typemachine, software, net, osdistribution, entity
 from deploy.models import package, packagehistory, packagecustomvar
 from configuration.models import deployconfig, globalconfig
-from datetime import datetime
+from datetime import datetime, timedelta, date, timezone
 from django.utils.timezone import utc
 from xml.sax.saxutils import escape
 from django.db.models import Count, Max
@@ -74,8 +74,7 @@ def is_deploy_authorized(m, handling, p=None):
     elif config.activate_time_deploy == 'yes':
         start = config.start_time
         end = config.end_time
-        if (start <= now and now <= end) or \
-                (end <= start and (start <= now or now <= end)):
+        if (start <= now and now <= end) or (end <= start and (start <= now or now <= end)):
             deploy_auth = True
         else:
             handling.append('<Info>Not in deployment period (global configuration)</Info>')
@@ -83,8 +82,7 @@ def is_deploy_authorized(m, handling, p=None):
     elif m.timeprofile is not None:
         start = m.timeprofile.start_time
         end = m.timeprofile.end_time
-        if (start <= now and now <= end) or \
-                (end <= start and (start <= now or now <= end)):
+        if (start <= now and now <= end) or (end <= start and (start <= now or now <= end)):
             deploy_auth = True
         else:
             handling.append('<Info>Not in deployment period (timeprofile)</Info>')
@@ -196,16 +194,20 @@ def check_conditions(m, pack, xml=None):
 
     # Check package deploy period
     if not is_deploy_authorized(m, None, pack):
-        status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(
-            pack.id) + '</Pid><Status>Warning condition: Package not in its deployment period</Status></Packagestatus>')
+        status('<Packagestatus>' +
+               '<Mid>' + str(m.id) + '</Mid>' +
+               '<Pid>' + str(pack.id) + '</Pid>' +
+               '<Status>Warning condition: Package not in its deployment period</Status>' +
+               '</Packagestatus>')
         return False
 
     # Check basic conditions
     if install is True:
         depends_filter = ['notinstalled', 'installed', 'is_W64_bits', 'is_W32_bits', 'system_is', 'system_not',
-                          'language_is', 'lower', 'higher', 'hostname_in', 'hostname_not', 'username_in', 'username_not',
-                          'ipaddr_in', 'ipaddr_not', 'vendor_in', 'vendor_not', 'product_in', 'product_not', 'type_in',
-                          'type_not']
+                          'language_is', 'lower', 'higher', 'hostname_in', 'hostname_not', 'username_in',
+                          'username_not', 'ipaddr_in', 'ipaddr_not', 'vendor_in', 'vendor_not', 'product_in',
+                          'product_not', 'type_in', 'type_not', 'executetimes', 'installtimes', 'executedelay',
+                          'installdelay']
         for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
             if len(cv) > 0:
                 template = django_engine.from_string(condition.softwarename)
@@ -530,6 +532,62 @@ def check_conditions(m, pack, xml=None):
                     install = False
                     pass
 
+            # Installation executed or completed a maximum of X times per day/week/month (calendar period, not duration)
+            elif condition.depends == 'executetimes' or condition.depends == 'installtimes':
+                try:
+                    search_status = 'Install in progress' if condition.depends == 'executetimes' else 'Operation completed'
+                    condition.softwarename = condition.softwarename.lower()
+                    today = datetime.now(timezone.utc)
+                    max_times_per_period = int(condition.softwareversion)
+                    if condition.softwarename in ['day', 'jour']:
+                        obj_in_period = packagehistory.objects.filter(machine_id=m.id, package_id=pack.id,
+                                                                      status=search_status, date__year=today.year,
+                                                                      date__month=today.month, date__day=today.day)
+                    elif condition.softwarename in ['week', 'semaine']:
+                        monday = today - timedelta(days=today.weekday())
+                        sunday = today + timedelta(days=6 - today.weekday())
+                        obj_in_period = packagehistory.objects.filter(machine_id=m.id, package_id=pack.id,
+                                                                      status=search_status,
+                                                                      date__range=(monday, sunday))
+                    elif condition.softwarename in ['month', 'mois']:
+                        obj_in_period = packagehistory.objects.filter(machine_id=m.id, package_id=pack.id,
+                                                                      status=search_status, date__year=today.year,
+                                                                      date__month=today.month)
+                    else:
+                        install = False
+
+                    if install is True:
+                        if len(obj_in_period) >= max_times_per_period:
+                            install = False
+                except:
+                    install = False
+                    pass
+
+            # Installation executed or completed ta minimum interval of X minutes/hours/days (duration)
+            elif condition.depends == 'executedelay' or condition.depends == 'installdelay':
+                try:
+                    search_status = 'Install in progress' if condition.depends == 'executedelay' else 'Operation completed'
+                    condition.softwarename = condition.softwarename.lower()
+                    today = datetime.now(timezone.utc)
+                    interval = int(condition.softwareversion)
+                    if condition.softwarename in ['minutes']:
+                        date_max = today - timedelta(minutes=interval)
+                    elif condition.softwarename in ['hours', 'heures']:
+                        date_max = today - timedelta(hours=interval)
+                    elif condition.softwarename in ['days', 'jours']:
+                        date_max = today - timedelta(days=interval)
+                    else:
+                        install = False
+
+                    if install is True:
+                        obj_in_period = packagehistory.objects.filter(machine_id=m.id, package_id=pack.id,
+                                                                      status=search_status, date__gt=date_max)
+                        if len(obj_in_period) > 0:
+                            install = False
+                except:
+                    install = False
+                    pass
+
             if install is False:
                 break
 
@@ -545,7 +603,7 @@ def check_conditions(m, pack, xml=None):
             pass
 
         depends_filter = ['isfile', 'notisfile', 'isdir', 'notisdir', 'isfiledir', 'notisfiledir', 'hashis', 'hashnot',
-                      'exitcodeis', 'exitcodenot']
+                          'exitcodeis', 'exitcodenot']
         for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
             if len(cv) > 0:
                 template = django_engine.from_string(condition.softwarename)
@@ -744,10 +802,11 @@ def check_conditions(m, pack, xml=None):
         pass
 
     if install is False:
-        status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(pack.id) + '</Pid><Status>Warning condition: ' +
-               escape(
-                   condition.name + '\nName: ' + condition.softwarename + '\nVersion: ' + condition.softwareversion) +
-               '</Status></Packagestatus>')
+        status('<Packagestatus>' +
+               '<Mid>' + str(m.id) + '</Mid>' +
+               '<Pid>' + str(pack.id) + '</Pid>' +
+               '<Status>Warning condition: ' + escape(condition.name + '\nName: ' + condition.softwarename + '\nVersion: ' + condition.softwareversion) + '</Status>' +
+               '</Packagestatus>')
     return install
 
 
@@ -818,7 +877,7 @@ def inventory(xml):
         m.language = l
         m.typemachine_id = ch.id
         m.manualy_created = 'no'
-        m.lastsave = datetime.utcnow().replace(tzinfo=utc)
+        m.lastsave = datetime.now(timezone.utc)
 
         if created:
             m.entity = config.entity
@@ -983,7 +1042,8 @@ def inventory(xml):
                         if check_conditions(m, pack):
                             if pack.command.find('no_break_on_error') != -1 and (
                                     clientversion == 'Unknown' or compare_versions(clientversion, '3.1') < 0):
-                                status('<Packagestatus><Mid>' + str(m.id) + '</Mid>' +
+                                status('<Packagestatus>' +
+                                       '<Mid>' + str(m.id) + '</Mid>' +
                                        '<Pid>' + str(pack.id) + '</Pid>' +
                                        '<Status>Unsupported option for updatengine-client version \'' + clientversion + '\': Ignoring \'no_break_on_error\'</Status>' +
                                        '</Packagestatus>')
@@ -998,7 +1058,7 @@ def inventory(xml):
                             pack.name = encodeXMLText(pack.name)
                             pack.description = encodeXMLText(pack.description)
                             pack.command = encodeXMLText(pack.command)
-                            handling.append('<Package>'
+                            handling.append('<Package>' +
                                             '<Id>' + str(m.id) + '</Id>' +
                                             '<Pid>' + str(pack.id) + '</Pid>' +
                                             '<Name>' + pack.name + '</Name>' +
@@ -1071,11 +1131,17 @@ def inventory_extended(xml):
                         if pack.command.find('no_break_on_error') != -1 and (
                                 clientversion == 'Unknown' or compare_versions(clientversion, '3.1') < 0):
                             if clientversion == 'Unknown':
-                                status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(
-                                    pack.id) + '</Pid><Status>Possible use of unsupported option for updatengine-client version \'' + clientversion + '\': \'no_break_on_error\' need client version >= 3.1 but this warning is only removed after that version</Status></Packagestatus>')
+                                status('<Packagestatus>' +
+                                       '<Mid>' + str(m.id) + '</Mid>' +
+                                       '<Pid>' + str(pack.id) + '</Pid>' +
+                                       '<Status>Possible use of unsupported option for updatengine-client version \'' + clientversion + '\': \'no_break_on_error\' need client version >= 3.1 but this warning is only removed after that version</Status>' +
+                                       '</Packagestatus>')
                             else:
-                                status('<Packagestatus><Mid>' + str(m.id) + '</Mid><Pid>' + str(
-                                    pack.id) + '</Pid><Status>Unsupported option for updatengine-client version \'' + clientversion + '\': Ignoring \'no_break_on_error\'</Status></Packagestatus>')
+                                status('<Packagestatus>' +
+                                       '<Mid>' + str(m.id) + '</Mid>' +
+                                       '<Pid>' + str(pack.id) + '</Pid>' +
+                                       '<Status>Unsupported option for updatengine-client version \'' + clientversion + '\': Ignoring \'no_break_on_error\'</Status>' +
+                                       '</Packagestatus>')
                                 pack.command = re.sub('\r?\nno_break_on_error', '', pack.command)
                         if pack.packagesum != 'nofile':
                             if m.entity is not None and m.entity.redistrib_url:
@@ -1087,7 +1153,7 @@ def inventory_extended(xml):
                         pack.name = encodeXMLText(pack.name)
                         pack.description = encodeXMLText(pack.description)
                         pack.command = encodeXMLText(pack.command)
-                        handling.append('<Package>'
+                        handling.append('<Package>' +
                                         '<Id>' + str(m.id) + '</Id>' +
                                         '<Pid>' + str(pack.id) + '</Pid>' +
                                         '<Name>' + pack.name + '</Name>' +

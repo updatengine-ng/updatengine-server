@@ -81,7 +81,11 @@ class packagecondition(models.Model):
         ('hashis', _('hashis')),
         ('hashnot', _('hashnot')),
         ('exitcodeis', _('exitcodeis')),
-        ('exitcodenot', _('exitcodenot'))
+        ('exitcodenot', _('exitcodenot')),
+        ('executetimes', _('executetimes')),
+        ('installtimes', _('installtimes')),
+        ('executedelay', _('executedelay')),
+        ('installdelay', _('installdelay')),
     )
     name = models.CharField(max_length=100, verbose_name=_('packagecondition|name'))
     depends = models.CharField(max_length=12, choices=choice, default='installed', verbose_name=_('packagecondition|depends'), help_text=_('packagecondition|depends help text'))

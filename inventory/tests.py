@@ -1,9 +1,9 @@
 from django.test import TestCase
 from inventory.models import machine, software, osdistribution, typemachine
-from deploy.models import package, packagecondition, packagecustomvar, timeprofile
+from deploy.models import package, packagecondition, packagecustomvar, timeprofile, packagehistory
 from inventory.views import *
 from configuration.models import deployconfig, globalconfig
-from datetime import datetime
+from datetime import datetime, timedelta, date, timezone
 
 
 class machineTestCase(TestCase):
@@ -11,8 +11,8 @@ class machineTestCase(TestCase):
         ################
         # Global configuration
         ################
-        deployconf = deployconfig.objects.create(name='Default configuration', activate_deploy='yes',
-                                                 activate_time_deploy='yes', start_time='07:00', end_time='18:00')
+        deployconfig.objects.create(name='Default configuration', activate_deploy='yes', activate_time_deploy='yes',
+                                    start_time='07:00', end_time='18:00')
 
         ################
         # Define machine and software associated
@@ -27,7 +27,7 @@ class machineTestCase(TestCase):
         mw11 = machine.objects.create(serial='1234', name='machine_windows_11_64', language='fr_FR',
                                       typemachine=typemw11, username='usertest')
 
-        #software.objects.create(name='mozilla', version='24.0.0', uninstall='bla', host=mw11, manualy_created='no')
+        # software.objects.create(name='mozilla', version='24.0.0', uninstall='bla', host=mw11, manualy_created='no')
         osdistribution.objects.create(name='Microsoft Windows 11 Pro', version='10.0.22621', arch='64bits',
                                       systemdrive='c', host=mw11, manualy_created='no')
 
@@ -57,7 +57,7 @@ class machineTestCase(TestCase):
                                       host=m64, manualy_created='no')
 
         ################
-        # Packages
+        # Packages and conditions
         ################
         # packages with language condition
         package_test_fr_FR = package.objects.create(name='fr_FR', description='install si fr_FR', command='rem')
@@ -297,17 +297,17 @@ class machineTestCase(TestCase):
         jpackage_MS11usernamenot.save()
 
         # package with condition typemachine_in
-        package_MS11typein = package.objects.create(name='MS11typein',
-                                                        description='install if typemachine is Notebook', command='rem')
+        package_MS11typein = package.objects.create(name='MS11typein', description='install if typemachine is Notebook',
+                                                    command='rem')
         condition_MS11typein = packagecondition.objects.create(name='install if typemachine is Notebook',
-                                                                   softwarename='Notebook',
-                                                                   softwareversion='undefined', depends='type_in')
+                                                               softwarename='Notebook', softwareversion='undefined',
+                                                               depends='type_in')
         package_MS11typein.conditions.add(condition_MS11typein)
         package_MS11typein.save()
 
         # package with custom variables
         package_customvariables = package.objects.create(name='customvariables',
-                                                          description='install if {{name}} < {{version}}', command='rem')
+                                                         description='install if {{name}} < {{version}}', command='rem')
         packagecustomvar.objects.create(package=package_customvariables, name='name', value='mozilla')
         packagecustomvar.objects.create(package=package_customvariables, name='version', value='24.0.1')
         condition_customvariables = packagecondition.objects.create(name='install if {{name}} < {{version}}',
@@ -323,6 +323,76 @@ class machineTestCase(TestCase):
                                                       end_time='11:00')
         package_timeprofile_8_11.timeprofiles.add(timeprofile_8_11)
         package_timeprofile_8_11.save()
+
+        # package with executetimes 2 times per days (/!\ packagehistory.date is auto_now type and not modified)
+        package_executetimes_2days = package.objects.create(name='executetimes_2days',
+                                                         description='execute a maximum of 2 times per day',
+                                                         command='rem')
+        condition_executetimes_2days = packagecondition.objects.create(name='execute a maximum of 2 times per day',
+                                                                    softwarename='day', softwareversion='2',
+                                                                    depends='executetimes')
+        package_executetimes_2days.conditions.add(condition_executetimes_2days)
+        package_executetimes_2days.save()
+
+        packagehistory_executetimes_2days_1 = packagehistory.objects.create(name='executetimes_2days_1', command='rem',
+                                                                         machine=mw11, package=package_executetimes_2days,
+                                                                         status='Install in progress')
+        packagehistory_executetimes_2days_2 = packagehistory.objects.create(name='executetimes_2days_2', command='rem',
+                                                                         machine=mw11, package=package_executetimes_2days,
+                                                                         status='Install in progress')
+
+        # package with installtimes 1 per day (/!\ packagehistory.date is auto_now type and not modified)
+        package_installtimes_1day = package.objects.create(name='installtimes_1day',
+                                                           description='complete a maximum of 1 times per day',
+                                                           command='rem')
+        condition_installtimes_1day = packagecondition.objects.create(name='complete a maximum of 1 times per day',
+                                                                      softwarename='day', softwareversion='1',
+                                                                      depends='installtimes')
+        package_installtimes_1day.conditions.add(condition_installtimes_1day)
+        package_installtimes_1day.save()
+
+        packagehistory.objects.create(name='installtimes_1day_1', command='rem', machine=mw11,
+                                      package=package_installtimes_1day, status='Operation completed')
+        packagehistory.objects.create(name='installtimes_1day_2', command='rem', machine=mw11,
+                                      package=package_installtimes_1day, status='Install in progress')
+
+        # package with executedelay 90 minutes (/!\ packagehistory.date is auto_now type and not modified)
+        package_executedelay_90minutes = package.objects.create(name='executedelay_90minutes',
+                                                             description='execute a maximum of 1 times per 90 minutes',
+                                                             command='rem')
+        condition_executedelay_90minutes = packagecondition.objects.create(
+            name='execute a maximum of 1 times per 90 minutes', softwarename='hours', softwareversion='3',
+            depends='installdelay')
+        package_executedelay_90minutes.conditions.add(condition_executedelay_90minutes)
+        package_executedelay_90minutes.save()
+
+        packagehistory_executedelay_90minutes_1 = packagehistory.objects.create(name='package_executedelay_90minutes_1',
+                                                                             command='rem', machine=mw11,
+                                                                             package=package_executedelay_90minutes,
+                                                                             status='Operation completed')
+        packagehistory_executedelay_90minutes_2 = packagehistory.objects.create(name='package_executedelay_90minutes_2',
+                                                                             command='rem', machine=mw11,
+                                                                             package=package_executedelay_90minutes,
+                                                                             status='Install in progress')
+
+        # package with installdelay 3 hours (/!\ packagehistory.date is auto_now type and not modified)
+        package_installdelay_3hours = package.objects.create(name='installdelay_3hours',
+                                                             description='complete a maximum of 1 times per 3 hours',
+                                                             command='rem')
+        condition_installdelay_3hours = packagecondition.objects.create(
+            name='complete a maximum of 1 times per 3 hours', softwarename='hours', softwareversion='3',
+            depends='installdelay')
+        package_installdelay_3hours.conditions.add(condition_installdelay_3hours)
+        package_installdelay_3hours.save()
+
+        packagehistory_installdelay_3hours_1 = packagehistory.objects.create(name='installdelay_3hours_1',
+                                                                             command='rem', machine=mw11,
+                                                                             package=package_installdelay_3hours,
+                                                                             status='Operation completed')
+        packagehistory_installdelay_3hours_2 = packagehistory.objects.create(name='installdelay_3hours_2',
+                                                                             command='rem', machine=mw11,
+                                                                             package=package_installdelay_3hours,
+                                                                             status='Install in progress')
 
     def test_lower_condition_without_joker(self):
         m = machine.objects.get(name='machine_windows_7_32')
@@ -473,7 +543,6 @@ class machineTestCase(TestCase):
         m64 = machine.objects.get(name='machine_windows_7_64')
         m11 = machine.objects.get(name='machine_windows_11_64')
         typein = package.objects.get(name='MS11typein')
-        print(m11.typemachine)
 
         self.assertEqual(check_conditions(m32, typein), False)
         self.assertEqual(check_conditions(m64, typein), False)
@@ -516,3 +585,43 @@ class machineTestCase(TestCase):
         self.assertEqual(check_conditions(m32, timeprofile_eight_eleven), expected_value)
         self.assertEqual(check_conditions(m64, timeprofile_eight_eleven), expected_value)
         self.assertEqual(check_conditions(m11, timeprofile_eight_eleven), expected_value)
+
+    def test_executetimes(self):
+        m32 = machine.objects.get(name='machine_windows_7_32')
+        m64 = machine.objects.get(name='machine_windows_7_64')
+        m11 = machine.objects.get(name='machine_windows_11_64')
+        executetimes_2days = package.objects.get(name='executetimes_2days')
+
+        self.assertEqual(check_conditions(m32, executetimes_2days), True)
+        self.assertEqual(check_conditions(m64, executetimes_2days), True)
+        self.assertEqual(check_conditions(m11, executetimes_2days), False)
+
+    def test_installtimes(self):
+        m32 = machine.objects.get(name='machine_windows_7_32')
+        m64 = machine.objects.get(name='machine_windows_7_64')
+        m11 = machine.objects.get(name='machine_windows_11_64')
+        installtimes_1day = package.objects.get(name='installtimes_1day')
+
+        self.assertEqual(check_conditions(m32, installtimes_1day), True)
+        self.assertEqual(check_conditions(m64, installtimes_1day), True)
+        self.assertEqual(check_conditions(m11, installtimes_1day), False)
+
+    def test_executedelay_90minutes(self):
+        m32 = machine.objects.get(name='machine_windows_7_32')
+        m64 = machine.objects.get(name='machine_windows_7_64')
+        m11 = machine.objects.get(name='machine_windows_11_64')
+        executedelay_90minutes = package.objects.get(name='executedelay_90minutes')
+
+        self.assertEqual(check_conditions(m32, executedelay_90minutes), True)
+        self.assertEqual(check_conditions(m64, executedelay_90minutes), True)
+        self.assertEqual(check_conditions(m11, executedelay_90minutes), False)
+
+    def test_installdelay(self):
+        m32 = machine.objects.get(name='machine_windows_7_32')
+        m64 = machine.objects.get(name='machine_windows_7_64')
+        m11 = machine.objects.get(name='machine_windows_11_64')
+        installdelay_3hours = package.objects.get(name='installdelay_3hours')
+
+        self.assertEqual(check_conditions(m32, installdelay_3hours), True)
+        self.assertEqual(check_conditions(m64, installdelay_3hours), True)
+        self.assertEqual(check_conditions(m11, installdelay_3hours), False)
