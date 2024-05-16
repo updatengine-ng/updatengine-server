@@ -124,7 +124,7 @@ def status(xml):
             obj = obj.latest('date')
             if obj.status == 'Programmed':
                 obj.delete()
-        # Add status history in 'in progress', 'completed' and 'Ready' if they are 5 minutes apart
+        # Add status history in 'in progress', 'completed' and 'ready' if they are 5 minutes apart
         if status in ['Install in progress', 'Operation completed', 'Ready to download and execute']:
             # Use previous record with same status if it is less than 5 minutes old
             today = datetime.now(timezone.utc)
@@ -134,8 +134,12 @@ def status(xml):
                 obj = packagehistory.objects.create(machine=m, package=p, command=p.command, status=status)
             else:
                 obj = obj.latest('date')
-        else:
+        # Warning conditions reuses old records to avoid filling the base unnecessarily
+        elif status.startswith('Warning condition:'):
             obj, created = packagehistory.objects.get_or_create(machine=m, package=p, command=p.command, status=status)
+        # Add other status like installation errors
+        else:
+            obj = packagehistory.objects.create(machine=m, package=p, command=p.command, status=status)
         obj.name = p.name
         obj.description = p.description
         obj.command = p.command
