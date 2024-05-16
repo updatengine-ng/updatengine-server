@@ -131,7 +131,7 @@ def status(xml):
             date_max = today - timedelta(minutes=5)
             obj = packagehistory.objects.filter(machine=m, package=p, command=p.command, status=status, date__gt=date_max)
             if not obj:
-                obj, created = packagehistory.objects.create(machine=m, package=p, command=p.command, status=status)
+                obj = packagehistory.objects.create(machine=m, package=p, command=p.command, status=status)
             else:
                 obj = obj.latest('date')
         else:
