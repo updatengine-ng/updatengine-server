@@ -31,8 +31,6 @@ from django.urls import reverse
 
 class deployconfigAdmin(admin.ModelAdmin):
     actions = None
-    list_editable = ('activate_deploy', 'activate_time_deploy', 'start_time', 'end_time', 'entity', 'packageprofile',
-                     'timeprofile')
 
     def has_add_permission(self, request):
         return False
@@ -61,7 +59,6 @@ class deployconfigAdmin(admin.ModelAdmin):
 
 class globalconfigAdmin(admin.ModelAdmin):
     actions = None
-    list_editable = ('show_warning', 'remove_duplicate')
 
     def has_add_permission(self, request):
         return False
