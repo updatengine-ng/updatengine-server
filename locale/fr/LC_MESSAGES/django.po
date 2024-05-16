@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-15 16:04-0400\n"
+"POT-Creation-Date: 2024-05-16 15:30-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,23 +32,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 
-#: configuration/admin.py:98 configuration/models.py:129
+#: configuration/admin.py:123 configuration/models.py:129
 msgid "LDAP"
 msgstr ""
 
-#: configuration/admin.py:121 configuration/admin.py:130
+#: configuration/admin.py:146 configuration/admin.py:155
 msgid "Personal info"
 msgstr "Informations personnelles"
 
-#: configuration/admin.py:123 configuration/admin.py:132
+#: configuration/admin.py:148 configuration/admin.py:157
 msgid "Permissions"
 msgstr "Permissions"
 
-#: configuration/admin.py:124 configuration/admin.py:133
+#: configuration/admin.py:149 configuration/admin.py:158
 msgid "Important dates"
 msgstr "Evenements"
 
-#: configuration/admin.py:125 configuration/admin.py:134
+#: configuration/admin.py:150 configuration/admin.py:159
 msgid "Groups and permissions"
 msgstr "Groupes et permissions"
 
@@ -117,6 +117,10 @@ msgstr "Configuration des déploiements"
 #: configuration/models.py:52 updatengine/templates/admin/base.html:186
 msgid "deployconfig|deployconfigs"
 msgstr "Configuration des déploiements"
+
+#: configuration/models.py:55 configuration/models.py:77
+msgid "header|settings"
+msgstr "Paramètres"
 
 #: configuration/models.py:64
 msgid "globalconfig|name"
@@ -480,10 +484,10 @@ msgstr ""
 "de machine', ce peut être une liste de valeurs séparées par des virgules."
 "<br>Pour la condition 'Adresse IP', il est possible de spécifier une adresse "
 "IP ou une adresse réseau (ex: '192.168.1.10', '192.168.1.10/32', "
-"'192.168.1.0/24')."
-"<br>Pour les conditions 'au maximum X fois par', spécifier 'jour', "
-"'semaine' ou 'mois'."
-"<br>Pour les conditions 'à intervalle minimum de', spécifier 'minutes', "
+"'192.168.1.0/24').<br>Pour les conditions 'au maximum X fois par', "
+"spécifier une des périodes calendaires 'jour', 'semaine' ou 'mois'. La "
+"période est le jour courant, la semaine (lun-dim) ou le mois (1-31).<br>"
+"Pour les conditions 'à intervalle minimum de', spécifier 'minutes', "
 "'heures' ou 'jours'."
 
 #: deploy/models.py:93

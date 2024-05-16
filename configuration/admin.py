@@ -25,31 +25,43 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 class deployconfigAdmin(admin.ModelAdmin):
     actions = None
-    list_display = ('name', 'activate_deploy', 'activate_time_deploy', 'start_time', 'end_time', 'entity',
-                    'packageprofile', 'timeprofile')
     list_editable = ('activate_deploy', 'activate_time_deploy', 'start_time', 'end_time', 'entity', 'packageprofile',
                      'timeprofile')
-    list_display_links = ('name',)
-
-    readonly_fields = ('name',)
 
     def has_add_permission(self, request):
         return False
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def changelist_view(self, request, extra_context=None):
+        if self.model.objects.all().count() == 1:
+            obj = self.model.objects.all()[0]
+            return HttpResponseRedirect(
+                reverse("admin:%s_%s_change" % (self.model._meta.app_label, self.model._meta.model_name),
+                        args=(obj.id,)))
+        return super(deployconfigAdmin, self).changelist_view(request=request, extra_context=extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_save_and_continue'] = False
+        return super(deployconfigAdmin, self).change_view(request, object_id, form_url, extra_context=extra_context)
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ('name',)
+        form = super(deployconfigAdmin, self).get_form(request, obj, **kwargs)
+        return form
 
 
 class globalconfigAdmin(admin.ModelAdmin):
     actions = None
-    list_display = ('name', 'show_warning', 'remove_duplicate')
     list_editable = ('show_warning', 'remove_duplicate')
-    list_display_links = ('name',)
-    readonly_fields = ('name',)
 
     def has_add_permission(self, request):
         return False
@@ -57,6 +69,23 @@ class globalconfigAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    def changelist_view(self, request, extra_context=None):
+        if self.model.objects.all().count() == 1:
+            obj = self.model.objects.all()[0]
+            return HttpResponseRedirect(
+                reverse("admin:%s_%s_change" % (self.model._meta.app_label, self.model._meta.model_name),
+                        args=(obj.id,)))
+        return super(globalconfigAdmin, self).changelist_view(request=request, extra_context=extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_save_and_continue'] = False
+        return super(globalconfigAdmin, self).change_view(request, object_id, form_url, extra_context=extra_context)
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ('name',)
+        form = super(globalconfigAdmin, self).get_form(request, obj, **kwargs)
+        return form
 
 class subuserInline(admin.TabularInline):
     model = subuser

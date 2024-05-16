@@ -52,7 +52,7 @@ class deployconfig(models.Model):
         verbose_name_plural = _('deployconfig|deployconfigs')
 
     def __str__(self):
-        return self.activate_deploy
+        return str(_('header|settings'))
 
 
 class globalconfig(models.Model):
@@ -74,7 +74,7 @@ class globalconfig(models.Model):
         verbose_name_plural = _('globalconfig|globalconfigs')
 
     def __str__(self):
-        return self.name
+        return str(_('header|settings'))
 
 
 # Create subuser to extend default django user

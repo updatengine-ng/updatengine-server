@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-15 16:04-0400\n"
+"POT-Creation-Date: 2024-05-16 15:30-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,23 +32,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 
-#: configuration/admin.py:98 configuration/models.py:129
+#: configuration/admin.py:123 configuration/models.py:129
 msgid "LDAP"
 msgstr ""
 
-#: configuration/admin.py:121 configuration/admin.py:130
+#: configuration/admin.py:146 configuration/admin.py:155
 msgid "Personal info"
 msgstr ""
 
-#: configuration/admin.py:123 configuration/admin.py:132
+#: configuration/admin.py:148 configuration/admin.py:157
 msgid "Permissions"
 msgstr ""
 
-#: configuration/admin.py:124 configuration/admin.py:133
+#: configuration/admin.py:149 configuration/admin.py:158
 msgid "Important dates"
 msgstr ""
 
-#: configuration/admin.py:125 configuration/admin.py:134
+#: configuration/admin.py:150 configuration/admin.py:159
 msgid "Groups and permissions"
 msgstr ""
 
@@ -116,6 +116,10 @@ msgstr "deployment configuration"
 #: configuration/models.py:52 updatengine/templates/admin/base.html:186
 msgid "deployconfig|deployconfigs"
 msgstr "Deployment configurations"
+
+#: configuration/models.py:55 configuration/models.py:77
+msgid "header|settings"
+msgstr "Settings"
 
 #: configuration/models.py:64
 msgid "globalconfig|name"
@@ -466,10 +470,10 @@ msgstr ""
 "machine' conditions, it can be a list of values separated by commas.<br>For "
 "the 'IP address' condition, it is possible to specify an IP address or a "
 "network address (e.g. '192.168.1.10', '192.168.1.10/32', '192.168.1.0/24')."
-"<br>For 'at maximum X times per' conditions, specify 'day', "
-"'week' or 'month'."
-"<br>For 'at minimum interval of' conditions, specify 'minutes', "
-"'hours' or 'days'."
+"<br>For 'at maximum X times per' conditions, specify one of the calendar "
+"periods 'day', 'week' or 'month'. The period is the current day, week "
+"(mon-sun) or month (1-31).<br>For 'at minimum interval of' conditions, "
+"specify 'minutes', 'hours' or 'days'."
 
 #: deploy/models.py:93
 msgid "packagecondition|softwareversion"
