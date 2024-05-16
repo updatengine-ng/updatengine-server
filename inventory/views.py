@@ -23,8 +23,7 @@ from lxml import etree
 from inventory.models import machine, typemachine, software, net, osdistribution, entity
 from deploy.models import package, packagehistory, packagecustomvar
 from configuration.models import deployconfig, globalconfig
-from datetime import datetime, timedelta, date, timezone
-from django.utils.timezone import utc
+from datetime import datetime, timedelta, timezone
 from xml.sax.saxutils import escape
 from django.db.models import Count, Max
 from netaddr import IPNetwork, IPAddress
@@ -119,7 +118,24 @@ def status(xml):
         if len(cv) > 0:
             template = django_engine.from_string(p.command)
             p.command = template.render(cv, request=None)
-        obj, created = packagehistory.objects.get_or_create(machine=m, package=p, command=p.command, status=status)
+        # Remove last record if it history status is 'Programmed'
+        obj = packagehistory.objects.filter(machine=m, package=p)
+        if obj:
+            obj = obj.latest('date')
+            if obj.status == 'Programmed':
+                obj.delete()
+        # Add status history in 'in progress', 'completed' and 'Ready' if they are 5 minutes apart
+        if status in ['Install in progress', 'Operation completed', 'Ready to download and execute']:
+            # Use previous record with same status if it is less than 5 minutes old
+            today = datetime.now(timezone.utc)
+            date_max = today - timedelta(minutes=5)
+            obj = packagehistory.objects.filter(machine=m, package=p, command=p.command, status=status, date__gt=date_max)
+            if not obj:
+                obj, created = packagehistory.objects.create(machine=m, package=p, command=p.command, status=status)
+            else:
+                obj = obj.latest('date')
+        else:
+            obj, created = packagehistory.objects.get_or_create(machine=m, package=p, command=p.command, status=status)
         obj.name = p.name
         obj.description = p.description
         obj.command = p.command

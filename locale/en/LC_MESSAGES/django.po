@@ -296,11 +296,11 @@ msgstr "no"
 
 #: deploy/models.py:54
 msgid "installed"
-msgstr "Software & version installed"
+msgstr "Software and version installed"
 
 #: deploy/models.py:55
 msgid "notinstalled"
-msgstr "Software & version not installed"
+msgstr "Software and version not installed"
 
 #: deploy/models.py:56
 msgid "lower"
@@ -473,7 +473,7 @@ msgstr ""
 
 #: deploy/models.py:93
 msgid "packagecondition|softwareversion"
-msgstr "version, hash, exit code, interval or duration"
+msgstr "version, hash, exit code, periodicity or interval"
 
 #: deploy/models.py:93
 msgid "packagecondition|softwareversion help text"

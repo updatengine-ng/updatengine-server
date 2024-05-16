@@ -308,11 +308,11 @@ msgstr "non"
 
 #: deploy/models.py:54
 msgid "installed"
-msgstr "Logiciel & version est installé"
+msgstr "Logiciel et version est installé"
 
 #: deploy/models.py:55
 msgid "notinstalled"
-msgstr "Logiciel & version n'est pas installé"
+msgstr "Logiciel et version n'est pas installé"
 
 #: deploy/models.py:56
 msgid "lower"
@@ -465,7 +465,7 @@ msgstr ""
 #: deploy/models.py:92
 msgid "packagecondition|softwarename"
 msgstr ""
-"nom de logiciel, d'hôte, de fichier, adresse IP, marque, type, modèle,"
+"nom de logiciel, d'hôte, de fichier, adresse IP, marque, type, modèle, "
 "commande ou période"
 
 #: deploy/models.py:92
@@ -488,7 +488,7 @@ msgstr ""
 
 #: deploy/models.py:93
 msgid "packagecondition|softwareversion"
-msgstr "version, hachage, code de retour, intervalle ou durée"
+msgstr "version, hachage, code de retour, périodicité ou intervalle"
 
 #: deploy/models.py:93
 msgid "packagecondition|softwareversion help text"
