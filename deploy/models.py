@@ -37,6 +37,7 @@ from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 def random_directory(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
@@ -142,6 +143,7 @@ class package(models.Model):
         ('yes', _('package|yes')),
         ('no', _('package|no'))
     )
+    choice_yes_no_undefined = (('-', _('package|unset')), ('yes', _('package|yes')), ('no', _('package|no')))
     name = models.CharField(max_length=100, verbose_name=_('package|name'))
     description = models.CharField(max_length=500, verbose_name=_('package|description'))
     conditions = models.ManyToManyField('packagecondition', blank=True, verbose_name=_('package|conditions'))
@@ -156,6 +158,16 @@ class package(models.Model):
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|exclusive editor'))
     use_global_variables = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|global variables'), help_text=_('package|global variables help text'))
     timeprofiles = models.ManyToManyField('timeprofile', blank=True, verbose_name=_('package|time profiles'), help_text=_('package|time profiles help text'))
+    no_break_on_error = models.CharField(max_length=3, choices=choice_yes_no_undefined, default='-',
+                                         verbose_name=_('deployconfig|no break on error'),
+                                         help_text=_('deployconfig|no break on error help text'))
+    download_no_restart = models.CharField(max_length=3, choices=choice_yes_no_undefined, default='-',
+                                           verbose_name=_('deployconfig|download no restart'),
+                                           help_text=_('deployconfig|download no restart help text'))
+    install_timeout = models.PositiveIntegerField(default=600,
+                                                  validators=[MinValueValidator(1), MaxValueValidator(3600)],
+                                                  verbose_name=_('deployconfig|install_timeout'),
+                                                  help_text=_('deployconfig|install_timeout help text'))
 
     class Meta:
         verbose_name = _('package|deployment package')

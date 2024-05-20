@@ -24,14 +24,12 @@ from inventory.models import entity
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class deployconfig(models.Model):
     unique = True
-    choice = (
-        ('yes', _('yes')),
-        ('no', _('no'))
-    )
+    choice = (('yes', _('yes')), ('no', _('no')))
     name = models.CharField(max_length=100, verbose_name=_('deployconfig|name'))
     activate_deploy = models.CharField(max_length=3, choices=choice, default='yes',
                                        verbose_name=_('deployconfig|activate_deploy'))
@@ -41,11 +39,20 @@ class deployconfig(models.Model):
     end_time = models.TimeField(verbose_name=_('deployconfig|end_time'))
     entity = models.ForeignKey('inventory.entity', null=True, blank=True, default=None, on_delete=models.SET_NULL,
                                verbose_name=_('deployconfig|entity'))
-    packageprofile = models.ForeignKey(
-        'deploy.packageprofile', null=True, blank=True, default=None, on_delete=models.SET_NULL,
-        verbose_name=_('deployconfig|package profile'), help_text=_('machine|packages profile help text'))
+    packageprofile = models.ForeignKey('deploy.packageprofile', null=True, blank=True, default=None,
+                                       on_delete=models.SET_NULL, verbose_name=_('deployconfig|package profile'),
+                                       help_text=_('machine|packages profile help text'))
     timeprofile = models.ForeignKey('deploy.timeprofile', null=True, blank=True, default=None,
                                     on_delete=models.SET_NULL, verbose_name=_('deployconfig|time deploy profile'))
+    no_break_on_error = models.CharField(max_length=3, choices=choice, default='no',
+                                         verbose_name=_('deployconfig|no_break_on_error'),
+                                         help_text=_('deployconfig|no_break_on_error help text'))
+    download_no_restart = models.CharField(max_length=3, choices=choice, default='no',
+                                           verbose_name=_('deployconfig|download_no_restart'),
+                                           help_text=_('deployconfig|download_no_restart help text'))
+    install_timeout = models.PositiveIntegerField(default=600, validators=[MinValueValidator(1), MaxValueValidator(3600)],
+                                          verbose_name=_('deployconfig|install_timeout'),
+                                          help_text=_('deployconfig|install_timeout help text'))
 
     class Meta:
         verbose_name = _('deployconfig|deployconfig')
@@ -57,10 +64,7 @@ class deployconfig(models.Model):
 
 class globalconfig(models.Model):
     unique = True
-    choice = (
-        ('yes', _('yes')),
-        ('no', _('no'))
-    )
+    choice = (('yes', _('yes')), ('no', _('no')))
     name = models.CharField(max_length=100, default='default', verbose_name=_('globalconfig|name'))
     show_warning = models.CharField(max_length=3, choices=choice, default='no',
                                     verbose_name=_('globalconfig|show_warning'),
@@ -132,10 +136,12 @@ class userauth(models.Model):
         verbose_name = _('Authentication profile')
         verbose_name_plural = _('Authentication profile')
 
+
 @receiver(post_save, sender=User)
 def create_userauth(sender, instance, created, **kwargs):
     if created:
         userauth.objects.create(user=instance)
+
 
 @receiver(post_save, sender=User)
 def save_userauth(sender, instance, **kwargs):

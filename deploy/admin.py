@@ -80,7 +80,8 @@ class packageForm(ModelForm):
 
 class packageAdmin(FieldsetsInlineMixin, ueAdmin):
 #class packageAdmin(ueAdmin):
-    list_display = ('name','description','get_command','filename','get_conditions','ignoreperiod','get_timeprofiles','public','editor','exclusive_editor')
+    list_display = ('name','description','get_command','filename','get_conditions','public','get_no_break_on_error',
+                    'get_download_no_restart','install_timeout','ignoreperiod','get_timeprofiles','editor','exclusive_editor')
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
@@ -99,11 +100,26 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
     fieldsets_with_inlines = [
         (_('package|general information'), {'fields': ('name', 'description')}),
         customvarInline,
-        (_('package|package edition'), {'fields': ('use_global_variables', 'conditions', 'command', 'filename', 'public', 'ignoreperiod', 'timeprofiles')}),
+        (_('package|package edition'),
+         {'fields': ('use_global_variables', 'conditions', 'command', 'filename')}),
+        (_('package|deployment options'), {'fields': ('public', 'no_break_on_error', 'download_no_restart', 'install_timeout')}),
+        (_('package|timeprofiles options'), {'fields': ('ignoreperiod', 'timeprofiles')}),
         (_('package|permissions'), {
             'classes': ('grp-collapse grp-closed',),
             'fields': ('entity', 'editor', 'exclusive_editor')}),
     ]
+
+    def get_no_break_on_error(self, obj):
+        choices = dict(package.choice_yes_no_undefined)
+        return _(choices[obj.no_break_on_error])
+    get_no_break_on_error.short_description = _('deployconfig|no break on error short description')
+    get_no_break_on_error.admin_order_field = 'no_break_on_error'
+
+    def get_download_no_restart(self, obj):
+        choices = dict(package.choice_yes_no_undefined)
+        return _(choices[obj.download_no_restart])
+    get_download_no_restart.short_description = _('deployconfig|download no restart short description')
+    get_download_no_restart.admin_order_field = 'download_no_restart'
 
     def get_command(self, obj):
         return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
@@ -161,9 +177,10 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
     def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
-            return package.objects.all()
+            queryset = package.objects.all()
         else:
-            return package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
+            queryset = package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
+        return queryset
 
 
 class packagehistoryAdmin(ueAdmin):
