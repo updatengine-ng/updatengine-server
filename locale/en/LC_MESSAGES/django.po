@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-21 03:02-0400\n"
+"POT-Creation-Date: 2024-05-21 16:10-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -206,8 +206,8 @@ msgstr "Deployment options"
 msgid "package|timeprofiles options"
 msgstr "Deployment periods"
 
-#: deploy/admin.py:107 deploy/admin.py:287 deploy/admin.py:369
-#: deploy/admin.py:454
+#: deploy/admin.py:107 deploy/admin.py:286 deploy/admin.py:368
+#: deploy/admin.py:453
 msgid "package|permissions"
 msgstr "permissions"
 
@@ -231,73 +231,73 @@ msgstr "command"
 msgid "package|time profiles short description"
 msgstr "periods"
 
-#: deploy/admin.py:150
+#: deploy/admin.py:149
 msgid ""
 "Warning: you will not be able to update a package that you didn't create if "
 "exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:215 deploy/models.py:316
+#: deploy/admin.py:214 deploy/models.py:316
 msgid "packagehistory|status"
 msgstr "status"
 
-#: deploy/admin.py:220 deploy/models.py:310
+#: deploy/admin.py:219 deploy/models.py:310
 msgid "packagehistory|command"
 msgstr "command"
 
-#: deploy/admin.py:227
+#: deploy/admin.py:226
 msgid "machine"
 msgstr "machine"
 
-#: deploy/admin.py:234 deploy/filters.py:70
+#: deploy/admin.py:233 deploy/filters.py:70
 msgid "package"
 msgstr "no"
 
-#: deploy/admin.py:286
+#: deploy/admin.py:285
 msgid "packageprofile|general information"
 msgstr "general information"
 
-#: deploy/admin.py:295
+#: deploy/admin.py:294
 msgid ""
 "Warning: you will not be able to update a profile that you didn't create if "
 "exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:368
+#: deploy/admin.py:367
 msgid "timeprofile|general information"
 msgstr "general information"
 
-#: deploy/admin.py:377
+#: deploy/admin.py:376
 msgid ""
 "timeprofile|Warning: you will not be able to update a wake on lan task that "
 "you didn't create if exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:453
+#: deploy/admin.py:452
 msgid "packagewakeonlan|general information"
 msgstr "general information"
 
-#: deploy/admin.py:462
+#: deploy/admin.py:461
 msgid ""
 "packagewakeonlan|Warning: you will not be able to update a wake on lan task "
 "that you didn't create if exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:537
+#: deploy/admin.py:536
 msgid "packagecondition|general information"
 msgstr "general information"
 
-#: deploy/admin.py:538
+#: deploy/admin.py:537
 msgid "packagecondition|permissions"
 msgstr "permissions"
 
-#: deploy/admin.py:545
+#: deploy/admin.py:544
 msgid ""
 "packagecondition|Warning: you will not be able to update a condition that "
 "you didn't create if exclusive editor is set to yes for this package"
 msgstr ""
 
-#: deploy/admin.py:622
+#: deploy/admin.py:621
 msgid "impex|general information"
 msgstr "general information"
 
@@ -664,8 +664,8 @@ msgstr "Timeout"
 #: deploy/models.py:170
 msgid "deployconfig|install_timeout help text"
 msgstr ""
-"Delay in seconds after which the client forces the deployment of a "
-"package to stop."
+"Delay in seconds after which the client forces the deployment of a package "
+"to stop."
 
 #: deploy/models.py:173 deploy/models.py:210
 msgid "package|deployment package"

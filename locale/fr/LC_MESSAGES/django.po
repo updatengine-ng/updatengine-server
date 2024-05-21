@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-21 03:02-0400\n"
+"POT-Creation-Date: 2024-05-21 16:10-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Noël MARTINON <noel.martinon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -208,8 +208,8 @@ msgstr "Options de déploiement"
 msgid "package|timeprofiles options"
 msgstr "Périodes de déploiement"
 
-#: deploy/admin.py:107 deploy/admin.py:287 deploy/admin.py:369
-#: deploy/admin.py:454
+#: deploy/admin.py:107 deploy/admin.py:286 deploy/admin.py:368
+#: deploy/admin.py:453
 msgid "package|permissions"
 msgstr "Permissions"
 
@@ -233,7 +233,7 @@ msgstr "commande"
 msgid "package|time profiles short description"
 msgstr "Périodes"
 
-#: deploy/admin.py:150
+#: deploy/admin.py:149
 msgid ""
 "Warning: you will not be able to update a package that you didn't create if "
 "exclusive editor is set to yes for this package"
@@ -241,27 +241,27 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer un paquet que vous n'avez pas crée si "
 "il est verrouillé en 'éditeur exclusif'"
 
-#: deploy/admin.py:215 deploy/models.py:316
+#: deploy/admin.py:214 deploy/models.py:316
 msgid "packagehistory|status"
 msgstr "statut"
 
-#: deploy/admin.py:220 deploy/models.py:310
+#: deploy/admin.py:219 deploy/models.py:310
 msgid "packagehistory|command"
 msgstr "commande"
 
-#: deploy/admin.py:227
+#: deploy/admin.py:226
 msgid "machine"
 msgstr "Machine"
 
-#: deploy/admin.py:234 deploy/filters.py:70
+#: deploy/admin.py:233 deploy/filters.py:70
 msgid "package"
 msgstr "Paquet"
 
-#: deploy/admin.py:286
+#: deploy/admin.py:285
 msgid "packageprofile|general information"
 msgstr "Général"
 
-#: deploy/admin.py:295
+#: deploy/admin.py:294
 msgid ""
 "Warning: you will not be able to update a profile that you didn't create if "
 "exclusive editor is set to yes for this package"
@@ -269,11 +269,11 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer un profil que vous n'avez pas crée si "
 "il est verrouillé en 'éditeur exclusif'"
 
-#: deploy/admin.py:368
+#: deploy/admin.py:367
 msgid "timeprofile|general information"
 msgstr "Général"
 
-#: deploy/admin.py:377
+#: deploy/admin.py:376
 msgid ""
 "timeprofile|Warning: you will not be able to update a wake on lan task that "
 "you didn't create if exclusive editor is set to yes for this package"
@@ -281,11 +281,11 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer un profil horaire que vous n'avez pas "
 "crée si il est verrouillé en 'éditeur exclusif'"
 
-#: deploy/admin.py:453
+#: deploy/admin.py:452
 msgid "packagewakeonlan|general information"
 msgstr "Général"
 
-#: deploy/admin.py:462
+#: deploy/admin.py:461
 msgid ""
 "packagewakeonlan|Warning: you will not be able to update a wake on lan task "
 "that you didn't create if exclusive editor is set to yes for this package"
@@ -293,15 +293,15 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer une tâche de wake on lan que vous "
 "n'avez pas créée si elle est verrouillée en 'éditeur exclusif'"
 
-#: deploy/admin.py:537
+#: deploy/admin.py:536
 msgid "packagecondition|general information"
 msgstr "Général"
 
-#: deploy/admin.py:538
+#: deploy/admin.py:537
 msgid "packagecondition|permissions"
 msgstr "Permissions"
 
-#: deploy/admin.py:545
+#: deploy/admin.py:544
 msgid ""
 "packagecondition|Warning: you will not be able to update a condition that "
 "you didn't create if exclusive editor is set to yes for this package"
@@ -309,7 +309,7 @@ msgstr ""
 "Attention, vous ne pouvez pas éditer une condition que vous n'avez pas créée "
 "si elle est verrouillée en 'éditeur exclusif'"
 
-#: deploy/admin.py:622
+#: deploy/admin.py:621
 msgid "impex|general information"
 msgstr "Général"
 
@@ -677,8 +677,9 @@ msgstr "Délai d'expiration"
 
 #: deploy/models.py:170
 msgid "deployconfig|install_timeout help text"
-msgstr "Délai en secondes après lequel le client force l'arrêt du "
-"déploiement d'un paquet."
+msgstr ""
+"Délai en secondes après lequel le client force l'arrêt du déploiement d'un "
+"paquet."
 
 #: deploy/models.py:173 deploy/models.py:210
 msgid "package|deployment package"

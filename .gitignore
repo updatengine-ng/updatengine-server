@@ -1,7 +1,7 @@
 *.pyc
 settings.py
 settings_local.py
-static/
+updatengine/static/
 custom/
 .idea
 

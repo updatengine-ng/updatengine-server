@@ -47,7 +47,7 @@
         <a href="{% url 'admin:index' %}{{ app_label}}">{{ app_label|capfirst }}</a> &rsaquo;
         {% if has_change_permission %}<a
                 href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
-	{{ action_short_description|capfirst }}
+    {{ action_short_description|capfirst }}
     </div>
 {% endif %}{% endblock %}
 
@@ -164,31 +164,31 @@
     <tr valign="middle">
         <td align="left"><i>F</i></td>
         <td align="left">{% trans "A full textual representation of a month, such as January or March" %}</td>
-        <td align="left"><i>{% trans "January" %}</i> {% trans "through" %}<i>{% trans "December" %}</i></td>
+        <td align="left"><i>{% trans "January" %}</i>{% trans " through " %}<i>{% trans "December" %}</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>m</i></td>
         <td align="left">{% trans "Numeric representation of a month, with leading zeros" %}</td>
-        <td align="left"><i>01</i>{% trans " through" %} <i>12</i></td>
+        <td align="left"><i>01</i>{% trans " through " %}<i>12</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>M</i></td>
         <td align="left">{% trans "A short textual representation of a month, three letters" %}</td>
-        <td align="left"><i>{% trans "Jan" %}</i>{% trans " through" %}<i>{% trans "Dec" %}</i></td>
+        <td align="left"><i>{% trans "Jan" %}</i>{% trans " through " %}<i>{% trans "Dec" %}</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>n</i></td>
         <td align="left">{% trans "Numeric representation of a month, without leading zeros" %}</td>
-        <td align="left"><i>1</i>{% trans " through" %}<i>12</i></td>
+        <td align="left"><i>1</i>{% trans " through " %}<i>12</i></td>
     </tr>
 
     <tr valign="middle">
         <td align="left"><i>t</i></td>
         <td align="left">{% trans "Number of days in the given month" %}</td>
-        <td align="left"><i>28</i>{% trans " through" %} <i>31</i></td>
+        <td align="left"><i>28</i>{% trans " through " %}<i>31</i></td>
     </tr>
 
     <tr valign="middle">
