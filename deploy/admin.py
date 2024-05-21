@@ -81,7 +81,7 @@ class packageForm(ModelForm):
 class packageAdmin(FieldsetsInlineMixin, ueAdmin):
 #class packageAdmin(ueAdmin):
     list_display = ('name','description','get_command','filename','get_conditions','public','get_no_break_on_error',
-                    'get_download_no_restart','install_timeout','ignoreperiod','get_timeprofiles','editor','exclusive_editor')
+                    'get_download_no_restart','install_timeout','get_ignoreperiod','get_timeprofiles','editor','exclusive_editor')
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
@@ -109,6 +109,13 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
             'fields': ('entity', 'editor', 'exclusive_editor')}),
     ]
 
+
+    def get_ignoreperiod(self, obj):
+        choices = dict(package.choice_yes_no)
+        return _(choices[obj.ignoreperiod])
+    get_ignoreperiod.short_description = _('deployconfig|ignore period short description')
+    get_ignoreperiod.admin_order_field = 'ignoreperiod'
+
     def get_no_break_on_error(self, obj):
         choices = dict(package.choice_yes_no_undefined)
         return _(choices[obj.no_break_on_error])
@@ -134,7 +141,7 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
                 reverse('admin:deploy_timeprofile_change', args=[timeprofile.id]), timeprofile.name)
             retval += '</ul>'
             return mark_safe(retval)
-    get_timeprofiles.short_description = _('package|time profiles')
+    get_timeprofiles.short_description = _('package|time profiles short description')
 
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
@@ -177,10 +184,9 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
     def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
         if request.user.is_superuser:
-            queryset = package.objects.all()
+            return package.objects.all()
         else:
-            queryset = package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
-        return queryset
+            return package.objects.filter(entity__pk__in = request.user.subuser.id_entities_allowed()).distinct()
 
 
 class packagehistoryAdmin(ueAdmin):

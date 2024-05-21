@@ -50,9 +50,6 @@ class deployconfig(models.Model):
     download_no_restart = models.CharField(max_length=3, choices=choice, default='no',
                                            verbose_name=_('deployconfig|download_no_restart'),
                                            help_text=_('deployconfig|download_no_restart help text'))
-    install_timeout = models.PositiveIntegerField(default=600, validators=[MinValueValidator(1), MaxValueValidator(3600)],
-                                          verbose_name=_('deployconfig|install_timeout'),
-                                          help_text=_('deployconfig|install_timeout help text'))
 
     class Meta:
         verbose_name = _('deployconfig|deployconfig')

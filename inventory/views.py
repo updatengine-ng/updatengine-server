@@ -1060,6 +1060,9 @@ def inventory(xml):
                             template = django_engine.from_string(pack.command)
                             pack.command = template.render(cv, request=None)
                         if check_conditions(m, pack):
+                            # Proceed 'install_timeout' option
+                            option_timeout = '\ninstall_timeout_' + str(pack.install_timeout)
+                            pack.command += option_timeout
                             # Proceed 'no_break_on_error' and 'download_no_restart' options
                             if pack.no_break_on_error == 'yes' or (
                                     pack.no_break_on_error == '-' and config.no_break_on_error == 'yes'):
