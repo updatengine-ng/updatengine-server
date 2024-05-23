@@ -5,12 +5,18 @@
 {#{% endblock %}#}
 
 {% block breadcrumbs %}{% if not is_popup %}
-    <div class="breadcrumbs">
-        <a href="../../">{% trans "Home" %}</a> &rsaquo;
-        <a href="../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-        <a href=".">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-    {{ action_short_description|capfirst }}
-    </div>
+    <ul class="grp-horizontal-list">
+        <li><a href="../../">{% trans "Home" %}</a></li>
+        <li><a href="../">
+        {% with header_label=app_label|capfirst|escape %}
+            {% with msgid="header|"|add:header_label %}
+                {% trans msgid %}
+            {% endwith %}
+        {% endwith %}
+        </a></li>
+        <li><a href=".">{{ opts.verbose_name_plural|capfirst }}</a></li>
+        <li>{{ action_short_description|capfirst }}</li>
+    </ul>
 {% endif %}{% endblock %}
 
 {% block content %}
