@@ -555,7 +555,7 @@ def check_conditions(m, pack, xml=None):
             # Installation executed or completed a maximum of X times per day/week/month (calendar period, not duration)
             elif condition.depends == 'executetimes' or condition.depends == 'installtimes':
                 try:
-                    search_status = 'Install in progress' if condition.depends == 'executetimes' else 'Operation completed'
+                    search_status = 'Ready to download and execute' if condition.depends == 'executetimes' else 'Operation completed'
                     condition.softwarename = condition.softwarename.lower()
                     today = datetime.now(timezone.utc)
                     max_times_per_period = int(condition.softwareversion)
@@ -586,7 +586,7 @@ def check_conditions(m, pack, xml=None):
             # Installation executed or completed ta minimum interval of X minutes/hours/days (duration)
             elif condition.depends == 'executedelay' or condition.depends == 'installdelay':
                 try:
-                    search_status = 'Install in progress' if condition.depends == 'executedelay' else 'Operation completed'
+                    search_status = 'Ready to download and execute' if condition.depends == 'executedelay' else 'Operation completed'
                     condition.softwarename = condition.softwarename.lower()
                     today = datetime.now(timezone.utc)
                     interval = int(condition.softwareversion)
