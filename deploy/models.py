@@ -191,7 +191,8 @@ class package(models.Model):
                     if p.filename != '':
                         p.filename.delete(save=False)
                 else:
-                    shutil.rmtree(os.path.dirname(p.filename.path))
+                    if len(package.objects.filter(filename=p.filename.name)) <= 1:
+                        shutil.rmtree(os.path.dirname(p.filename.path))
 
         except:
             pass  # when new file then we do nothing, normal case
@@ -272,11 +273,15 @@ def postcreate_package(sender, instance, created, **kwargs):
 
 @receiver(pre_delete, sender=package)
 def predelete_package(sender, instance, **kwargs):
-    if instance.filename.name != '':
-        if os.path.split(os.path.dirname(instance.filename.path))[1] == 'package-file':
-            instance.filename.delete(save=False)
-        else:
-            shutil.rmtree(os.path.dirname(instance.filename.path))
+    try:
+        if instance.filename.name != '':
+            if os.path.split(os.path.dirname(instance.filename.path))[1] == 'package-file':
+                instance.filename.delete(save=False)
+            else:
+                if len(package.objects.filter(filename=instance.filename.name)) <= 1:
+                    shutil.rmtree(os.path.dirname(instance.filename.path))
+    except:
+        pass
 
 
 # call packages_changed only when packages m2m changed
@@ -568,4 +573,5 @@ def predelete_impex(sender, instance, **kwargs):
         if os.path.split(os.path.dirname(instance.filename.path))[1] == 'package-file':
             instance.filename.delete(save=False)
         else:
-            shutil.rmtree(os.path.dirname(instance.filename.path))
+            if len(package.objects.filter(filename=instance.filename.name)) <= 1:
+                shutil.rmtree(os.path.dirname(instance.filename.path))

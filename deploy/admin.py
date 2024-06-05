@@ -32,6 +32,8 @@ from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from updatengine.utils import FieldsetsInlineMixin
+from datetime import datetime
+import copy
 
 
 class ueAdmin(admin.ModelAdmin):
@@ -87,6 +89,7 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
     filter_horizontal = ('conditions','entity','timeprofiles')
     form = packageForm
+    actions = ['duplicate']
     # inlines = (variableInline,)
     # readonly_fields = ('variableInline')
     # fieldsets = (
@@ -142,6 +145,32 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
             retval += '</ul>'
             return mark_safe(retval)
     get_timeprofiles.short_description = _('package|time profiles short description')
+
+    def duplicate(modeladmin, request, queryset):
+        for obj in queryset:
+            obj_copy = copy.copy(obj)
+            obj_copy.id = None
+            obj_copy.editor = request.user
+            datenow = datetime.now().strftime("%Y%m%d_%H%M%S")
+            obj_copy.name = f'{obj.name} ({datenow})'
+            obj_copy.save()
+
+            # copy M2M relationship: conditions, entities, timeprofiles
+            for condition in obj.conditions.all():
+                obj_copy.conditions.add(condition)
+            for entity in obj.entity.all():
+                obj_copy.entity.add(entity)
+            for timeprofile in obj.timeprofiles.all():
+                obj_copy.timeprofiles.add(timeprofile)
+
+            obj_copy.save()
+            obj_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_package_change', args=[obj.id]), obj.name)
+            obj_copy_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_package_change', args=[obj_copy.id]), obj_copy.name)
+            msg = _('The package &ldquo; %s &rdquo; has been copied to &ldquo; %s &rdquo; successfully.') % (obj_link, obj_copy_link)
+            messages.success(request, mark_safe(msg))
+    duplicate.short_description = _('package|deployment packages duplicate')
 
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
@@ -538,6 +567,30 @@ class packageconditionAdmin(ueAdmin):
                     'classes': ('grp-collapse grp-closed',),
                     'fields': ('entity','editor', 'exclusive_editor')}),
                 )
+    actions = ['duplicate']
+
+    def duplicate(modeladmin, request, queryset):
+        for obj in queryset:
+            obj_copy = copy.copy(obj)
+            obj_copy.id = None
+            obj_copy.editor = request.user
+            datenow = datetime.now().strftime("%Y%m%d_%H%M%S")
+            obj_copy.name = f'{obj.name} ({datenow})'
+            obj_copy.save()
+
+            # copy M2M relationship: entities
+            for entity in obj.entity.all():
+                obj_copy.entity.add(entity)
+
+            obj_copy.save()
+            obj_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_packagecondition_change', args=[obj.id]), obj.name)
+            obj_copy_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_packagecondition_change', args=[obj_copy.id]), obj_copy.name)
+            msg = _('The condition &ldquo; %s &rdquo; has been copied to &ldquo; %s &rdquo; successfully.') % (obj_link, obj_copy_link)
+            messages.success(request, mark_safe(msg))
+    duplicate.short_description = _('packagecondition|packages conditions duplicate')
+
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
         if not request.user.is_superuser:
