@@ -38,12 +38,15 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.files.storage import default_storage
 
 
-def random_directory(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
+def random_directory(size=24, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
     random_string = ''.join(random.choice(chars) for x in range(size))
-    return prefix+random_string+suffix
-
+    random_path = prefix+random_string+suffix
+    if default_storage.exists(os.path.dirname(random_path)):
+        return random_directory(size, chars, prefix, suffix)
+    return random_path
 
 
 class packagecondition(models.Model):
