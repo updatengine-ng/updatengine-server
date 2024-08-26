@@ -109,6 +109,7 @@ fi
 source ${VENV_DIR}/bin/activate
 cd ${INST_DIR}/updatengine-server
 
+python -m ensurepip --upgrade
 pip install --upgrade pip
 pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
