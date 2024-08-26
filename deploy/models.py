@@ -185,6 +185,19 @@ class package(models.Model):
         return mark_safe(retval)
     get_conditions.short_description = _('packageAdmin|get_conditions')
 
+    def get_customvars(self):
+        retval = ''
+        if self.use_global_variables == 'yes':
+            retval += '<p>{0} : {1}</p>'.format(_('package|global variables').capitalize(), self.get_use_global_variables_display())
+        customvars = packagecustomvar.objects.filter(package=self)
+        if customvars.count():
+            retval += '{0} :<ul class="grp-list-options">'.format(_('package|deployment custom variables').capitalize())
+            for customvar in customvars:
+                retval += '<li>%s = %s</li>' % (customvar.name, customvar.value)
+            retval += '</ul>'
+        return mark_safe(retval)
+    get_customvars.short_description = _('variables').capitalize()
+
     def save(self, *args, **kwargs):
         # delete old file when replacing by updating the file
         try:

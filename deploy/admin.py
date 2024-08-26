@@ -82,7 +82,7 @@ class packageForm(ModelForm):
 
 class packageAdmin(FieldsetsInlineMixin, ueAdmin):
 #class packageAdmin(ueAdmin):
-    list_display = ('name','description','get_command','filename','get_conditions','public','get_no_break_on_error',
+    list_display = ('name','description','get_command','filename','get_conditions','get_customvars','public','get_no_break_on_error',
                     'get_download_no_restart','install_timeout','get_ignoreperiod','get_timeprofiles','editor','exclusive_editor')
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
