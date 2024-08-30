@@ -205,7 +205,7 @@
 			{%url 'admin:auth_user_changelist' as user_url %}
                 	<li><a href="{{ user_url }}">{% trans 'users'|capfirst %}</a></li>
                 {% endif %}
-		
+
                 </ul>
             </li>
             {% endif %}
@@ -214,13 +214,15 @@
                 <a href="javascript://" class="user-options-handler grp-collapse-handler">{% firstof user.first_name user.username %}</a>
                 <ul class="grp-user-options">
                     <!-- Change Password -->
-                    {% url 'admin:password_change' as password_change_url %}
-                    {% if password_change_url %}
-                        <li><a href="{{ password_change_url }}">
-                    {% else %}
-                        <li><a href="{{ root_path }}password_change/">
+                    {% if not user.userauth.ldap_auth %}
+                      {% url 'admin:password_change' as password_change_url %}
+                      {% if password_change_url %}
+                          <li><a href="{{ password_change_url }}">
+                      {% else %}
+                          <li><a href="{{ root_path }}password_change/">
+                      {% endif %}
+                      {% trans 'Change password' %}</a></li>
                     {% endif %}
-                    {% trans 'Change password' %}</a></li>
                     <!-- Logout -->
                     {% url 'admin:logout' as logout_url %}
                     {% if logout_url %}
@@ -268,7 +270,7 @@
 
         <!-- CONTENT -->
         <article id="grp-content" class="{% block content-class %}{% endblock %}">
-            
+
             <!-- MESSAGES -->
             {% if messages %}
                 <ul class="grp-messagelist">
@@ -294,7 +296,7 @@
             </div>
 
         </article>
-        
+
         <!-- FOOTER -->
         {% block footer %}{% endblock %}
 

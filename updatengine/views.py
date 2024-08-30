@@ -1,8 +1,9 @@
 from django.http import JsonResponse
 import json
 import os
-import ssl
 from .utils import get_latest_release_version
+from django.contrib.auth.views import PasswordChangeView
+from django.http import Http404
 
 
 def check_version(request):
@@ -24,3 +25,10 @@ def check_version(request):
             'version' : '',
             'url' : ''
         })
+
+
+class ChangePasswordView(PasswordChangeView):
+    def get(self, *args, **kwargs):
+        if self.request.user.userauth.ldap_auth:
+            raise Http404
+        return super(ChangePasswordView, self).get(*args, **kwargs)
