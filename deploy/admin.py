@@ -155,13 +155,18 @@ class packageAdmin(FieldsetsInlineMixin, ueAdmin):
             obj_copy.name = f'{obj.name} ({datenow})'
             obj_copy.save()
 
-            # copy M2M relationship: conditions, entities, timeprofiles
+            # copy M2M relationship: conditions, entities, timeprofiles and related customvars
             for condition in obj.conditions.all():
                 obj_copy.conditions.add(condition)
             for entity in obj.entity.all():
                 obj_copy.entity.add(entity)
             for timeprofile in obj.timeprofiles.all():
                 obj_copy.timeprofiles.add(timeprofile)
+            for customvar in packagecustomvar.objects.filter(package=obj):
+                customvar_copy = copy.copy(customvar)
+                customvar_copy.id = None
+                customvar_copy.package = obj_copy
+                customvar_copy.save()
 
             obj_copy.save()
             obj_link = '<a href="%s">%s</a>' % (
