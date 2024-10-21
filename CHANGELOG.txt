@@ -2,11 +2,32 @@
 # UpdatEngine-server #
 ######################
 
+6.0.0:
+- Upgrade to Django 4.2.16 LTS
+- Increase upload size limit to 5G
+- Add 'custom variables' column to deploy/package page
+- Increase package directory name length and make sure it is unique
+- Add 'duplicate' feature to packages and conditions
+- Add 'download_no_restart', 'no_break_on_error' and 'timeout' options in admin interface
+- Modify configuration pages display
+- Add 'execute' and 'install' conditions with 'max times per period' and 'min interval of'
+- Display time profiles on packages page
+- Add time profiles option to the packages
+- Fix version comparison function and package status
+- Update debian installation script
+- Add custom variables feature
+- Add SHA-512 hash for packages checksum
+- Increase length of field uninstall on software
+- Add LDAP support
+- Add powershell deployment script for Windows GPO
+- Add docker installation script
+
+
 5.0.0:
 - Upgrade to Django 3.2 LTS
 - Upgrade adminactions module to 1.15 version
 - Add debian upgrade script
-- Reorder the inventory columns (hostname in the first one)
+- Reorder the inventory columns (hostname is the first one)
 - Add conditions vendor,product,type
 - Display package command on several lines
 - Add direct link to conditions on the packages page
