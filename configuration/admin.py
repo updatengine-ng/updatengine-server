@@ -1,8 +1,8 @@
 ###############################################################################
-###############################################################################
 # UpdatEngine - Software Packages Deployment and Administration tool          #
 #                                                                             #
 # Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
+# Copyright (C) Noël Martinon - noel.martinon@gmail.com                       #
 #                                                                             #
 # This program is free software; you can redistribute it and/or               #
 # modify it under the terms of the GNU General Public License                 #
