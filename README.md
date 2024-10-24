@@ -4,7 +4,9 @@ UpdatEngine Server is a web app allowing people to inventory computer and server
 
 * [History](#history)
 * [Project features](#project-features)
-* [Install](#install-latest-stable)
+* [Installation](#installation)
+  * [Python Virtual Environment](#in-a-python-virtual-environment)
+  * [Docker](#in-a-docker-container) 
 * [Upgrade](#upgrade)
 * [Examples](#examples-of-deployment-packages)
 * [Links](#links)
@@ -16,22 +18,117 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 ## Project features
 
-* Python 3.10 / Django 3.2 LTS project
-* Tested with Debian 10/11, Ubuntu 18.04/20.04/22.04
+* Python 3.10+ / Django 4.2 LTS project
+* Tested with Debian 10/11/12, Ubuntu 18.04/20.04/22.04
+
+## Installation
+
+UpdatEngine-server installation scripts for Debian/Ubuntu are located in the 'install' folder. 
+
+### In a Python virtual environment
+
+1. Preparation of configuration files
+
+    If this preparation step is ignored, the step 2 installation will use default remote site settings 'debian/custom.dist/.env.default'.
+
+    - Switch to the superuser account:
+
+          sudo su -
+
+    - Create a directory to store your settings and move into it (here in 'home' directory):
+
+          mkdir ~/ue-config && cd $_
+
+    - Create the 'custom' directory used by the installation script:
+
+        It must be placed at the some level than 'install.sh' from step 2
+
+          mkdir custom
+
+    - Get default '.env' file and customize it:
+
+      Customize your settings in this file (Installation directories, URL, database, SMTP...).
+
+          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/custom.dist/.env.default
+          nano ./custom/.env
+
+    - Optionally, get example 'settings_local.py' to customize some features:
+
+      Customize additional settings in this file (LDAP, LOGGING...).
+
+          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/custom.dist/settings_local.py.example
+          nano ./custom/settings_local.py
+
+2. Installation
+
+    - Get last installation script and run it:
+
+          cd ~/ue-config
+          wget -O install.sh https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/install.sh
+          chmod +x install.sh
+          ./install.sh
 
 
-## Install latest stable
+    The script automaticaly update the python settings, the apache.conf and create auto-signed SSL certfificat.
 
-A Debian/Ubuntu installation script is located in the 'install' folder. Customize your settings in this file (Installation directories, URL, database, SMTP...) and run it !
+### In a docker container
 
-The script automaticaly update the python settings, the apache.conf and create auto-signed SSL certfificat.
- 
-See old **[2.1.1 installation documentation](https://updatengine-ng.com/)** for details
+The distribution base image doesn't exist yet, so the container is built from source.
 
+1. Preparation of configuration files
+
+   If this preparation step is ignored, the step 2 installation will use default remote site settings 'docker/custom.dist/.env.default'.
+
+   - Switch to the superuser account or to a user that is able to build and run docker:
+
+          sudo su -
+
+   - Create a directory to store your settings and move into it (here in 'home' directory):
+
+          mkdir ~/ue-config && cd $_
+
+    - Create the 'custom' directory used by the installation script:
+
+        It must be placed at the some level than 'install-ue-docker.sh' from step 2
+
+          mkdir custom
+
+    - Get default '.env' file and customize it:
+
+      Customize your settings in this file (Installation directories, URL, database, SMTP...).
+
+          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/custom.dist/.env.default
+          nano ./custom/.env
+
+    - Optionally, get example 'settings_local.py' to customize some features:
+
+      Add additional settings in this file (LDAP, LOGGING...). All settings available for Django could be put in this file and the contains it is loading at the end of the 'settings.py', all values could be overridden 
+
+          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/custom.dist/settings_local.py.example
+          nano ./custom/settings_local.py
+
+2. Installation
+
+    - Get last docker deployment script, customize INST_DIR and run it:
+
+          cd ~/ue-config
+          wget https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/deploy-ue-docker.sh
+          nano deploy-ue-docker.sh
+          chmod +x deploy-ue-docker.sh
+          ./deploy-ue-docker.sh
 
 ## Upgrade
 
-A Debian/Ubuntu upgrade script is located in the 'install' folder. Customize and run it !
+> [!WARNING]
+Before any upgrade, it's always recommended to backup the updatengine-server database, the current updatengine-server directory and possibly the Python venv directory.
+
+### Before version 6.0.0:
+
+Proceed with the same steps as those of the installation above using your own values ​​entered in your previous 'debian_install_ue.sh' script or your current 'updatengine/settings.py' file. Then run step 2 of the installation which will upgrade your database and project files.
+
+### From version 6.0.0:
+
+Go to your directory containing 'install.sh' and 'custom' directory and just run step 2 of the installation.
 
 ## Examples of deployment packages
 
@@ -201,11 +298,8 @@ If cancelling then UpdatEngine-client will check and ask again on next inventory
 ## Links
 * Official site : https://updatengine-ng.com/
 * French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr
-* Site archive : https://web.archive.org/web/20170318143615/http://www.updatengine.com:80/
 
 ## License
 
 GPL-2.0
-
-
 
