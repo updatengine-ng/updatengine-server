@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2024/04/27
+## 2024/11/09
 ################################################
 #
 #             /!\ WARNING /!\
@@ -20,6 +20,12 @@
 ## Must be root user to install
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root user"
+    exit
+fi
+
+## Must be in root user's environment
+if [[ ":$PATH:" != *":/usr/sbin:"* ]]; then
+    echo "The path is missing /usr/sbin, please ensure to use the command 'su -' to switch to the full root user's environment."
     exit
 fi
 
