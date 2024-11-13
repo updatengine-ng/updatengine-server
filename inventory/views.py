@@ -238,7 +238,7 @@ def check_conditions(m, pack, xml=None):
 
             # Software not installed (wildcards can be used for condition name)
             if condition.depends == 'notinstalled':
-                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                nameregex = '^' + re.escape(condition.softwarename).replace('\\*', '.*') + '$'
                 # Empty softwareversion is allowed (else django filter error!)
                 if condition.softwareversion is None:
                     condition.softwareversion = ''
@@ -249,7 +249,7 @@ def check_conditions(m, pack, xml=None):
 
             # Software installed (wildcards can be used for condition name)
             elif condition.depends == 'installed':
-                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                nameregex = '^' + re.escape(condition.softwarename).replace('\\*', '.*') + '$'
                 # Empty softwareversion is allowed (else django filter error!)
                 if condition.softwareversion is None:
                     condition.softwareversion = ''
@@ -273,7 +273,7 @@ def check_conditions(m, pack, xml=None):
 
             # System name is (wildcards can be used)
             elif condition.depends == 'system_is':
-                nameregex = re.escape(condition.softwarename).replace('\*', '.*')
+                nameregex = re.escape(condition.softwarename).replace('\\*', '.*')
                 # Empty softwareversion is allowed to check an empty version
                 if condition.softwareversion is None:
                     condition.softwareversion = ''
@@ -289,7 +289,7 @@ def check_conditions(m, pack, xml=None):
 
             # System name is not (wildcards can be used)
             elif condition.depends == 'system_not':
-                nameregex = re.escape(condition.softwarename).replace('\*', '.*')
+                nameregex = re.escape(condition.softwarename).replace('\\*', '.*')
                 # Empty softwareversion is allowed to check an empty version
                 if condition.softwareversion is None:
                     condition.softwareversion = ''
@@ -310,7 +310,7 @@ def check_conditions(m, pack, xml=None):
 
             # Software not installed or version lower than (wildcards can be used for condition name)
             elif condition.depends == 'lower':
-                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                nameregex = '^' + re.escape(condition.softwarename).replace('\\*', '.*') + '$'
                 # Check if name exists
                 if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
                     # Empty softwareversion is useful to ignore the version and only check not installed
@@ -326,7 +326,7 @@ def check_conditions(m, pack, xml=None):
 
             # Software installed and version higher than (wildcards can be used for condition name)
             elif condition.depends == 'higher':
-                nameregex = '^' + re.escape(condition.softwarename).replace('\*', '.*') + '$'
+                nameregex = '^' + re.escape(condition.softwarename).replace('\\*', '.*') + '$'
                 # Check if name exists
                 if software.objects.filter(host_id=m.id, name__iregex=nameregex).exists():
                     # Empty softwareversion is useful to ignore the version and only check installed
@@ -351,7 +351,7 @@ def check_conditions(m, pack, xml=None):
                     for hostname in hosts:
                         if not hostname:
                             continue
-                        nameregex = '^' + re.escape(hostname).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(hostname).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.name, re.IGNORECASE):
                             install = True
                             break
@@ -369,7 +369,7 @@ def check_conditions(m, pack, xml=None):
                     for hostname in hosts:
                         if not hostname:
                             continue
-                        nameregex = '^' + re.escape(hostname).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(hostname).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.name, re.IGNORECASE):
                             install = False
                             break
@@ -385,7 +385,7 @@ def check_conditions(m, pack, xml=None):
                     for username in users:
                         if not username:
                             continue
-                        nameregex = '^' + re.escape(username).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(username).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.username, re.IGNORECASE):
                             install = True
                             break
@@ -403,7 +403,7 @@ def check_conditions(m, pack, xml=None):
                     for username in users:
                         if not username:
                             continue
-                        nameregex = '^' + re.escape(username).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(username).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.username, re.IGNORECASE):
                             install = False
                             break
@@ -459,7 +459,7 @@ def check_conditions(m, pack, xml=None):
                     for vendor in vendors:
                         if not vendor:
                             continue
-                        nameregex = '^' + re.escape(vendor).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(vendor).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.vendor, re.IGNORECASE):
                             install = True
                             break
@@ -477,7 +477,7 @@ def check_conditions(m, pack, xml=None):
                     for vendor in vendors:
                         if not vendor:
                             continue
-                        nameregex = '^' + re.escape(vendor).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(vendor).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.vendor, re.IGNORECASE):
                             install = False
                             break
@@ -493,7 +493,7 @@ def check_conditions(m, pack, xml=None):
                     for product in products:
                         if not product:
                             continue
-                        nameregex = '^' + re.escape(product).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(product).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.product, re.IGNORECASE):
                             install = True
                             break
@@ -511,7 +511,7 @@ def check_conditions(m, pack, xml=None):
                     for product in products:
                         if not product:
                             continue
-                        nameregex = '^' + re.escape(product).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(product).replace('\\*', '.*') + '$'
                         if re.match(nameregex, m.product, re.IGNORECASE):
                             install = False
                             break
@@ -527,7 +527,7 @@ def check_conditions(m, pack, xml=None):
                     for typemachine in typemachines:
                         if not typemachine:
                             continue
-                        nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(typemachine).replace('\\*', '.*') + '$'
                         if re.match(nameregex, str(m.typemachine), re.IGNORECASE):
                             install = True
                             break
@@ -545,7 +545,7 @@ def check_conditions(m, pack, xml=None):
                     for typemachine in typemachines:
                         if not typemachine:
                             continue
-                        nameregex = '^' + re.escape(typemachine).replace('\*', '.*') + '$'
+                        nameregex = '^' + re.escape(typemachine).replace('\\*', '.*') + '$'
                         if re.match(nameregex, str(m.typemachine), re.IGNORECASE):
                             install = False
                             break
