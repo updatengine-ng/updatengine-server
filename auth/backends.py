@@ -24,6 +24,7 @@ from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django_auth_ldap.backend import LDAPBackend
 from django.contrib.auth.models import Group, User
+from django.contrib.auth.hashers import check_password
 import ldap
 
 
@@ -36,6 +37,8 @@ class AuthBackend(ModelBackend):
                 user =  User.objects.get(username=username, userauth__ldap_auth=False)
             else:
                 user = User.objects.get(username=username)
+            if not check_password(password, user.password):
+                return None
         except User.DoesNotExist:
             return None
 
