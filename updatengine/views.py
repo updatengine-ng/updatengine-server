@@ -2,7 +2,7 @@ from django.http import JsonResponse
 import json
 import os
 from .utils import get_latest_release_version
-from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from django.http import Http404
 
 
@@ -32,3 +32,10 @@ class ChangePasswordView(PasswordChangeView):
         if self.request.user.userauth.ldap_auth:
             raise Http404
         return super(ChangePasswordView, self).get(*args, **kwargs)
+
+
+class ChangePasswordDoneView(PasswordChangeDoneView):
+    def get(self, *args, **kwargs):
+        if self.request.user.userauth.ldap_auth:
+            raise Http404
+        return super(ChangePasswordDoneView, self).get(*args, **kwargs)

@@ -19,12 +19,12 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
 ###############################################################################
 
-from django.urls import include, re_path
+from django.urls import include, re_path, reverse_lazy
 from django.contrib import admin
 from inventory.views import post
 from django.contrib.admin import site
 import adminactions.actions as actions
-from .views import check_version, ChangePasswordView
+from .views import check_version, ChangePasswordView, ChangePasswordDoneView
 
 # Import admin module in each installed application
 admin.autodiscover()
@@ -34,7 +34,8 @@ site.add_action(actions.mass_update)
 site.add_action(actions.export_as_csv)
 
 urlpatterns = [
-    re_path(r'^password_change/', ChangePasswordView.as_view()),
+    re_path(r'^password_change/$', ChangePasswordView.as_view(success_url=reverse_lazy('password_change_done'))),
+    re_path(r'^password_change/done/', ChangePasswordDoneView.as_view(), name='password_change_done'),
     re_path(r'^grappelli/', include('grappelli.urls')),
     re_path(r'^post/', post),
     re_path(r'^adminactions/', include('adminactions.urls')),
