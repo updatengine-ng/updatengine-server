@@ -19,7 +19,7 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 ## Project features
 
 * Python 3.10+ / Django 4.2 LTS project
-* Tested with Debian 10/11/12, Ubuntu 18.04/20.04/22.04
+* Tested with Debian 10/11/12, Ubuntu 18.04/20.04/22.04/24.04
 
 ## Installation
 
