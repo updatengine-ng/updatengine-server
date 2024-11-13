@@ -2,6 +2,10 @@
 # UpdatEngine-server #
 ######################
 
+6.0.1:
+- Fix debian installation script for Python 3.12 compatibility
+- Fix escape sequence in inventory views
+
 6.0.0:
 - Upgrade to Django 4.2.16 LTS
 - Increase upload size limit to 5G
