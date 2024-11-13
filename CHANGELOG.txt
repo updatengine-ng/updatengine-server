@@ -2,6 +2,10 @@
 # UpdatEngine-server #
 ######################
 
+6.1.0:
+- Fix bug when displaying the password_change_done page
+- Fix AuthBackend authentication accepting bad passwords
+
 6.0.1:
 - Fix debian installation script for Python 3.12 compatibility
 - Fix escape sequence in inventory views
