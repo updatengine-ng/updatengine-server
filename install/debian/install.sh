@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2024/11/09
+## 2024/11/12
 ################################################
 #
 #             /!\ WARNING /!\
@@ -86,16 +86,17 @@ fi
 ## Install linux packages and python modules
 apt update
 apt install git apache2 python3 python3-dev python3-venv python3-pip \
-    python3-distutils libapache2-mod-wsgi-py3 git mariadb-server \
+    libapache2-mod-wsgi-py3 git mariadb-server \
     libmariadb-dev build-essential libxml2-dev libxslt-dev \
     libldap2-dev libsasl2-dev pkg-config -y
 
-# Create directories
+# Create python virtual environment
 if [ ! -d "${VENV_DIR}" ]; then
     mkdir -p ${VENV_DIR}
     python3 -m venv ${VENV_DIR}
 fi
 
+# Create UpdatEngine server directory
 [ ! -d "${INST_DIR}" ] && mkdir -p ${INST_DIR}
 cd ${INST_DIR}
 
@@ -116,7 +117,7 @@ source ${VENV_DIR}/bin/activate
 cd ${INST_DIR}/updatengine-server
 
 python -m ensurepip --upgrade
-pip install --upgrade pip
+pip install --upgrade setuptools
 pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
 # Create database if it not exists
@@ -202,3 +203,6 @@ fi
 
 # Back to initial directory
 cd "${INITIAL_DIR}"
+
+# Deactivate the Python venv
+deactivate
