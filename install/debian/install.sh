@@ -86,7 +86,7 @@ fi
 ## Install linux packages and python modules
 apt update
 apt install git apache2 python3 python3-dev python3-venv python3-pip \
-    libapache2-mod-wsgi-py3 git mariadb-server \
+    gettext-base libapache2-mod-wsgi-py3 git mariadb-server \
     libmariadb-dev build-essential libxml2-dev libxslt-dev \
     libldap2-dev libsasl2-dev pkg-config -y
 
