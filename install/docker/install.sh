@@ -2,10 +2,13 @@
 
 ################################################
 ## UpdatEngine-server docker installation script
-## 2024/03/29
+## 2024/12/05
 ################################################
 #
 ################################################
+
+# Check this current script line endings style
+grep -l $'\r' "${BASH_SOURCE[0]}" && echo "Error: Please convert the file "${BASH_SOURCE[0]}" to Linux-style line endings (LF) then run it again. You can use the command \"sed -i 's/\r//g' ${BASH_SOURCE[0]}\"" && exit 1
 
 INITIAL_DIR=$( pwd )
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -29,7 +32,6 @@ fi
 
 # Set or read custom settings
 mkdir -p ./custom
-
 if [ ! -f ./custom/.env ]; then
   echo "################"
   echo "WARNING: The installer will used default site settings. Edit the 'custom/.env' file with your own settings."
@@ -49,6 +51,10 @@ else
   echo "################"
 fi
 
+# Check and convert the .env line endings style
+grep -l $'\r' ./custom/.env && sed -i 's/\r//g' ./custom/.env && echo "Information: The file './custom/.env' was converted from Windows-style line endings (CRLF) to Linux-style line endings (LF)."
+
+# Export all key/value pairs from the '.env' file to the shell environment
 export $(cat ./custom/.env) > /dev/null 2>&1
 if [ "$CONFIG_TYPE" = "LETSENCRYPT" ]; then
     echo "################"

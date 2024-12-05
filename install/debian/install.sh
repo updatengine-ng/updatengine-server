@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2024/11/12
+## 2024/12/05
 ################################################
 #
 #             /!\ WARNING /!\
@@ -17,24 +17,27 @@
 #
 ################################################
 
-## Must be root user to install
+# Must be root user to install
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root user"
-    exit
+    exit 1
 fi
 
-## Must be in root user's environment
+# Must be in root user's environment
 if [[ ":$PATH:" != *":/usr/sbin:"* ]]; then
     echo "The path is missing /usr/sbin, please ensure to use the command 'su -' to switch to the full root user's environment."
-    exit
+    exit 1
 fi
+
+# Check this current script line endings style
+grep -l $'\r' "${BASH_SOURCE[0]}" && echo "Error: Please convert the file "${BASH_SOURCE[0]}" to Linux-style line endings (LF) then run it again. You can use the next command \"sed -i 's/\r//g' ${BASH_SOURCE[0]}\"" && exit 1
 
 # By default, the installer uses UE git branch 'master'. User can define
 # another branch by declaring it in environment variable.
 [ -z ${GIT_BRANCH} ] && GIT_BRANCH=master
 echo "Using git branch ${GIT_BRANCH}"
 
-# Set SCRIPT_DIR, custom directory must be there
+# Set SCRIPT_DIR, 'custom' directory must be there
 INITIAL_DIR=$( pwd )
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
@@ -45,7 +48,6 @@ cd $SCRIPT_DIR
 
 # Set or read custom settings
 mkdir -p ./custom
-
 if [ ! -f ./custom/.env ]; then
     echo "################"
     echo "WARNING: The installer will used default site settings. Edit the 'custom/.env' file with your own settings."
@@ -59,7 +61,7 @@ if [ ! -f ./custom/.env ]; then
         read -p "Do you wish to continue with the default settings instead of edit now (y/n) ? " yn
         case $yn in
             [Yy]* ) break;;
-            [Nn]* ) echo "Please set your settings in 'custom/.env' file and re-run the installation script."; cd "${INITIAL_DIR}"; exit;;
+            [Nn]* ) echo "Please set your settings in 'custom/.env' file and run again the installation script."; cd "${INITIAL_DIR}"; exit;;
             * ) echo "Please answer yes or no.";;
         esac
     done
@@ -69,6 +71,10 @@ else
     echo "################"
 fi
 
+# Check and convert the .env line endings style
+grep -l $'\r' ./custom/.env && sed -i 's/\r//g' ./custom/.env && echo "Information: The file './custom/.env' was converted from Windows-style line endings (CRLF) to Linux-style line endings (LF)."
+
+# Export all key/value pairs from the '.env' file to the shell environment
 export $(cat ./custom/.env) > /dev/null 2>&1
 
 # Set SECRET_KEY to a random value if not defined
@@ -83,7 +89,7 @@ fi
 ###      -- Installation process --          ###
 ################################################
 
-## Install linux packages and python modules
+# Install linux packages and python modules
 apt update
 apt install git apache2 python3 python3-dev python3-venv python3-pip \
     gettext-base libapache2-mod-wsgi-py3 git mariadb-server \
