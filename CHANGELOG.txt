@@ -2,6 +2,9 @@
 # UpdatEngine-server #
 ######################
 
+6.1.1:
+- Fix ignorance of 'download_no_restart' and 'no_break_on_error' when using the extended conditions
+
 6.1.0:
 - Fix bug when displaying the password_change_done page
 - Fix AuthBackend authentication accepting bad passwords
