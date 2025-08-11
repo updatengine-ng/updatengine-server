@@ -1163,10 +1163,10 @@ def inventory_extended(xml):
                             template = django_engine.from_string(pack.command)
                             pack.command = template.render(cv, request=None)
                         # Proceed 'no_break_on_error' and 'download_no_restart' options
-                        if pack.no_break_on_error == 'yes' or (pack.no_break_on_error == '' and config.no_break_on_error == 'yes'):
+                        if pack.no_break_on_error == 'yes' or (pack.no_break_on_error == '-' and config.no_break_on_error == 'yes'):
                             if '\nno_break_on_error' not in pack.command:
                                 pack.command += '\nno_break_on_error'
-                        if pack.download_no_restart == 'yes' or (pack.download_no_restart == '' and config.download_no_restart == 'yes'):
+                        if pack.download_no_restart == 'yes' or (pack.download_no_restart == '-' and config.download_no_restart == 'yes'):
                             if '\ndownload_no_restart' not in pack.command:
                                 pack.command += '\ndownload_no_restart'
                         # Check if updatengine-client supports 'no_break_on_error' option
