@@ -2,6 +2,9 @@
 # UpdatEngine-server #
 ######################
 
+6.1.2:
+- Fix help text for 'Enable failure tolerance' feature
+
 6.1.1:
 - Fix ignorance of 'download_no_restart' and 'no_break_on_error' when using the extended conditions
 
