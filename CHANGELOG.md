@@ -2,6 +2,20 @@
 # UpdatEngine-server #
 ######################
 
+## 7.0.0 (2025-12-12):
+
+**🔧 Maintenance**
+
+- Bump Django from 4.2.16 to 5.2.9
+- Bump django-auth-ldap from 4.8.0 to 5.2.0
+- Bump django-extensions from 3.2.3 to 4.1
+- Bump django-grappelli from 4.0.1 to 4.0.3
+- Bump lxml from 5.3.0 to 6.0.2
+- Bump mysqlclient from 2.2.4 to 2.2.7
+- Bump packaging from 24.1 to 25.0
+- Bump pytz from 2024.1 to 2025.2
+- Bump PyYAML from 6.0.2 to 6.0.3
+
 ## 6.1.3 (2025-12-12):
 
 **✨ Improvements**
