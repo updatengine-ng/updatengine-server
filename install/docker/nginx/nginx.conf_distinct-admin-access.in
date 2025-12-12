@@ -1,0 +1,51 @@
+upstream updatengine {
+    server web:8000;
+}
+
+# Client access
+server {
+    listen 443 ssl;
+    server_name ${SERVER_NAME};
+    server_tokens off;
+
+    ssl_certificate /etc/ssl/certs/site.crt;
+    ssl_certificate_key /etc/ssl/private/site.key;    
+
+    location /post/ {
+        proxy_pass http://updatengine;
+        proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_redirect off;
+    }
+
+    location /media/ {
+        alias /app/updatengine/media/;
+    }
+}
+
+# Admin access
+server {
+    listen 1443 ssl;
+    server_name ${SERVER_NAME};
+    server_tokens off;
+
+    client_max_body_size 5G;
+
+    ssl_certificate /etc/ssl/certs/site.crt;
+    ssl_certificate_key /etc/ssl/private/site.key;
+
+    location / {
+        proxy_pass http://updatengine;
+        proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_redirect off;
+    }
+
+    location /static/ {
+        alias /app/updatengine/static/;
+    }
+
+    location /media/ {
+        alias /app/updatengine/media/;
+    }
+}

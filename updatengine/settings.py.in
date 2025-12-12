@@ -34,7 +34,7 @@ PROJECT_URL = 'https://${SERVER_NAME}:${PORT}'
 ALLOWED_HOSTS = ['${SERVER_NAME}']
 
 # List of trusted origins
-CSRF_TRUSTED_ORIGINS = ['https://${SERVER_NAME}:${PORT}']
+CSRF_TRUSTED_ORIGINS = ['https://${SERVER_NAME}:${PORT}','https://${SERVER_NAME}:${PORT_ADMIN}']
 
 # Interface language
 LANGUAGES = (

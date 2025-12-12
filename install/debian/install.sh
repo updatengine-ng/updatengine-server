@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2024/12/05
+## 2025/12/12
 ################################################
 #
 #             /!\ WARNING /!\
@@ -76,6 +76,7 @@ grep -l $'\r' ./custom/.env && sed -i 's/\r//g' ./custom/.env && echo "Informati
 
 # Export all key/value pairs from the '.env' file to the shell environment
 export $(cat ./custom/.env) > /dev/null 2>&1
+[ -z $PORT_ADMIN ] && $PORT_ADMIN=$PORT
 
 # Set SECRET_KEY to a random value if not defined
 if [ -z ${SECRET_KEY} ] || [ ${SECRET_KEY} = '!mustbechanged!' ]; then
@@ -148,7 +149,11 @@ fi
 # Set apache configuration
 if [ ! -f /etc/apache2/sites-available/apache-updatengine.conf ] ; then
     echo "Set apache configuration"
-    envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf
+    if [ "${PORT}" = "${PORT_ADMIN}" ]; then        
+        envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf
+    else
+        envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine_distinct-admin-access.conf > /etc/apache2/sites-available/apache-updatengine.conf
+    fi
     a2ensite apache-updatengine
     a2enmod wsgi
 fi

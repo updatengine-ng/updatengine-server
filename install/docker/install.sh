@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server docker installation script
-## 2024/12/05
+## 2025/12/12
 ################################################
 #
 ################################################
@@ -56,6 +56,9 @@ grep -l $'\r' ./custom/.env && sed -i 's/\r//g' ./custom/.env && echo "Informati
 
 # Export all key/value pairs from the '.env' file to the shell environment
 export $(cat ./custom/.env) > /dev/null 2>&1
+[ -z $PORT_ADMIN ] && $PORT_ADMIN=$PORT
+
+# Warning for LETSENCRYPT type
 if [ "$CONFIG_TYPE" = "LETSENCRYPT" ]; then
     echo "################"
     echo "ERROR: LETSENCRYPT option is not yet supported."
@@ -80,7 +83,12 @@ fi
 if [ ! -f ./custom/nginx/nginx.conf ]; then
     mkdir -p ./custom/nginx
     export DOLLAR='$'
-    envsubst < ./nginx/nginx.conf.in$CONFIG_TYPE > ./custom/nginx/nginx.conf
+    if [ "${PORT}" = "${PORT_ADMIN}" ]; then
+        envsubst < ./nginx/nginx.conf.in$CONFIG_TYPE > ./custom/nginx/nginx.conf
+    else
+        envsubst < ./nginx/nginx.conf_distinct-admin-access.in$CONFIG_TYPE > ./custom/nginx/nginx.conf
+    fi
+
 fi
 
 if ([ ! -f ./custom/ssl/site.key ] ||  [ ! -f ./custom/ssl/site.crt ]) && [ "$CONFIG_TYPE" != "LETSENCRYPT" ]; then
@@ -93,12 +101,15 @@ BASE_DIR='../..'
 cp Dockerfile $BASE_DIR/
 cp entrypoint.sh $BASE_DIR/
 envsubst < docker-compose.yml$CONFIG_TYPE > $BASE_DIR/docker-compose.yml
+if [ "${PORT}" = "${PORT_ADMIN}" ]; then
+    sed -i '/:1443/d' $BASE_DIR/docker-compose.yml
+fi
 cp ./custom/.env $BASE_DIR/
 cat $BASE_DIR/requirements/pip-packages.txt requirements.txt > $BASE_DIR/requirements.txt
 
 cd $BASE_DIR
 git pull
-docker compose up -d --build
+docker compose up -d --build --force-recreate
 
 # Create admin account if none
 docker exec -it updatengine-server bash -c "echo 'select count(*) from auth_user;' | python manage.py dbshell | grep -v 'count' | grep 0" > /dev/null 2>&1

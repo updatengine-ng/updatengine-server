@@ -68,6 +68,7 @@ services:
       - ./install/docker/custom/ssl/site.key:/etc/ssl/private/site.key
     ports:
       - $PORT:443
+      - $PORT_ADMIN:1443
     depends_on:
       web:
         condition: service_healthy
