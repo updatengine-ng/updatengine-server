@@ -153,6 +153,7 @@ if [ ! -f /etc/apache2/sites-available/apache-updatengine.conf ] ; then
         envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf
     else
         envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine_distinct-admin-access.conf > /etc/apache2/sites-available/apache-updatengine.conf
+        a2enmod rewrite
     fi
     a2ensite apache-updatengine
     a2enmod wsgi
