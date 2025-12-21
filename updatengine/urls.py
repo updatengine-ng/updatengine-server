@@ -25,6 +25,7 @@ from inventory.views import post
 from django.contrib.admin import site
 import adminactions.actions as actions
 from .views import check_version, ChangePasswordView, ChangePasswordDoneView
+from django.contrib.auth import views as auth_views
 
 # Import admin module in each installed application
 admin.autodiscover()
@@ -41,5 +42,6 @@ urlpatterns = [
     re_path(r'^adminactions/', include('adminactions.urls')),
     re_path(r'^i18n/', include('django.conf.urls.i18n')),
     re_path(r'^check_version/$', check_version, name='latest_version'),
+    re_path(r'^logout/$', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     re_path(r'', admin.site.urls),
 ]

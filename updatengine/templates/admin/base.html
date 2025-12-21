@@ -224,13 +224,11 @@
                       {% trans 'Change password' %}</a></li>
                     {% endif %}
                     <!-- Logout -->
-                    {% url 'admin:logout' as logout_url %}
-                    {% if logout_url %}
-                        <li><a href="{{ logout_url }}">
-                    {% else %}
-                        <li><a href="{{ root_path }}logout/">
-                    {% endif %}
-                    {% trans 'Log out' %}</a></li>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <li><button type="submit" class="grp-button">{% trans 'Log out' %}</button></li>
+                    </form>
+
                 </ul>
             </li>
             <li>
