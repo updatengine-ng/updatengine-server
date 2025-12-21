@@ -2,6 +2,12 @@
 # UpdatEngine-server #
 ######################
 
+## 7.0.1 (2025-12-21):
+
+**🐛 Bug fix **
+
+- Fix http error 405 on logout
+
 ## 7.0.0 (2025-12-12):
 
 **🔧 Maintenance**
@@ -22,21 +28,26 @@
 
 - Add optional environment value 'PORT_ADMIN' to distinguish the admin IP port from the client port
 
-## 6.1.2:
+## 6.1.2 (2025-10-20):
+
 - Fix help text for 'Enable failure tolerance' feature
 
-## 6.1.1:
+## 6.1.1 (2025-08-11):
+
 - Fix ignorance of 'download_no_restart' and 'no_break_on_error' when using the extended conditions
 
-## 6.1.0:
+## 6.1.0 (2024-09-13):
+
 - Fix bug when displaying the password_change_done page
 - Fix AuthBackend authentication accepting bad passwords
 
-## 6.0.1:
+## 6.0.1 (2024-09-13):
+
 - Fix debian installation script for Python 3.12 compatibility
 - Fix escape sequence in inventory views
 
-## 6.0.0:
+## 6.0.0 (2024-10-24):
+
 - Upgrade to Django 4.2.16 LTS
 - Increase upload size limit to 5G
 - Add 'custom variables' column to deploy/package page
@@ -56,8 +67,12 @@
 - Add powershell deployment script for Windows GPO
 - Add docker installation script
 
+## 5.0.1 (2022-09-28):
 
-## 5.0.0:
+- Fix error 'has_add_permission' on users page
+
+## 5.0.0 (2022-09-16):
+
 - Upgrade to Django 3.2 LTS
 - Upgrade adminactions module to 1.15 version
 - Add debian upgrade script
@@ -71,40 +86,48 @@
 - Apply bulleted list style to 'packages' on the packageprofile page
 - Fix version check
 
-## 4.1.0:
+## 4.1.0 (2022-03-25):
+
 - Update last release version using json
 - Add debian installation script and new apache config
 - Complete entity ip range help text
 - Sort machines names in history filter list
 - Add os version in inventory view
 
-## 4.0.3:
+## 4.0.3 (2020-09-27):
+
 - Fix white page on mass update
 - Remove web directory indexes from apache conf
 
-## 4.0.2:
+## 4.0.2 (2020-04-01):
+
 - Fix wol issue
 - Add lines to fix potential pip3 mysqlclient issue
 - Fix version check
 
-## 4.0.1:
+## 4.0.1 (2020-03-09):
+
 - Add script db tables conversion to utf-8 (all languages support)
 - Fix bug on remove os name or arch through the web gui
 - Add 'username' condition and 'not logged in' tag
 
-## 4.0.0:
+## 4.0.0 (2020-02-19):
+
 - Port code to Python 3.7
 - Migrate to Django 2.2
 - Use the latest python packages in line with the upgrade (django-grappelli, mysqlclient...)
 
-## 3.0.2:
+## 3.0.2 (2019-11-25):
+
 - Optimizes extended conditions with client: Pre-check conditions to avoid asking client for unnecessary extended conditions if already a condition on the software is not satisfied.
 
-## 3.0.1:
+## 3.0.1 (2019-06-20):
+
 - Fix bug in imports/exports deployments
 - Fix inventory dispatch (clients < 3.0 was sending 'undefined' for UserName, Domain and Language)
 
-## 3.0:
+## 3.0 (2019-06-19):
+
 - Interface:
   - The chosen language remains displayed
   - Fix some translations in 'Export as CSV' and 'Mass update'
