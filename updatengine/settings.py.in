@@ -176,11 +176,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Translations
 ugettext = lambda s: s
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale/'),)
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
+# Absolute path to the directory static files should be collected to.
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
+# URL prefix for static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
@@ -189,14 +192,7 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
-MEDIA_URL = PROJECT_URL + '/media/'
-
-# Absolute path to the directory static files should be collected to.
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-
-# URL prefix for static files.
-# STATIC_URL = PROJECT_URL + '/static/'
-# ADMIN_MEDIA_PREFIX = STATIC_URL + '/static/admin/'
+MEDIA_URL = '/media/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
