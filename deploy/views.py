@@ -31,7 +31,15 @@ from .models import package
 def download(request, filepath):
     if not request.user.is_superuser or not request.user.has_perm('deploy.change_package'):
         raise Http404()
-    pkg = get_object_or_404(package, filename=filepath)
+
+    # Check if at least one package uses the requested filepath (case of duplicates)
+    try:
+        pkg = package.objects.filter(filename=filepath)
+    except package.DoesNotExist:
+        raise Http404()
+
+    # Prepare and send response
+    pkg = pkg[0]
     filename = os.path.basename(filepath)
     chunk_size = 8192
     response = StreamingHttpResponse(
