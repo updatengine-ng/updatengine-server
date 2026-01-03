@@ -49,14 +49,15 @@ UpdatEngine-server installation scripts for Debian/Ubuntu are located in the 'in
 
       Customize your settings in this file (Installation directories, URL, database, SMTP...).
 
-          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/custom.dist/.env.default
+          GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
+          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/debian/custom.dist/.env.default
           nano ./custom/.env
 
     - Optionally, get example 'settings_local.py' to customize some features:
 
       Customize additional settings in this file (LDAP, LOGGING...).
 
-          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/custom.dist/settings_local.py.example
+          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/debian/custom.dist/settings_local.py.example
           nano ./custom/settings_local.py
 
 2. Installation
@@ -64,7 +65,7 @@ UpdatEngine-server installation scripts for Debian/Ubuntu are located in the 'in
     - Get last installation script and run it:
 
           cd ~/ue-config
-          wget -O install.sh https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/install.sh
+          wget -O install.sh https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/debian/install.sh
           chmod +x install.sh
           ./install.sh
 
@@ -97,14 +98,15 @@ The distribution base image doesn't exist yet, so the container is built from so
 
       Customize your settings in this file (Installation directories, URL, database, SMTP...).
 
-          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/custom.dist/.env.default
+          GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
+          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/docker/custom.dist/.env.default
           nano ./custom/.env
 
     - Optionally, get example 'settings_local.py' to customize some features:
 
       Add additional settings in this file (LDAP, LOGGING...). All settings available for Django could be put in this file and the contains it is loading at the end of the 'settings.py', all values could be overridden 
 
-          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/custom.dist/settings_local.py.example
+          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/docker/custom.dist/settings_local.py.example
           nano ./custom/settings_local.py
 
 2. Installation
@@ -112,7 +114,7 @@ The distribution base image doesn't exist yet, so the container is built from so
     - Get last docker deployment script, customize INST_DIR and run it:
 
           cd ~/ue-config
-          wget https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/deploy-ue-docker.sh
+          wget https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/docker/deploy-ue-docker.sh
           nano deploy-ue-docker.sh
           chmod +x deploy-ue-docker.sh
           ./deploy-ue-docker.sh

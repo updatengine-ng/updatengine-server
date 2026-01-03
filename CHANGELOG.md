@@ -2,6 +2,20 @@
 # UpdatEngine-server #
 ######################
 
+## 7.1.0 (2026-01-03):
+
+**✨ Improvements**
+
+- Security improvement: Use FileWrapper instead of Web server for GUI file download. On the administration IP port, only the authenticated users are allow to download package using the package file URL.
+
+**🔧 Maintenance**
+
+- Bump gunicorn>=22.0.0
+
+**🐛 Bug fix **
+
+- Update installation script for use latest release version instead of master branch
+
 ## 7.0.1 (2025-12-21):
 
 **🐛 Bug fix **
