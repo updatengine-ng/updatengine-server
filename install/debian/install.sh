@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2025/12/12
+## 2026/01/03
 ################################################
 #
 #             /!\ WARNING /!\
@@ -32,9 +32,9 @@ fi
 # Check this current script line endings style
 grep -l $'\r' "${BASH_SOURCE[0]}" && echo "Error: Please convert the file "${BASH_SOURCE[0]}" to Linux-style line endings (LF) then run it again. You can use the next command \"sed -i 's/\r//g' ${BASH_SOURCE[0]}\"" && exit 1
 
-# By default, the installer uses UE git branch 'master'. User can define
-# another branch by declaring it in environment variable.
-[ -z ${GIT_BRANCH} ] && GIT_BRANCH=master
+# By default, the installer uses the Git branch of the latest released version of UE.
+# User can define another branch by declaring it in environment variable before running the installation script.
+[ -z ${GIT_BRANCH} ] && GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
 echo "Using git branch ${GIT_BRANCH}"
 
 # Set SCRIPT_DIR, 'custom' directory must be there
