@@ -2,6 +2,12 @@
 # UpdatEngine-server #
 ######################
 
+## 7.1.1 (2025-01-05):
+
+**🐛 Bug fix **
+
+- Fix media URL for default entity without URL redirection - regression since 7.1.0
+
 ## 7.1.0 (2026-01-03):
 
 **✨ Improvements**

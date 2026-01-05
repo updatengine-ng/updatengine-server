@@ -25,6 +25,7 @@ from django.shortcuts import get_object_or_404, Http404
 from wsgiref.util import FileWrapper
 from django.http import StreamingHttpResponse
 from .models import package
+from django.conf import settings
 
 
 @login_required
