@@ -31,6 +31,7 @@ from netaddr import IPNetwork, IPAddress
 import sys
 import re
 from django.template import engines
+from django.conf import settings
 
 django_engine = engines['django']
 
@@ -222,7 +223,6 @@ def check_conditions(m, pack, xml=None):
                '</Packagestatus>')
         return False
 
-    # Check basic conditions
     if install is True:
         depends_filter = ['notinstalled', 'installed', 'is_W64_bits', 'is_W32_bits', 'system_is', 'system_not',
                           'language_is', 'lower', 'higher', 'hostname_in', 'hostname_not', 'username_in',
@@ -814,6 +814,7 @@ def check_conditions(m, pack, xml=None):
 
             if install is False:
                 break
+    # Check basic conditions
 
     # Using try block because condition doesn't exist for package deployment period
     try:
@@ -1086,7 +1087,7 @@ def inventory(xml):
                                 if m.entity is not None and m.entity.redistrib_url:
                                     packurl = str(m.entity.redistrib_url) + str(pack.filename)
                                 else:
-                                    packurl = pack.filename.url
+                                    packurl = f'{settings.PROJECT_URL}{settings.MEDIA_URL}{pack.filename}'
                             else:
                                 packurl = ''
                             pack.name = encodeXMLText(pack.name)
@@ -1189,7 +1190,7 @@ def inventory_extended(xml):
                             if m.entity is not None and m.entity.redistrib_url:
                                 packurl = str(m.entity.redistrib_url) + str(pack.filename)
                             else:
-                                packurl = pack.filename.url
+                                packurl = f'{settings.PROJECT_URL}{settings.MEDIA_URL}{pack.filename}'
                         else:
                             packurl = ''
                         pack.name = encodeXMLText(pack.name)
@@ -1223,7 +1224,7 @@ def public_soft_list(pack=None):
 
     for pack in slist:
         if pack.packagesum != 'nofile':
-            packurl = pack.filename.url
+            packurl = f'{settings.PROJECT_URL}{settings.MEDIA_URL}{pack.filename}'
         else:
             packurl = ''
         pack.name = encodeXMLText(pack.name)
