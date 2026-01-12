@@ -2,6 +2,12 @@
 # UpdatEngine-server #
 ######################
 
+## 7.1.2 (2025-01-12):
+
+**🐛 Bug fix **
+
+- Fix package's filename URL to satisfy client and admin request
+
 ## 7.1.1 (2025-01-05):
 
 **🐛 Bug fix **
