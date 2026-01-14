@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2026/01/03
+## 2026/01/14
 ################################################
 #
 #             /!\ WARNING /!\
@@ -128,23 +128,30 @@ pip install --upgrade setuptools
 pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
 
 # Create database if it not exists
-mysql -e "use ${DB_NAME}" > /dev/null 2>&1
+mariadb -e "use ${DB_NAME}" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Create database ${DB_NAME}"
-    mysql -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4;"
-    mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+    mariadb -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4;"
+fi
+
+# Load the time zone tables in the mysql database
+mariadb -s -r -N -e "SELECT count(*) FROM mysql.time_zone;" | grep -w "0"
+if [ "$?" = "0" ]; then
+    echo "Load timezone tables"
+    mariadb-tzinfo-to-sql /usr/share/zoneinfo | mariadb -u root mysql
 fi
 
 # Create database user
-mysql -u "${DB_USER}" -p"${DB_PASSWORD}" -h localhost -e "use ${DB_NAME}" > /dev/null 2>&1
+mariadb -u "${DB_USER}" -p"${DB_PASSWORD}" -h localhost -e "use ${DB_NAME}" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Create database user ${DB_USER}"
-    mysql -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost' IDENTIFIED by '${DB_PASSWORD}';"
+    mariadb -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost' IDENTIFIED by '${DB_PASSWORD}';"
     if [ $? -ne 0 ]; then
-        mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED by '${DB_PASSWORD}';"
-        mysql -e "GRANT ALL ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';"
+        mariadb -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED by '${DB_PASSWORD}';"
+        mariadb -e "GRANT ALL ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';"
     fi
 fi
+
 
 # Set apache configuration
 if [ ! -f /etc/apache2/sites-available/apache-updatengine.conf ] ; then
