@@ -49,6 +49,7 @@ UpdatEngine-server installation scripts for Debian/Ubuntu are located in the 'in
 
       Customize your settings in this file (Installation directories, URL, database, SMTP...).
 
+          apt install git -y
           GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
           wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/debian/custom.dist/.env.default
           nano ./custom/.env
@@ -98,6 +99,7 @@ The distribution base image doesn't exist yet, so the container is built from so
 
       Customize your settings in this file (Installation directories, URL, database, SMTP...).
 
+          apt install git -y
           GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
           wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/$GIT_BRANCH/install/docker/custom.dist/.env.default
           nano ./custom/.env

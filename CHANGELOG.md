@@ -2,6 +2,13 @@
 # UpdatEngine-server #
 ######################
 
+## 7.1.3 (2025-01-14):
+
+**🐛 Bug fix **
+
+- Fix installation due changes for timezone from MariaDB 10.5
+- Update README and scripts to install git in the first place
+
 ## 7.1.2 (2025-01-12):
 
 **🐛 Bug fix **

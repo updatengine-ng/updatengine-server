@@ -32,6 +32,9 @@ fi
 # Check this current script line endings style
 grep -l $'\r' "${BASH_SOURCE[0]}" && echo "Error: Please convert the file "${BASH_SOURCE[0]}" to Linux-style line endings (LF) then run it again. You can use the next command \"sed -i 's/\r//g' ${BASH_SOURCE[0]}\"" && exit 1
 
+# Install git
+apt install git -y
+
 # By default, the installer uses the Git branch of the latest released version of UE.
 # User can define another branch by declaring it in environment variable before running the installation script.
 [ -z ${GIT_BRANCH} ] && GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
@@ -92,7 +95,7 @@ fi
 
 # Install linux packages and python modules
 apt update
-apt install git apache2 python3 python3-dev python3-venv python3-pip \
+apt install apache2 python3 python3-dev python3-venv python3-pip \
     gettext-base libapache2-mod-wsgi-py3 git mariadb-server \
     libmariadb-dev build-essential libxml2-dev libxslt-dev \
     libldap2-dev libsasl2-dev pkg-config -y

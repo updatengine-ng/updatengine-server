@@ -2,12 +2,12 @@
 
 ################################################
 ## UpdatEngine-server installation script with docker
-## 2026/01/06
+## 2026/01/14
 ################################################
 
 INST_DIR=/opt
-export GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
 apt install git gettext-base
+export GIT_BRANCH=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/updatengine-ng/updatengine-server.git | tail --lines=1 | cut --delimiter='/' --fields=3)
 if [ ! -d "${INST_DIR}/updatengine-server" ]; then
     cd ${INST_DIR}
     git clone https://github.com/updatengine-ng/updatengine-server -b ${GIT_BRANCH}
