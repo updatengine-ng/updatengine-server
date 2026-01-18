@@ -2,7 +2,7 @@
 
 ################################################
 ## UpdatEngine-server installation script
-## 2026/01/14
+## 2026/01/18
 ################################################
 #
 #             /!\ WARNING /!\
@@ -57,7 +57,7 @@ if [ ! -f ./custom/.env ]; then
     echo "################"
     wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/${GIT_BRANCH}/install/debian/custom.dist/.env.default > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-      echo "Error: Unable to download the default environment settings ." >&2
+      echo "Error: Unable to download the default environment settings." >&2
       exit 1
     fi
     while true; do
@@ -155,26 +155,38 @@ if [ $? -ne 0 ]; then
     fi
 fi
 
+# Enable apache modules
+a2enmod rewrite wsgi ssl headers
+if [ $? -ne 0 ]; then
+    echo "Error: A least one of the Apache modules 'rewrite', 'wsgi', 'ssl' or 'headers' cannot be enabled."
+    exit 1
+fi
 
 # Set apache configuration
-if [ ! -f /etc/apache2/sites-available/apache-updatengine.conf ] ; then
-    echo "Set apache configuration"
-    if [ "${PORT}" = "${PORT_ADMIN}" ]; then        
-        envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /etc/apache2/sites-available/apache-updatengine.conf
-    else
-        envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine_distinct-admin-access.conf > /etc/apache2/sites-available/apache-updatengine.conf
-        a2enmod rewrite
-    fi
-    a2ensite apache-updatengine
-    a2enmod wsgi
+echo "Set apache configuration"
+if [ "${PORT}" = "${PORT_ADMIN}" ]; then
+    envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf > /tmp/apache-updatengine.conf
+else
+    envsubst < ${INST_DIR}/updatengine-server/requirements/apache-updatengine_distinct-admin-access.conf > /tmp/apache-updatengine.conf
 fi
+if [ -f /etc/apache2/sites-available/apache-updatengine.conf ] ; then
+    diff --brief /etc/apache2/sites-available/apache-updatengine.conf /tmp/apache-updatengine.conf >/dev/null
+    if [ $? -ne 0 ]; then
+        echo "Backup old apache configuration"
+        mv /etc/apache2/sites-available/apache-updatengine.conf /etc/apache2/sites-available/apache-updatengine.conf_$(date +'%Y%m%d_%H%M%S')
+    fi
+fi
+mv /tmp/apache-updatengine.conf /etc/apache2/sites-available/apache-updatengine.conf
+chmod 644 /etc/apache2/sites-available/apache-updatengine.conf
+a2ensite apache-updatengine
 
 # Generate SSL certificat
 if [ ! -f ${SSL_DIR}/updatengine.key ] || [ ! -f ${SSL_DIR}/updatengine.crt ] ; then
     echo "Create a self-signed SSL certificate"
     openssl req --new -newkey rsa:2048 -days 365 -nodes -x509 -keyout ${SSL_DIR}/updatengine.key -out ${SSL_DIR}/updatengine.crt -subj "/O=UpdatEngine-NG/CN=updatengine-ng.com" > /dev/null 2>&1
+else
+    echo "Keep the existing self-signed SSL certificate"
 fi
-a2enmod ssl
 
 # Start apache daemon
 systemctl restart apache2
