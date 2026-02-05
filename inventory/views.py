@@ -233,8 +233,9 @@ def check_conditions(m, pack, xml=None):
             if len(cv) > 0:
                 template = django_engine.from_string(condition.softwarename)
                 condition.softwarename = template.render(cv, request=None)
-                template = django_engine.from_string(condition.softwareversion)
-                condition.softwareversion = template.render(cv, request=None)
+                if condition.softwareversion:
+                    template = django_engine.from_string(condition.softwareversion)
+                    condition.softwareversion = template.render(cv, request=None)
 
             # Software not installed (wildcards can be used for condition name)
             if condition.depends == 'notinstalled':
@@ -629,8 +630,9 @@ def check_conditions(m, pack, xml=None):
             if len(cv) > 0:
                 template = django_engine.from_string(condition.softwarename)
                 condition.softwarename = template.render(cv, request=None)
-                template = django_engine.from_string(condition.softwareversion)
-                condition.softwareversion = template.render(cv, request=None)
+                if condition.softwareversion:
+                    template = django_engine.from_string(condition.softwareversion)
+                    condition.softwareversion = template.render(cv, request=None)
 
             # File exists
             if condition.depends == 'isfile':
