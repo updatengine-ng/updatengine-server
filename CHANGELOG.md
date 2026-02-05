@@ -2,20 +2,31 @@
 # UpdatEngine-server #
 ######################
 
-## 7.1.3 (2025-01-14):
+## 7.1.4 (2026-02-05):
+
+**✨ Improvements**
+
+- Enforce usage of Apache modules and backup old Apache configuration
+
+**🐛 Bug fix **
+
+- Fix bug when using customvars on empty condition's software version
+
+
+## 7.1.3 (2026-01-14):
 
 **🐛 Bug fix **
 
 - Fix installation due changes for timezone from MariaDB 10.5
 - Update README and scripts to install git in the first place
 
-## 7.1.2 (2025-01-12):
+## 7.1.2 (2026-01-12):
 
 **🐛 Bug fix **
 
 - Fix package's filename URL to satisfy client and admin request
 
-## 7.1.1 (2025-01-05):
+## 7.1.1 (2026-01-05):
 
 **🐛 Bug fix **
 
