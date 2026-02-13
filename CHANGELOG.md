@@ -2,6 +2,12 @@
 # UpdatEngine-server #
 ######################
 
+## 7.1.5 (2026-02-13):
+
+**🐛 Bug fix **
+
+- Fix html escaping in customvars
+
 ## 7.1.4 (2026-02-05):
 
 **✨ Improvements**

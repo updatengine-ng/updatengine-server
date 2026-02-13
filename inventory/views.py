@@ -30,11 +30,10 @@ from django.db.models import Count, Max
 from netaddr import IPNetwork, IPAddress
 import sys
 import re
-from django.template import engines
+from django.template import engines, Engine, Context
 from django.conf import settings
 
 django_engine = engines['django']
-
 
 def compare_versions(version1, version2):
     ''' Compare two version string '''
@@ -118,8 +117,8 @@ def status(xml):
             cv['hostname'] = m.name
             cv['domain'] = m.domain
         if len(cv) > 0:
-            template = django_engine.from_string(p.command)
-            p.command = template.render(cv, request=None)
+            template = Engine().from_string(p.command)
+            p.command = template.render(Context(cv, autoescape=False))
         # Remove last record if it history status is 'Programmed'
         obj = packagehistory.objects.filter(machine=m, package=p)
         if obj:
@@ -175,8 +174,8 @@ def get_extended_conditions(m, pack):
     handling = list()
     for condition in pack.conditions.filter(package=pack):
         if len(cv) > 0:
-            template = django_engine.from_string(condition.softwarename)
-            condition.softwarename = template.render(cv, request=None)
+            template = Engine().from_string(condition.softwarename)
+            condition.softwarename = template.render(Context(cv, autoescape=False))
         if condition.depends == 'isfile':
             handling.append('<File>' + condition.softwarename + '</File>')
         elif condition.depends == 'notisfile':
@@ -231,11 +230,11 @@ def check_conditions(m, pack, xml=None):
                           'installdelay']
         for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
             if len(cv) > 0:
-                template = django_engine.from_string(condition.softwarename)
-                condition.softwarename = template.render(cv, request=None)
+                template = Engine().from_string(condition.softwarename)
+                condition.softwarename = template.render(Context(cv, autoescape=False))
                 if condition.softwareversion:
-                    template = django_engine.from_string(condition.softwareversion)
-                    condition.softwareversion = template.render(cv, request=None)
+                    template = Engine().from_string(condition.softwareversion)
+                    condition.softwareversion = template.render(Context(cv, autoescape=False))
 
             # Software not installed (wildcards can be used for condition name)
             if condition.depends == 'notinstalled':
@@ -628,11 +627,11 @@ def check_conditions(m, pack, xml=None):
                           'exitcodeis', 'exitcodenot']
         for condition in pack.conditions.filter(package=pack, depends__in=depends_filter):
             if len(cv) > 0:
-                template = django_engine.from_string(condition.softwarename)
-                condition.softwarename = template.render(cv, request=None)
+                template = Engine().from_string(condition.softwarename)
+                condition.softwarename = template.render(Context(cv, autoescape=False))
                 if condition.softwareversion:
-                    template = django_engine.from_string(condition.softwareversion)
-                    condition.softwareversion = template.render(cv, request=None)
+                    template = Engine().from_string(condition.softwareversion)
+                    condition.softwareversion = template.render(Context(cv, autoescape=False))
 
             # File exists
             if condition.depends == 'isfile':
@@ -1061,8 +1060,8 @@ def inventory(xml):
                             cv['hostname'] = m.name
                             cv['domain'] = m.domain
                         if len(cv) > 0:
-                            template = django_engine.from_string(pack.command)
-                            pack.command = template.render(cv, request=None)
+                            template = Engine().from_string(pack.command)
+                            pack.command = template.render(Context(cv, autoescape=False))
                         if check_conditions(m, pack):
                             # Proceed 'install_timeout' option
                             option_timeout = '\ninstall_timeout_' + str(pack.install_timeout)
@@ -1163,8 +1162,8 @@ def inventory_extended(xml):
                             cv['hostname'] = m.name
                             cv['domain'] = m.domain
                         if len(cv) > 0:
-                            template = django_engine.from_string(pack.command)
-                            pack.command = template.render(cv, request=None)
+                            template = Engine().from_string(pack.command)
+                            pack.command = template.render(Context(cv, autoescape=False))
                         # Proceed 'no_break_on_error' and 'download_no_restart' options
                         if pack.no_break_on_error == 'yes' or (pack.no_break_on_error == '-' and config.no_break_on_error == 'yes'):
                             if '\nno_break_on_error' not in pack.command:
@@ -1240,8 +1239,8 @@ def public_soft_list(pack=None):
             # cv['domain'] = m.domain
             continue
         if len(cv) > 0:
-            template = django_engine.from_string(pack.command)
-            pack.command = template.render(cv, request=None)
+            template = Engine().from_string(pack.command)
+            pack.command = template.render(Context(cv, autoescape=False))
         pack.command = encodeXMLText(pack.command)
         handling.append('<Package>' +
                         '<Pid>' + str(pack.id) + '</Pid>' +
