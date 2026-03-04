@@ -1,0 +1,104 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, develop, feat/django5-upgrade ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Django 5.x requires Python 3.10+ (dropped 3.8 and 3.9)
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pip-packages*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Install system dependencies (LDAP)
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -y --no-install-recommends libldap2-dev libsasl2-dev
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest pytest-django pytest-cov
+        if [ -f requirements/pip-packages-sqlite.txt ]; then pip install -r requirements/pip-packages-sqlite.txt; fi
+
+    - name: Lint with flake8
+      run: |
+        # Stop build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Run tests with pytest
+      run: |
+        pytest --cov=. --cov-report=xml --cov-report=html
+      continue-on-error: true
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+      continue-on-error: true
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install system dependencies (LDAP)
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -y --no-install-recommends libldap2-dev libsasl2-dev
+
+
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety
+        if [ -f requirements/pip-packages-sqlite.txt ]; then pip install -r requirements/pip-packages-sqlite.txt; fi
+
+    - name: Run Bandit security scan
+      run: |
+        bandit -r . -f json -o bandit-report.json
+      continue-on-error: true
+
+    - name: Check dependencies for vulnerabilities
+      run: |
+        safety check --json
+      continue-on-error: true
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: |
+        if [ -f install/docker/Dockerfile ]; then
+          docker build . --file install/docker/Dockerfile --tag updatengine-server:$(date +%s)
+        fi
+      continue-on-error: true

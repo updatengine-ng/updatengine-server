@@ -1,0 +1,196 @@
+{% extends "modern/base_modern.html" %}
+{% block title %}Parc Machines - UpdateEngine{% endblock %}
+{% block nav_inventory %}active{% endblock %}
+
+{% block breadcrumb %}
+<nav class="flex mb-4" aria-label="Breadcrumb">
+  <ol class="flex items-center space-x-2 text-sm text-gray-500">
+    <li><i class="fas fa-home"></i></li>
+    <li><span class="mx-2">/</span></li>
+    <li class="text-gray-900 font-medium">Parc machines</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Parc Machines</h1>
+      <p class="text-sm text-gray-500 mt-1">{{ total_count }} machine{{ total_count|pluralize }} au total</p>
+    </div>
+    <div class="flex gap-3">
+      <a href="/modern/export/csv/" class="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+        <i class="fas fa-download"></i> Exporter CSV
+      </a>
+    </div>
+  </div>
+
+  <!-- Filters bar -->
+  <form method="get" id="filter-form" class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+    <div class="flex flex-wrap gap-4 items-center">
+
+      <!-- Search -->
+      <div class="flex-1 min-w-[200px] relative">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+        <input
+          type="text"
+          name="q"
+          value="{{ request.GET.q }}"
+          placeholder="Nom, IP, utilisateur..."
+          class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          hx-get="/modern/inventory/"
+          hx-trigger="keyup changed delay:400ms"
+          hx-target="#machine-table"
+          hx-include="#filter-form"
+        />
+      </div>
+
+      <!-- Status filter -->
+      <select
+        name="status"
+        class="border border-gray-200 rounded-lg text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        hx-get="/modern/inventory/"
+        hx-trigger="change"
+        hx-target="#machine-table"
+        hx-include="#filter-form"
+      >
+        <option value="">Tous les états</option>
+        <option value="online" {% if request.GET.status == "online" %}selected{% endif %}>En ligne</option>
+        <option value="offline" {% if request.GET.status == "offline" %}selected{% endif %}>Hors ligne</option>
+      </select>
+
+      <!-- OS filter -->
+      <select
+        name="os"
+        class="border border-gray-200 rounded-lg text-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        hx-get="/modern/inventory/"
+        hx-trigger="change"
+        hx-target="#machine-table"
+        hx-include="#filter-form"
+      >
+        <option value="">Tous les OS</option>
+        {% for os in os_list %}
+        <option value="{{ os.id }}" {% if request.GET.os == os.id|stringformat:"s" %}selected{% endif %}>{{ os.name }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Reset -->
+      <a href="/modern/inventory/" class="text-sm text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times mr-1"></i>Réinitialiser
+      </a>
+    </div>
+  </form>
+
+  <!-- Machine Table -->
+  <div id="machine-table" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Machine</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">OS</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">État</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Dernière connexion</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">IP</th>
+          <th class="px-6 py-4"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for m in machines %}
+        <tr class="hover:bg-blue-50/30 transition-colors">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-desktop text-primary-600 text-sm"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900">{{ m.name }}</p>
+                <p class="text-xs text-gray-400">ID: {{ m.id }}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-gray-600">
+            {% if m.username %}{{ m.username }}{% else %}<span class="text-gray-300">—</span>{% endif %}
+          </td>
+          <td class="px-6 py-4 text-gray-600">
+            {% if m.osdistribution_set.all|length > 0 %}
+              {{ m.osdistribution_set.all.0.name }}
+            {% else %}
+              <span class="text-gray-300">—</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4">
+            {% if m.is_online %}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+              <span class="online-dot"></span> En ligne
+            </span>
+            {% else %}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+              <span class="offline-dot"></span> Hors ligne
+            </span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-gray-500 text-xs">
+            {% if m.last_contact_date %}
+              {{ m.last_contact_date|timesince }} ago
+            {% else %}
+              <span class="text-gray-300">Jamais</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-gray-500 text-xs font-mono">
+            {% if m.serial %}{{ m.serial }}{% else %}<span class="text-gray-300">—</span>{% endif %}
+          </td>
+          <td class="px-6 py-4 text-right">
+            <a
+              href="/modern/machine/{{ m.id }}/"
+              class="text-primary-600 hover:text-primary-800 font-medium text-xs hover:underline"
+            >
+              Détails <i class="fas fa-chevron-right text-[10px]"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="px-6 py-16 text-center">
+            <div class="flex flex-col items-center gap-3 text-gray-400">
+              <i class="fas fa-desktop text-5xl"></i>
+              <p class="font-medium">Aucune machine trouvée</p>
+              <p class="text-sm">Essayez de modifier vos filtres</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if machines.has_other_pages %}
+    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50">
+      <p class="text-sm text-gray-500">
+        Page {{ machines.number }} sur {{ machines.paginator.num_pages }}
+        &bull; {{ total_count }} résultat{{ total_count|pluralize }}
+      </p>
+      <div class="flex items-center gap-1">
+        {% if machines.has_previous %}
+        <a href="?page={{ machines.previous_page_number }}&q={{ request.GET.q }}&status={{ request.GET.status }}&os={{ request.GET.os }}"
+           class="px-3 py-1.5 rounded-lg border border-gray-200 text-sm hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        <span class="px-3 py-1.5 rounded-lg bg-primary-600 text-white text-sm font-medium">{{ machines.number }}</span>
+        {% if machines.has_next %}
+        <a href="?page={{ machines.next_page_number }}&q={{ request.GET.q }}&status={{ request.GET.status }}&os={{ request.GET.os }}"
+           class="px-3 py-1.5 rounded-lg border border-gray-200 text-sm hover:bg-gray-100 transition-colors">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

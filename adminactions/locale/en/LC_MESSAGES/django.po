@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-03 17:56+0700\n"
+"POT-Creation-Date: 2024-05-21 16:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,200 +17,692 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/adminactions/byrows_update.py:29 src/adminactions/export.py:47
-#: src/adminactions/export.py:249 src/adminactions/export.py:331
-#: src/adminactions/graph.py:49 src/adminactions/mass_update.py:247
-#: src/adminactions/merge.py:82
+#: adminactions/bulk_update.py:42
+msgid "CSV file"
+msgstr ""
+
+#: adminactions/bulk_update.py:45 adminactions/mass_update.py:161
+msgid "if checked calls obj.clean()"
+msgstr ""
+
+#: adminactions/bulk_update.py:50
+msgid "if checked use obj.save() instead of manager.bulk_update()"
+msgstr ""
+
+#: adminactions/bulk_update.py:93
+msgid "Please select one or more index fields"
+msgstr ""
+
+#: adminactions/bulk_update.py:118 adminactions/byrows_update.py:29
+#: adminactions/duplicates.py:70 adminactions/export.py:51
+#: adminactions/export.py:282 adminactions/export.py:383
+#: adminactions/graph.py:48 adminactions/mass_update.py:389
+#: adminactions/merge.py:88
 msgid "Sorry you do not have rights to execute this action"
 msgstr ""
 
-#: src/adminactions/byrows_update.py:55
-msgid "Updated record(s)"
-msgstr ""
-
-#: src/adminactions/byrows_update.py:89
-msgid "By rows update"
-msgstr ""
-
-#: src/adminactions/export.py:142
-msgid "Export as CSV"
-msgstr ""
-
-#: src/adminactions/export.py:158
-msgid "Export as XLS"
-msgstr ""
-
-#: src/adminactions/export.py:320
-msgid "Export as fixture"
-msgstr ""
-
-#: src/adminactions/export.py:412
-msgid "Export delete tree"
-msgstr ""
-
-#: src/adminactions/forms.py:37 src/adminactions/forms.py:60
-msgid "Header"
-msgstr ""
-
-#: src/adminactions/forms.py:38
-msgid "Delimiter"
-msgstr ""
-
-#: src/adminactions/forms.py:39
-msgid "Quotechar"
-msgstr ""
-
-#: src/adminactions/forms.py:41
-msgid "Quoting"
-msgstr ""
-
-#: src/adminactions/forms.py:42
-msgid "All"
-msgstr ""
-
-#: src/adminactions/forms.py:43
-msgid "Minimal"
-msgstr ""
-
-#: src/adminactions/forms.py:44
-msgid "None"
-msgstr ""
-
-#: src/adminactions/forms.py:45
-msgid "Non Numeric"
-msgstr ""
-
-#: src/adminactions/forms.py:47
-msgid "Escapechar"
-msgstr ""
-
-#: src/adminactions/forms.py:48
-msgid "Datetime format"
-msgstr ""
-
-#: src/adminactions/forms.py:49
-msgid "Date format"
-msgstr ""
-
-#: src/adminactions/forms.py:50
-msgid "Time format"
-msgstr ""
-
-#: src/adminactions/forms.py:51 src/adminactions/forms.py:74
-msgid "Columns"
-msgstr ""
-
-#: src/adminactions/forms.py:61
-msgid "Use display"
-msgstr ""
-
-#: src/adminactions/graph.py:162
-msgid "Graph selected records"
-msgstr ""
-
-#: src/adminactions/mass_update.py:231
+#: adminactions/bulk_update.py:171 adminactions/mass_update.py:466
 #, python-format
 msgid "Updated %s records"
 msgstr ""
 
-#: src/adminactions/mass_update.py:371
+#: adminactions/bulk_update.py:232
+msgid "Bulk update"
+msgstr ""
+
+#: adminactions/bulk_update.py:266
+#, python-format
+msgid "%s column is not present in the file"
+msgstr ""
+
+#: adminactions/byrows_update.py:69
+msgid "Updated record(s)"
+msgstr ""
+
+#: adminactions/byrows_update.py:102
+msgid "By rows update"
+msgstr ""
+
+#: adminactions/duplicates.py:120
+msgid "No duplicated rows found"
+msgstr ""
+
+#: adminactions/duplicates.py:137
+msgid "Find Duplicates"
+msgstr ""
+
+#: adminactions/export.py:174
+msgid "Export as CSV"
+msgstr ""
+
+#: adminactions/export.py:200
+msgid "Export as XLS"
+msgstr ""
+
+#: adminactions/export.py:368
+msgid "Export as fixture"
+msgstr ""
+
+#: adminactions/export.py:479
+msgid "Export delete tree"
+msgstr ""
+
+#: adminactions/forms.py:43 adminactions/forms.py:108
+msgid "Header"
+msgstr ""
+
+#: adminactions/forms.py:45
+msgid "Delimiter"
+msgstr ""
+
+#: adminactions/forms.py:47
+msgid "Quotechar"
+msgstr ""
+
+#: adminactions/forms.py:50
+msgid "Quoting"
+msgstr ""
+
+#: adminactions/forms.py:52
+msgid "All"
+msgstr ""
+
+#: adminactions/forms.py:53
+msgid "Minimal"
+msgstr ""
+
+#: adminactions/forms.py:54
+msgid "None"
+msgstr ""
+
+#: adminactions/forms.py:55
+msgid "Non Numeric"
+msgstr ""
+
+#: adminactions/forms.py:60
+msgid "Escapechar"
+msgstr ""
+
+#: adminactions/forms.py:91
+msgid "Datetime format"
+msgstr ""
+
+#: adminactions/forms.py:93
+msgid "Date format"
+msgstr ""
+
+#: adminactions/forms.py:94
+msgid "Time format"
+msgstr ""
+
+#: adminactions/forms.py:95 adminactions/forms.py:110
+msgid "Columns"
+msgstr ""
+
+#: adminactions/forms.py:109
+msgid "Use display"
+msgstr ""
+
+#: adminactions/forms.py:123
+msgid "Use Natural Primary Keys"
+msgstr ""
+
+#: adminactions/forms.py:124
+msgid "Use Natural Foreign Keys"
+msgstr ""
+
+#: adminactions/graph.py:34
+msgid "Graph type"
+msgstr ""
+
+#: adminactions/graph.py:35
+msgid "Group by and count by"
+msgstr ""
+
+#: adminactions/graph.py:181
+msgid "Graph selected records"
+msgstr ""
+
+#: adminactions/mass_update.py:126 adminactions/mass_update.py:147
+msgid "convert to uppercase"
+msgstr ""
+
+#: adminactions/mass_update.py:127 adminactions/mass_update.py:148
+msgid "convert to lowercase"
+msgstr ""
+
+#: adminactions/mass_update.py:130
+msgid "capitalize first character"
+msgstr ""
+
+#: adminactions/mass_update.py:132
+msgid "leading and trailing whitespace"
+msgstr ""
+
+#: adminactions/mass_update.py:137
+msgid "add <arg> percent to existing value"
+msgstr ""
+
+#: adminactions/mass_update.py:159
+msgid "use Celery to run update in background"
+msgstr ""
+
+#: adminactions/mass_update.py:166
+msgid "if checked use obj.save() instead of manager.update()"
+msgstr ""
+
+#: adminactions/mass_update.py:210
+msgid "Cannot use Async with FileField"
+msgstr ""
+
+#: adminactions/mass_update.py:220
+msgid "Unable no mass update ManyToManyField without 'validate'"
+msgstr ""
+
+#: adminactions/mass_update.py:525
 msgid "Mass update"
 msgstr ""
 
-#: src/adminactions/merge.py:35
+#: adminactions/merge.py:34
 msgid "Dependencies"
 msgstr ""
 
-#: src/adminactions/merge.py:36
+#: adminactions/merge.py:35
 msgid "Move"
 msgstr ""
 
-#: src/adminactions/merge.py:36
+#: adminactions/merge.py:35
 msgid "Delete"
 msgstr ""
 
-#: src/adminactions/merge.py:167
+#: adminactions/merge.py:222
 msgid "Please select exactly 2 records"
 msgstr ""
 
-#: src/adminactions/merge.py:199
+#: adminactions/merge.py:258
 #, python-format
 msgid "Merge selected %(verbose_name_plural)s"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/any_model.html:26
-#: src/adminactions/templates/adminactions/byrows_update.html:20
-#: src/adminactions/templates/adminactions/charts.html:18
-#: src/adminactions/templates/adminactions/export_csv.html:46
-#: src/adminactions/templates/adminactions/export_fixture.html:6
-#: src/adminactions/templates/adminactions/export_xls.html:19
-#: src/adminactions/templates/adminactions/mass_update.html:26
-#: src/adminactions/templates/adminactions/merge.html:5
-#: src/adminactions/templates/adminactions/merge_preview.html:5
+#: adminactions/templates/adminactions/any_model.html:26
+#: adminactions/templates/adminactions/bulk_update.html:9
+#: adminactions/templates/adminactions/bulk_update_results.html:10
+#: adminactions/templates/adminactions/byrows_update.html:20
+#: adminactions/templates/adminactions/charts.html:18
+#: adminactions/templates/adminactions/duplicates.html:6
+#: adminactions/templates/adminactions/export_csv.html:46
+#: adminactions/templates/adminactions/export_fixture.html:6
+#: adminactions/templates/adminactions/export_xls.html:19
+#: adminactions/templates/adminactions/helpers/import_fixture.html:3
+#: adminactions/templates/adminactions/mass_update.html:9
+#: adminactions/templates/adminactions/merge.html:5
+#: adminactions/templates/adminactions/merge_preview.html:5
 msgid "Home"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/byrows_update.html:30
+#: adminactions/templates/adminactions/any_model.html:74
+#: adminactions/templates/adminactions/byrows_update.html:70
+msgid "Update records"
+msgstr ""
+
+#: adminactions/templates/adminactions/byrows_update.html:30
 msgid "Please correct the error below."
 msgstr ""
 
-#: src/adminactions/templates/adminactions/byrows_update.html:30
+#: adminactions/templates/adminactions/byrows_update.html:30
 msgid "Please correct the errors below."
 msgstr ""
 
-#: src/adminactions/templates/adminactions/export_csv.html:69
+#: adminactions/templates/adminactions/charts.html:33
+msgid "go"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:69
+#: adminactions/templates/adminactions/export_fixture.html:28
+#: adminactions/templates/adminactions/export_xls.html:41
 msgid "Export"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:35
+#: adminactions/templates/adminactions/export_csv.html:76
+msgid "The following characters are recognized in the"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:77
+msgid "format"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:77
+msgid "parameter string"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:81
+msgid "character"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:82
+msgid "Description"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:83
+msgid "Example returned values"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:90
+msgid "Day"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:97
+msgid "Day of the month, 2 digits with leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:98
+#: adminactions/templates/adminactions/export_csv.html:110
+msgid "to"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:103
+msgid "A textual representation of a day, three letters"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:104
+msgid "Mon"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:104
+#: adminactions/templates/adminactions/export_csv.html:116
+#: adminactions/templates/adminactions/export_csv.html:143
+msgid "through"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:104
+msgid "Sun"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:109
+msgid "Day of the month without leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:114
+msgid "(lowercase 'L')"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:115
+msgid "A full textual representation of the day of the week"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:116
+msgid "Sunday"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:116
+msgid "Saturday"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:121
+msgid "ISO-8601 numeric representation of the day of the week"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:122
+msgid "for Monday through"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:122
+msgid "for Sunday"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:127
+msgid "English ordinal suffix for the day of the month, 2 characters"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:130
+msgid "Works well with"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:136
+msgid "Numeric representation of the day of the week"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:137
+msgid "(for Sunday) through"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:137
+msgid "(for Saturday)"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:142
+msgid "The day of the year (starting from 0)"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:147
+msgid "Week"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:154
+msgid ""
+"ISO-8601 week number of year, weeks starting on Monday (added in PHP 4.1.0)"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:155
+msgid "Example:"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:155
+msgid "(the 42nd week in the year)"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:159
+msgid "Month"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:166
+msgid "A full textual representation of a month, such as January or March"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:167
+msgid "January"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:167
+#: adminactions/templates/adminactions/export_csv.html:173
+#: adminactions/templates/adminactions/export_csv.html:179
+#: adminactions/templates/adminactions/export_csv.html:185
+#: adminactions/templates/adminactions/export_csv.html:191
+#: adminactions/templates/adminactions/export_csv.html:245
+#: adminactions/templates/adminactions/export_csv.html:251
+#: adminactions/templates/adminactions/export_csv.html:257
+#: adminactions/templates/adminactions/export_csv.html:263
+#: adminactions/templates/adminactions/export_csv.html:269
+msgid " through "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:167
+msgid "December"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:172
+msgid "Numeric representation of a month, with leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:178
+msgid "A short textual representation of a month, three letters"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:179
+msgid "Jan"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:179
+msgid "Dec"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:184
+msgid "Numeric representation of a month, without leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:190
+msgid "Number of days in the given month"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:195
+msgid "Year"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:202
+msgid "Whether it's a leap year"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:203
+msgid " if it is a leap year, "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:203
+msgid "otherwise."
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:208
+msgid ""
+"ISO 8601 week-numbering year. This has the same value as Y, except that if "
+"the ISO week number (W) belongs to the previous or next year, that year is "
+"used instead."
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:209
+#: adminactions/templates/adminactions/export_csv.html:221
+msgid "Examples:"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:209
+#: adminactions/templates/adminactions/export_csv.html:215
+msgid "1999"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:209
+msgid " or"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:209
+msgid "2003"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:214
+msgid "A full numeric representation of a year, 4 digits"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:215
+#: adminactions/templates/adminactions/export_csv.html:305
+msgid "Examples: "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:215
+#: adminactions/templates/adminactions/export_csv.html:221
+msgid "or"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:220
+msgid "A two digit representation of a year"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:225
+msgid "Time"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:232
+msgid "Lowercase Ante meridiem and Post meridiem"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:233
+msgid "or "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:238
+msgid "Uppercase Ante meridiem and Post meridiem"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:239
+msgid " or "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:244
+msgid "Swatch Internet time"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:250
+msgid "12-hour format of an hour without leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:256
+msgid "24-hour format of an hour without leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:262
+msgid "12-hour format of an hour with leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:268
+msgid "24-hour format of an hour with leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:274
+msgid "Minutes with leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:275
+msgid " to "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:280
+msgid "Seconds, with leading zeros"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:281
+msgid " through"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:285
+msgid "Timezone"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:291
+msgid " (capital i)"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:292
+msgid "Whether or not the date is in daylight saving time"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:293
+msgid " if Daylight Saving Time, <i>0</i> otherwise."
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:298
+msgid "Difference to Greenwich time (GMT) in hours"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:299
+#: adminactions/templates/adminactions/export_csv.html:323
+msgid "Example: "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:304
+msgid "Timezone abbreviation"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:310
+msgid ""
+"Timezone offset in seconds. The offset for timezones west of UTC is always "
+"negative, and for those east of UTC is always positive."
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:311
+msgid "through "
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:315
+msgid "Full Date/Time"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:322
+msgid "Formatted date"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:323
+msgid "Thu, 21 Dec 2000 16:01:07 +0200"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:328
+msgid "Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)"
+msgstr ""
+
+#: adminactions/templates/adminactions/export_csv.html:329
+msgid "See also"
+msgstr ""
+
+#: adminactions/templates/adminactions/helpers/import_fixture.html:18
+msgid "Import"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:44
+msgid "field name"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:45
+msgid "update"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:46
+msgid "function"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:47
+msgid "new value"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:49
+msgid "existing values"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:50
+msgid "(sample)"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:75
+msgid "Update"
+msgstr ""
+
+#: adminactions/templates/adminactions/mass_update.html:75
+msgid "records"
+msgstr ""
+
+#: adminactions/templates/adminactions/merge.html:34
 msgid "Field"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:36
+#: adminactions/templates/adminactions/merge.html:35
 msgid "Master"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:36
+#: adminactions/templates/adminactions/merge.html:35
 msgid "This will be preserved"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:38
+#: adminactions/templates/adminactions/merge.html:37
 msgid "swap"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:39
+#: adminactions/templates/adminactions/merge.html:38
 msgid "Result"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:41
+#: adminactions/templates/adminactions/merge.html:40
 msgid "Other"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:41
+#: adminactions/templates/adminactions/merge.html:40
 msgid "This will be removed"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge.html:70
-#: src/adminactions/templates/adminactions/merge_preview.html:9
+#: adminactions/templates/adminactions/merge.html:69
+#: adminactions/templates/adminactions/merge_preview.html:9
 msgid "Preview"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge_preview.html:8
+#: adminactions/templates/adminactions/merge_preview.html:8
 msgid "Merge records"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge_preview.html:18
+#: adminactions/templates/adminactions/merge_preview.html:18
 msgid "Key"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge_preview.html:23
+#: adminactions/templates/adminactions/merge_preview.html:23
 msgid "Original"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge_preview.html:24
+#: adminactions/templates/adminactions/merge_preview.html:24
 msgid "After Merging"
 msgstr ""
 
-#: src/adminactions/templates/adminactions/merge_preview.html:39
+#: adminactions/templates/adminactions/merge_preview.html:39
 msgid "Merge"
 msgstr ""

@@ -2,6 +2,75 @@
 # UpdatEngine-server #
 ######################
 
+7.0.0 (en cours - branche feat/django5-upgrade):
+- Upgrade to Django 5.2 LTS (drop support for Python 3.8 and 3.9)
+- Upgrade to Python 3.10/3.11/3.12 support
+- Replace obsolete packages: xlwt -> openpyxl, unicodecsv -> built-in csv, django-crispy-forms updated
+- Add django-environ for environment-based configuration
+- Add django-redis for session and cache management via Redis
+- Add security: django-axes (brute force protection), argon2-cffi (password hashing)
+- Add modern frontend: Tailwind CSS v3 + Alpine.js v3 via package.json
+- Remove deprecated USE_L10N setting (removed in Django 5.0)
+- Fix TESTING detection to support pytest (pytest-django + pytest-cov)
+- Add pytest.ini for structured test configuration
+- Add .github/workflows/ci.yml for CI/CD Pipeline (test, security, docker jobs)
+- Add .github/dependabot.yml for automated dependency updates
+- Add updatengine/env_check.py for environment settings validation
+- Add .env.example for easier deployment configuration
+- Modernize admin interface with demo dashboard (demo_dashboard.html)
+- Update Dockerfile Python base image 3.9 -> 3.12
+- Add tailwind.config.js for CSS build pipeline
+
+6.1.0:
+- Fix bug when displaying the password_change_done page
+- Fix AuthBackend authentication accepting bad passwords
+
+6.0.1:
+- Fix debian installation script for Python 3.12 compatibility
+- Fix escape sequence in inventory views
+
+6.0.0:
+- Upgrade to Django 4.2.16 LTS
+- Increase upload size limit to 5G
+- Add 'custom variables' column to deploy/package page
+- Increase package directory name length and make sure it is unique
+- Add 'duplicate' feature to packages and conditions
+- Add 'download_no_restart', 'no_break_on_error' and 'timeout' options in admin interface
+- Modify configuration pages display
+- Add 'execute' and 'install' conditions with 'max times per period' and 'min interval of'
+- Display time profiles on packages page
+- Add time profiles option to the packages
+- Fix version comparison function and package status
+- Update debian installation script
+- Add custom variables feature
+- Add SHA-512 hash for packages checksum
+- Increase length of field uninstall on software
+- Add LDAP support
+- Add powershell deployment script for Windows GPO
+- Add docker installation script
+
+
+5.0.0:
+- Upgrade to Django 3.2 LTS
+- Upgrade adminactions module to 1.15 version
+- Add debian upgrade script
+- Reorder the inventory columns (hostname is the first one)
+- Add conditions vendor,product,type
+- Display package command on several lines
+- Add direct link to conditions on the packages page
+- Add direct link to packages on the conditions page
+- Add direct link to machines and packages on the history page
+- Apply bulleted list style to 'packages' and 'conditions' on the deployment page
+- Apply bulleted list style to 'packages' on the packageprofile page
+- Fix version check
+
+4.1.0:
+- Update last release version using json
+- Add debian installation script and new apache config
+- Complete entity ip range help text
+- Sort machines names in history filter list
+- Add os version in inventory view
+
 4.0.3:
 - Fix white page on mass update
 - Remove web directory indexes from apache conf

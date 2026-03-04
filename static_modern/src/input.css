@@ -1,0 +1,250 @@
+/* =========================================
+   UPDATENGINE MODERN - DESIGN SYSTEM
+   NinjaOne-inspired interface
+   ========================================= */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* =========================================
+   BASE STYLES
+   ========================================= */
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-dark-700;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply bg-gray-50 dark:bg-dark-900 text-gray-900 dark:text-gray-100;
+    @apply font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+}
+
+/* =========================================
+   COMPONENTS - BUTTONS
+   ========================================= */
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-ninja-500 text-white hover:bg-ninja-600;
+    @apply focus:ring-ninja-500 shadow-ninja;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-200;
+    @apply hover:bg-gray-300 dark:hover:bg-dark-600;
+  }
+  
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600;
+    @apply focus:ring-red-500;
+  }
+  
+  .btn-success {
+    @apply btn bg-green-500 text-white hover:bg-green-600;
+    @apply focus:ring-green-500;
+  }
+  
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+}
+
+/* =========================================
+   COMPONENTS - CARDS
+   ========================================= */
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-dark-800 rounded-xl shadow-lg;
+    @apply border border-gray-200 dark:border-dark-700;
+    @apply p-6 transition-all duration-200;
+  }
+  
+  .card-hover {
+    @apply card hover:shadow-xl hover:shadow-ninja/10;
+    @apply hover:-translate-y-1;
+  }
+  
+  .card-header {
+    @apply border-b border-gray-200 dark:border-dark-700 pb-4 mb-4;
+  }
+  
+  .card-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-gray-100;
+  }
+}
+
+/* =========================================
+   COMPONENTS - INPUTS
+   ========================================= */
+
+@layer components {
+  .input {
+    @apply w-full px-4 py-2 rounded-lg border;
+    @apply border-gray-300 dark:border-dark-600;
+    @apply bg-white dark:bg-dark-800;
+    @apply text-gray-900 dark:text-gray-100;
+    @apply focus:ring-2 focus:ring-ninja-500 focus:border-ninja-500;
+    @apply transition-all duration-200;
+  }
+  
+  .input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+  
+  .label {
+    @apply block text-sm font-medium mb-2;
+    @apply text-gray-700 dark:text-gray-300;
+  }
+}
+
+/* =========================================
+   COMPONENTS - NAVIGATION
+   ========================================= */
+
+@layer components {
+  .sidebar {
+    @apply fixed left-0 top-0 h-full w-64;
+    @apply bg-white dark:bg-dark-800;
+    @apply border-r border-gray-200 dark:border-dark-700;
+    @apply shadow-lg z-40;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 mx-2 rounded-lg;
+    @apply text-gray-700 dark:text-gray-300;
+    @apply hover:bg-gray-100 dark:hover:bg-dark-700;
+    @apply transition-all duration-200;
+  }
+  
+  .sidebar-item-active {
+    @apply sidebar-item bg-ninja-50 dark:bg-ninja-900/20;
+    @apply text-ninja-600 dark:text-ninja-400;
+    @apply font-medium;
+  }
+  
+  .topbar {
+    @apply fixed top-0 right-0 left-64 h-16;
+    @apply bg-white dark:bg-dark-800;
+    @apply border-b border-gray-200 dark:border-dark-700;
+    @apply shadow-sm z-30;
+  }
+}
+
+/* =========================================
+   COMPONENTS - BADGES & PILLS
+   ========================================= */
+
+@layer components {
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply badge bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+  }
+  
+  .badge-warning {
+    @apply badge bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300;
+  }
+  
+  .badge-danger {
+    @apply badge bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300;
+  }
+  
+  .badge-info {
+    @apply badge bg-ninja-100 dark:bg-ninja-900/30 text-ninja-800 dark:text-ninja-300;
+  }
+}
+
+/* =========================================
+   COMPONENTS - TABLES
+   ========================================= */
+
+@layer components {
+  .table {
+    @apply w-full border-collapse;
+  }
+  
+  .table thead {
+    @apply bg-gray-50 dark:bg-dark-800;
+  }
+  
+  .table th {
+    @apply px-6 py-3 text-left text-xs font-medium;
+    @apply text-gray-700 dark:text-gray-300 uppercase tracking-wider;
+  }
+  
+  .table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm;
+    @apply text-gray-900 dark:text-gray-100;
+  }
+  
+  .table tbody tr {
+    @apply border-b border-gray-200 dark:border-dark-700;
+    @apply hover:bg-gray-50 dark:hover:bg-dark-800/50;
+    @apply transition-colors duration-150;
+  }
+}
+
+/* =========================================
+   UTILITIES - CUSTOM
+   ========================================= */
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-dark-800;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-dark-600 rounded-full;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-dark-500;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}

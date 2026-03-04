@@ -1,26 +1,11 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_modify actions massupdate static %}
-{% block extrahead %}{{ block.super }}
-    <style type="text/css">
-        #col1 {
-            float: left;
-            width: 70%;
-        }
-
-        #col2 {
-            float: right;
-            width: 30%;
-        }
-
-        #col2 select {
-            width: 100%;
-        }
-    </style>
-  {{ media }}
-{% endblock %}
+{#{% block extrahead %}{{ block.super }}#}
+{#  {{ media }}#}
+{#{% endblock %}#}
 
 {% block breadcrumbs %}{% if not is_popup %}
-     <ul class="grp-horizontal-list">
+    <ul class="grp-horizontal-list">
         <li><a href="../../">{% trans "Home" %}</a></li>
         <li><a href="../">
         {% with header_label=app_label|capfirst|escape %}
@@ -29,7 +14,7 @@
             {% endwith %}
         {% endwith %}
         </a></li>
-        <li><a href=".">{% blocktrans with msgid=opts.verbose_name_plural|capfirst %}{{ msgid }}{% endblocktrans %}</a></li>
+        <li><a href=".">{{ opts.verbose_name_plural|capfirst }}</a></li>
         <li>{{ action_short_description|capfirst }}</li>
     </ul>
 {% endif %}{% endblock %}
@@ -44,9 +29,9 @@
     {% endif %}
     {{ form.non_field_errors }}
     <div id='col1'>
-        <form action="" method="post">
+        <form action="" method="post" id="mass-update-form" enctype="multipart/form-data">
             {% csrf_token %}
-            <table border="1">
+            <table class="mass-update">
                 {% for field in adminform.form.configured_fields %}
                     <tr>
                         <td>{{ field.label_tag }}</td>
@@ -62,13 +47,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>{% trans "adminactions|field name" %}</th>
-                    <th>{% trans "adminactions|update" %}</th>
-                    <th>{% trans "adminactions|function" %}</th>
-                    <th>{% trans "adminactions|new value" %}</th>
+                    <th>{% trans "field name" %}</th>
+                    <th>{% trans "update" %}</th>
+                    <th>{% trans "function" %}</th>
+                    <th>{% trans "new value" %}</th>
                     {% if grouped %}
-                    <th>{% trans "adminactions|existing values" %}
-                        <small><i>({% trans "adminactions|(sample)" %})</i></small>
+                    <th>{% trans "existing values" %}
+                        <small><i>{% trans "(sample)" %}</i></small>
                     </th>
                   {% endif %}
                 </tr>
@@ -93,20 +78,7 @@
             {% for hidden in form.hidden_fields %}
                 {{ hidden }}
             {% endfor %}
-{#            <input type="hidden" name="action" value="{{ action }}"/>#}
-            <input type="submit" name="apply" value="{% trans "adminactions|Update records" %}"/>
+            <input type="submit" name="apply" value="{% trans "Update" %} {{ selection.count }} {% trans "records" %}"/>
         </form>
     </div>
-{#    <div id='col2'>#}
-{#        Selected records:#}
-{#        <ul>#}
-{#            {% for el in selection %}#}
-{#                <li>#}
-{#                    <input name="prefill-with" type="radio" value="{{ object.pk }}"{% if el.pk == form.instance.pk %} checked="checked"{% endif %}>#}
-{#                    {{ el }}#}
-{#                </li>#}
-{#            {% endfor %}#}
-{#        </ul>#}
-{#        <input type="submit" class="grp-button grp-default" value="Prefill fields with selected record">#}
-{#    </div>#}
 {% endblock %}

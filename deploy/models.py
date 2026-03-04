@@ -2,6 +2,7 @@
 # UpdatEngine - Software Packages Deployment and Administration tool          #
 #                                                                             #
 # Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
+# Copyright (C) Noël Martinon - noel.martinon@gmail.com                       #
 #                                                                             #
 # This program is free software; you can redistribute it and/or               #
 # modify it under the terms of the GNU General Public License                 #
@@ -18,10 +19,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
 ###############################################################################
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save, pre_delete
 from django.db import models
-from django.db.models.signals import m2m_changed
+from django.db.models.signals import m2m_changed, post_migrate
 from django.dispatch import receiver
 from inventory.models import machine
 import hashlib
@@ -35,11 +36,18 @@ from django.conf import settings
 from inventory.models import entity
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
+from django.urls import reverse
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.files.storage import default_storage
 
 
-def random_directory(size=8, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
+def random_directory(size=24, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits, prefix='', suffix=''):
     random_string = ''.join(random.choice(chars) for x in range(size))
-    return prefix+random_string+suffix
+    random_path = prefix+random_string+suffix
+    if default_storage.exists(os.path.dirname(random_path)):
+        return random_directory(size, chars, prefix, suffix)
+    return random_path
 
 
 class packagecondition(models.Model):
@@ -63,6 +71,12 @@ class packagecondition(models.Model):
         ('username_not', _('username_not')),
         ('ipaddr_in', _('ipaddr_in')),
         ('ipaddr_not', _('ipaddr_not')),
+        ('vendor_in', _('vendor_in')),
+        ('vendor_not', _('vendor_not')),
+        ('product_in', _('product_in')),
+        ('product_not', _('product_not')),
+        ('type_in', _('type_in')),
+        ('type_not', _('type_not')),
         ('isfile', _('isfile')),
         ('notisfile', _('notisfile')),
         ('isdir', _('isdir')),
@@ -72,7 +86,11 @@ class packagecondition(models.Model):
         ('hashis', _('hashis')),
         ('hashnot', _('hashnot')),
         ('exitcodeis', _('exitcodeis')),
-        ('exitcodenot', _('exitcodenot'))
+        ('exitcodenot', _('exitcodenot')),
+        ('executetimes', _('executetimes')),
+        ('installtimes', _('installtimes')),
+        ('executedelay', _('executedelay')),
+        ('installdelay', _('installdelay')),
     )
     name = models.CharField(max_length=100, verbose_name=_('packagecondition|name'))
     depends = models.CharField(max_length=12, choices=choice, default='installed', verbose_name=_('packagecondition|depends'), help_text=_('packagecondition|depends help text'))
@@ -87,6 +105,14 @@ class packagecondition(models.Model):
         verbose_name_plural = _('packagecondition|packages conditions')
         ordering = ['name']
 
+    def get_condition_packages(self):
+        retval = '<ul class="grp-list-options">'
+        for p in package.objects.filter(conditions=self.id):
+            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_package_change', args=[p.id]), p.name)
+        retval += '</ul>'
+        return mark_safe(retval)
+    get_condition_packages.short_description = _('package|deployment packages')
+
     def __str__(self):
         return self.name
 
@@ -94,23 +120,58 @@ class packagecondition(models.Model):
 def content_file_name(self, name):
     return random_directory(prefix='package-file/', suffix='/'+name)
 
+def md5_for_file(filefield, block_size=2**20):  # MD5 keep for client backward compatibility < 6.0.0
+    if filefield == '':
+        return 'nofile'
+    f = open(filefield.path, 'rb')
+    md5 = hashlib.md5()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        md5.update(data)
+    return md5.hexdigest()
+
+def sha512_for_file(filefield, block_size=2**20):
+    if filefield == '':
+        return 'nofile'
+    sha512 = hashlib.sha512()
+    with open(filefield.path, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            sha512.update(block)
+    return sha512.hexdigest()
+
 
 class package(models.Model):
     choice_yes_no = (
         ('yes', _('package|yes')),
         ('no', _('package|no'))
     )
+    choice_yes_no_undefined = (('-', _('package|unset')), ('yes', _('package|yes')), ('no', _('package|no')))
     name = models.CharField(max_length=100, verbose_name=_('package|name'))
     description = models.CharField(max_length=500, verbose_name=_('package|description'))
     conditions = models.ManyToManyField('packagecondition', blank=True, verbose_name=_('package|conditions'))
     command = models.TextField(max_length=1000, verbose_name=_('package|command'), help_text=_('package|command help text'))
     packagesum = models.CharField(max_length=40, null=True, blank=True, verbose_name=_('package|packagesum'))
+    packagehash = models.CharField(max_length=128, null=True, blank=True, verbose_name=_('package|packagehash'))
     filename = models.FileField(upload_to=content_file_name, null=True, blank=True, verbose_name=_('package|filename'))
     ignoreperiod = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|ignore deploy period'))
     public = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package| public package'))
     entity = models.ManyToManyField(entity, blank=True, verbose_name=_('package|entity'))
     editor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name=_('package| package last editor'))
     exclusive_editor = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|exclusive editor'))
+    use_global_variables = models.CharField(max_length=3, choices=choice_yes_no, default='no', verbose_name=_('package|global variables'), help_text=_('package|global variables help text'))
+    timeprofiles = models.ManyToManyField('timeprofile', blank=True, verbose_name=_('package|time profiles'), help_text=_('package|time profiles help text'))
+    no_break_on_error = models.CharField(max_length=3, choices=choice_yes_no_undefined, default='-',
+                                         verbose_name=_('deployconfig|no break on error'),
+                                         help_text=_('deployconfig|no break on error help text'))
+    download_no_restart = models.CharField(max_length=3, choices=choice_yes_no_undefined, default='-',
+                                           verbose_name=_('deployconfig|download no restart'),
+                                           help_text=_('deployconfig|download no restart help text'))
+    install_timeout = models.PositiveIntegerField(default=600,
+                                                  validators=[MinValueValidator(1), MaxValueValidator(3600)],
+                                                  verbose_name=_('deployconfig|install_timeout'),
+                                                  help_text=_('deployconfig|install_timeout help text'))
 
     class Meta:
         verbose_name = _('package|deployment package')
@@ -118,10 +179,25 @@ class package(models.Model):
         ordering = ['name']
 
     def get_conditions(self):
-        retval = mark_safe('<br/>- '.join([c.name for c in self.conditions.all()]))
-        if len(retval): retval = mark_safe('- ' + retval)
-        return retval
+        retval = '<ul class="grp-list-options">'
+        for c in self.conditions.all():
+            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_packagecondition_change', args=[c.id]), c.name)
+        retval += '</ul>'
+        return mark_safe(retval)
     get_conditions.short_description = _('packageAdmin|get_conditions')
+
+    def get_customvars(self):
+        retval = ''
+        if self.use_global_variables == 'yes':
+            retval += '<p>{0} : {1}</p>'.format(_('package|global variables').capitalize(), self.get_use_global_variables_display())
+        customvars = packagecustomvar.objects.filter(package=self)
+        if customvars.count():
+            retval += '{0} :<ul class="grp-list-options">'.format(_('package|deployment custom variables').capitalize())
+            for customvar in customvars:
+                retval += '<li>%s = %s</li>' % (customvar.name, customvar.value)
+            retval += '</ul>'
+        return mark_safe(retval)
+    get_customvars.short_description = _('variables').capitalize()
 
     def save(self, *args, **kwargs):
         # delete old file when replacing by updating the file
@@ -132,43 +208,75 @@ class package(models.Model):
                     if p.filename != '':
                         p.filename.delete(save=False)
                 else:
-                    shutil.rmtree(os.path.dirname(p.filename.path))
+                    if len(package.objects.filter(filename=p.filename.name)) <= 1:
+                        shutil.rmtree(os.path.dirname(p.filename.path))
 
         except:
             pass  # when new file then we do nothing, normal case
         super(package, self).save(*args, **kwargs)
 
-    def md5_for_file(self, block_size=2**20):
-        if self.filename == '':
-            return 'nofile'
-        f = open(self.filename.path, 'rb')
-        md5 = hashlib.md5()
-        while True:
-            data = f.read(block_size)
-            if not data:
-                break
-            md5.update(data)
-        return md5.hexdigest()
+    def __str__(self):
+        return self.name
+
+
+class packagecustomvar(models.Model):
+    name = models.CharField(max_length=100, verbose_name=_('name'), help_text=_('packagecustomvar|name help text'))
+    value = models.CharField(max_length=200, verbose_name=_('value'))
+    apply_on_commands = models.BooleanField(default=True, verbose_name=_('packagecustomvar|apply on commands'))
+    apply_on_conditions = models.BooleanField(default=True, verbose_name=_('packagecustomvar|apply on conditions'))
+    description = models.CharField(max_length=200, null=True, blank=True, verbose_name=_('description'))
+    package = models.ForeignKey(package, on_delete=models.CASCADE, verbose_name=_('package|deployment package'))
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _('package|deployment custom variable')
+        verbose_name_plural = _('package|deployment custom variables')
+        unique_together = ('name', 'package',)
+
+    def clean(self):
+        if self.name in ('username', 'hostname', 'domain'):
+            raise ValidationError(_('package|deployment reserved names'))
+        if self.apply_on_commands is False and self.apply_on_conditions is False:
+            raise ValidationError(_('package|deployment at least one scope'))
+
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+
+# Fill packagehash field if not set and filename exists
+@receiver(post_migrate)
+def update_packagehash(sender, *args, **kwargs):
+    if sender.name == 'deploy':
+        try:
+            for p in package.objects.filter(packagehash__isnull=True):
+                if p.filename != '' and p.packagehash is None:
+                    p.packagehash = sha512_for_file(p.filename)
+                p.save()
+        except:
+            pass
 
 # Add a post_save function to update packagesum after each save on
 # a package object
 @receiver(post_save, sender=package)
 def postcreate_package(sender, instance, created, **kwargs):
-    # Update of packagesum field
+    # Update of packagesum and packagehash fields
     if not instance.filename:
         instance.packagesum = 'nofile'
+        instance.packagehash = 'nofile'
     else:
-        instance.packagesum = instance.md5_for_file()
+        instance.packagesum = md5_for_file(instance.filename)
+        instance.packagehash = sha512_for_file(instance.filename)
     # Update of all package history wish are programmed
     for ph in packagehistory.objects.filter(package=instance, status='Programmed'):
         ph.name = instance.name
         ph.description = instance.description
         ph.command = instance.command
         ph.packagesum = instance.packagesum
+        ph.packagehash = instance.packagehash
         if instance.packagesum != 'nofile':
             ph.filename = instance.filename.path
         else:
@@ -182,11 +290,15 @@ def postcreate_package(sender, instance, created, **kwargs):
 
 @receiver(pre_delete, sender=package)
 def predelete_package(sender, instance, **kwargs):
-    if instance.filename.name != '':
-        if os.path.split(os.path.dirname(instance.filename.path))[1] == 'package-file':
-            instance.filename.delete(save=False)
-        else:
-            shutil.rmtree(os.path.dirname(instance.filename.path))
+    try:
+        if instance.filename.name != '':
+            if os.path.split(os.path.dirname(instance.filename.path))[1] == 'package-file':
+                instance.filename.delete(save=False)
+            else:
+                if len(package.objects.filter(filename=instance.filename.name)) <= 1:
+                    shutil.rmtree(os.path.dirname(instance.filename.path))
+    except:
+        pass
 
 
 # call packages_changed only when packages m2m changed
@@ -201,6 +313,7 @@ def packages_changed(sender, action, instance, **kwargs):
             obj.description = package.description
             obj.command = package.command
             obj.packagesum = package.packagesum
+            obj.packagehash = package.packagehash
             if package.packagesum != 'nofile':
                 obj.filename = package.filename.path
             obj.save()
@@ -218,6 +331,7 @@ class packagehistory(models.Model):
     description = models.CharField(max_length=500, null=True, blank=True, verbose_name=_('packagehistory|description'))
     command = models.TextField(max_length=1000, null=True, blank=True, verbose_name=_('packagehistory|command'))
     packagesum = models.CharField(max_length=40, null=True, blank=True, verbose_name=_('packagehistory|packagesum'))
+    packagehash = models.CharField(max_length=128, null=True, blank=True, verbose_name=_('package|packagehash'))
     filename = models.CharField(max_length=500, null=True, blank=True, verbose_name=_('packagehistory|filename'))
     machine = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('packagehistory|machine'))
     package = models.ForeignKey(package, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_('packagehistory|package'))
@@ -276,9 +390,11 @@ class packageprofile(models.Model):
         return sorted(packlist, key=lambda package: package.name)
 
     def get_packages(self):
-        retval = mark_safe('<br/>- '.join([p.name for p in self.get_soft()]))
-        if len(retval): retval = mark_safe('- ' + retval)
-        return retval
+        retval = '<ul class="grp-list-options">'
+        for p in self.get_soft():
+            retval += '<li><a href="%s">%s</a></li>' % (reverse('admin:deploy_package_change', args=[p.id]), p.name)
+        retval += '</ul>'
+        return mark_safe(retval)
     get_packages.short_description = _('packageAdmin|get_packages')
 
 
@@ -339,6 +455,7 @@ class impex(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name=_('impex|name'))
     description = models.TextField(max_length=500, verbose_name=_('impex|description'))
     packagesum = models.CharField(max_length=40, null=True, blank=True, verbose_name=_('impex|packagesum'))
+    packagehash = models.CharField(max_length=128, null=True, blank=True, verbose_name=_('package|packagehash'))
     filename = models.FileField(upload_to=content_file_name, null=True, blank=True, default=None, verbose_name=_('impex|filename'))
     package = models.ForeignKey(package, null=True, blank=True, default=None, on_delete=models.SET_NULL, verbose_name=_('impex|package'))
     date = models.DateTimeField(auto_now=True, verbose_name=_('impex|date'))
@@ -368,18 +485,6 @@ class impex(models.Model):
         except:
             pass  # when new file then we do nothing, normal case
         super(impex, self).save(*args, **kwargs)
-
-    def md5_for_file(self, block_size=2**20):
-        if self.filename == '':
-            return 'nofile'
-        f = open(self.filename.path, 'rb')
-        md5 = hashlib.md5()
-        while True:
-            data = f.read(block_size)
-            if not data:
-                break
-            md5.update(data)
-        return md5.hexdigest()
 
     def __str__(self):
         return self.name
@@ -472,7 +577,8 @@ def postcreate_impex(sender, instance, created, **kwargs):
                 pack.conditions.add(cond)
             pack.save()
 
-    instance.packagesum = instance.md5_for_file()
+    instance.packagesum = md5_for_file(instance.filename)
+    instance.packagehash = sha512_for_file(instance.filename)
     post_save.disconnect(receiver=postcreate_impex, sender=impex)
     instance.save()
     post_save.connect(receiver=postcreate_impex, sender=impex)
@@ -484,4 +590,5 @@ def predelete_impex(sender, instance, **kwargs):
         if os.path.split(os.path.dirname(instance.filename.path))[1] == 'package-file':
             instance.filename.delete(save=False)
         else:
-            shutil.rmtree(os.path.dirname(instance.filename.path))
+            if len(package.objects.filter(filename=instance.filename.name)) <= 1:
+                shutil.rmtree(os.path.dirname(instance.filename.path))

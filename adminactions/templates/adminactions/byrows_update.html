@@ -31,7 +31,7 @@
         </p>
         {{ adminform.form.non_field_errors }}
     {% endif %}
-    <form action="" method="post">
+    <form action="" method="post" id="update-form">
         {% csrf_token %}
         {{ formset.non_form_errors.as_ul }}
         <div class="formset-container">
@@ -67,6 +67,6 @@
         {% for hidden in actionform.hidden_fields %}
             {{ hidden }}
         {% endfor %}
-        <input type="submit" name="apply" value="Update records"/>
+        <input type="submit" name="apply" value="{% trans 'Update records' %}"/>
     </form>
 {% endblock %}

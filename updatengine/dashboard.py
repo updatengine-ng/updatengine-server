@@ -2,6 +2,7 @@
 # UpdatEngine - Software Packages Deployment and Administration tool          #
 #                                                                             #
 # Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
+# Copyright (C) Noël Martinon - noel.martinon@gmail.com                       #
 #                                                                             #
 # This program is free software; you can redistribute it and/or               #
 # modify it under the terms of the GNU General Public License                 #
@@ -26,7 +27,7 @@ To activate your index dashboard add the following to your settings.py::
     GRAPPELLI_INDEX_DASHBOARD = 'updatengine.dashboard.CustomIndexDashboard'
 """
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from grappelli.dashboard import modules, Dashboard
 
 

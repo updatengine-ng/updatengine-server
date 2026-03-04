@@ -1,2 +1,13 @@
 *.pyc
 settings.py
+settings_local.py
+updatengine/static/
+custom/
+.idea
+.env
+*.log
+__pycache__/
+*.egg-info/
+dist/
+build/
+

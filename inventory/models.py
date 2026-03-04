@@ -2,6 +2,7 @@
 # UpdatEngine - Software Packages Deployment and Administration tool          #
 #                                                                             #
 # Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
+# Copyright (C) Noël Martinon - noel.martinon@gmail.com                       #
 #                                                                             #
 # This program is free software; you can redistribute it and/or               #
 # modify it under the terms of the GNU General Public License                 #
@@ -18,7 +19,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
 ###############################################################################
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -235,7 +236,7 @@ class software(models.Model):
     )
     name = models.CharField(max_length=300, verbose_name=_('software|name'))
     version = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('software|version'))
-    uninstall = models.CharField(max_length=500, null=True, blank=True, default='undefined', verbose_name=_('software|uninstall'))
+    uninstall = models.CharField(max_length=800, null=True, blank=True, default='undefined', verbose_name=_('software|uninstall'))
     host = models.ForeignKey(machine, on_delete=models.CASCADE, verbose_name=_('software|host'))
     manualy_created = models.CharField(max_length=3, choices=choice, default='yes', verbose_name=_('software|manualy_created'))
 

@@ -2,6 +2,7 @@
 # UpdatEngine - Software Packages Deployment and Administration tool          #
 #                                                                             #
 # Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
+# Copyright (C) Noël Martinon - noel.martinon@gmail.com                       #
 #                                                                             #
 # This program is free software; you can redistribute it and/or               #
 # modify it under the terms of the GNU General Public License                 #
@@ -18,16 +19,22 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
 ###############################################################################
 
-from deploy.models import package, packagehistory, packageprofile, packagecondition, timeprofile, packagewakeonlan, impex
+from deploy.models import (package, packagehistory, packageprofile, packagecondition, timeprofile, packagewakeonlan,
+                           impex, packagecustomvar)
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
 from deploy.filters import entityFilter, machineFilter, statusFilter,\
         packageEntityFilter, packageHistoryFilter, conditionEntityFilter, conditionFilter,\
         myPackagesFilter, myConditionsFilter
 from inventory.models import entity, machine
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.forms import ModelForm
 from django.contrib import messages
+from django.utils.safestring import mark_safe
+from django.urls import reverse
+from updatengine.utils import FieldsetsInlineMixin
+from datetime import datetime
+import copy
 
 
 class ueAdmin(admin.ModelAdmin):
@@ -38,6 +45,13 @@ class ueAdmin(admin.ModelAdmin):
 
     def get_export_as_csv_filename(self, request, queryset):
         return 'deploy'
+
+
+class customvarInline(admin.TabularInline):
+    model = packagecustomvar
+    max_num = 20
+    extra = 0
+    fields = ['name', 'value', 'apply_on_commands', 'apply_on_conditions', 'description']
 
 
 class packageForm(ModelForm):
@@ -67,20 +81,102 @@ class packageForm(ModelForm):
         return self.my_user
 
 
-class packageAdmin(ueAdmin):
-    list_display = ('name','description','command','filename','get_conditions','ignoreperiod','public','editor','exclusive_editor')
+class packageAdmin(FieldsetsInlineMixin, ueAdmin):
+#class packageAdmin(ueAdmin):
+    list_display = ('name','description','get_command','filename','get_conditions','get_customvars','public','get_no_break_on_error',
+                    'get_download_no_restart','install_timeout','get_ignoreperiod','get_timeprofiles','editor','exclusive_editor')
     list_display_link = ('name')
     search_fields = ('name','description','command','filename','public')
     list_filter = ('ignoreperiod',packageEntityFilter,conditionFilter, myPackagesFilter)
-    filter_horizontal = ('conditions','entity')
+    filter_horizontal = ('conditions','entity','timeprofiles')
     form = packageForm
-    fieldsets = (
-                (_('package|general information'), {'fields': ('name', 'description')}),
-                (_('package|package edition'), {'fields': ('conditions', 'command', 'filename','public','ignoreperiod')}),
-                (_('package|permissions'), {
-                    'classes': ('grp-collapse grp-closed',),
-                    'fields': ('entity','editor', 'exclusive_editor')}),
-                )
+    actions = ['duplicate']
+    # inlines = (variableInline,)
+    # readonly_fields = ('variableInline')
+    # fieldsets = (
+    #             (_('package|general information'), {'fields': ('name', 'description')}),
+    #             (_('package|package edition'), {'fields': ('conditions', 'command', 'filename','public','ignoreperiod')}),
+    #             (_('package|permissions'), {
+    #                 'classes': ('grp-collapse grp-closed',),
+    #                 'fields': ('entity','editor', 'exclusive_editor')}),
+    #             )
+
+    fieldsets_with_inlines = [
+        (_('package|general information'), {'fields': ('name', 'description')}),
+        customvarInline,
+        (_('package|package edition'),
+         {'fields': ('use_global_variables', 'conditions', 'command', 'filename')}),
+        (_('package|deployment options'), {'fields': ('public', 'no_break_on_error', 'download_no_restart', 'install_timeout')}),
+        (_('package|timeprofiles options'), {'fields': ('ignoreperiod', 'timeprofiles')}),
+        (_('package|permissions'), {
+            'classes': ('grp-collapse grp-closed',),
+            'fields': ('entity', 'editor', 'exclusive_editor')}),
+    ]
+
+
+    def get_ignoreperiod(self, obj):
+        choices = dict(package.choice_yes_no)
+        return _(choices[obj.ignoreperiod])
+    get_ignoreperiod.short_description = _('deployconfig|ignore period short description')
+    get_ignoreperiod.admin_order_field = 'ignoreperiod'
+
+    def get_no_break_on_error(self, obj):
+        choices = dict(package.choice_yes_no_undefined)
+        return _(choices[obj.no_break_on_error])
+    get_no_break_on_error.short_description = _('deployconfig|no break on error short description')
+    get_no_break_on_error.admin_order_field = 'no_break_on_error'
+
+    def get_download_no_restart(self, obj):
+        choices = dict(package.choice_yes_no_undefined)
+        return _(choices[obj.download_no_restart])
+    get_download_no_restart.short_description = _('deployconfig|download no restart short description')
+    get_download_no_restart.admin_order_field = 'download_no_restart'
+
+    def get_command(self, obj):
+        return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
+    get_command.short_description = _('package|command')
+    get_command.admin_order_field = 'command'
+
+    def get_timeprofiles(self, obj):
+        if obj.timeprofiles is not None:
+            retval = '<ul class="grp-list-options">'
+            for timeprofile in obj.timeprofiles.order_by('name').filter():
+                retval += '<li><a href="%s">%s</a></li>' % (
+                reverse('admin:deploy_timeprofile_change', args=[timeprofile.id]), timeprofile.name)
+            retval += '</ul>'
+            return mark_safe(retval)
+    get_timeprofiles.short_description = _('package|time profiles short description')
+
+    def duplicate(modeladmin, request, queryset):
+        for obj in queryset:
+            obj_copy = copy.copy(obj)
+            obj_copy.id = None
+            obj_copy.editor = request.user
+            datenow = datetime.now().strftime("%Y%m%d_%H%M%S")
+            obj_copy.name = f'{obj.name} ({datenow})'
+            obj_copy.save()
+
+            # copy M2M relationship: conditions, entities, timeprofiles and related customvars
+            for condition in obj.conditions.all():
+                obj_copy.conditions.add(condition)
+            for entity in obj.entity.all():
+                obj_copy.entity.add(entity)
+            for timeprofile in obj.timeprofiles.all():
+                obj_copy.timeprofiles.add(timeprofile)
+            for customvar in packagecustomvar.objects.filter(package=obj):
+                customvar_copy = copy.copy(customvar)
+                customvar_copy.id = None
+                customvar_copy.package = obj_copy
+                customvar_copy.save()
+
+            obj_copy.save()
+            obj_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_package_change', args=[obj.id]), obj.name)
+            obj_copy_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_package_change', args=[obj_copy.id]), obj_copy.name)
+            msg = _('The package &ldquo; %s &rdquo; has been copied to &ldquo; %s &rdquo; successfully.') % (obj_link, obj_copy_link)
+            messages.success(request, mark_safe(msg))
+    duplicate.short_description = _('package|deployment packages duplicate')
 
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
@@ -129,20 +225,48 @@ class packageAdmin(ueAdmin):
 
 
 class packagehistoryAdmin(ueAdmin):
-    list_display = ('date','machine','status','name','description','command','filename','package')
+    list_display = ('date','get_machine','get_status','name','description','get_command','filename','get_package')
     search_fields = ('status','name','description','command')
     list_filter = (entityFilter, machineFilter,packageHistoryFilter,statusFilter,
             ('date', DateFieldListFilter))
     ordering =('-date',)
+
     def has_add_permission(self, request):
         return False
+
     def has_delete_permission(self, request, obj=None):
         return True
 
+    def has_change_permission(self, request, obj=None):
+        return False
+
     def __init__(self, *args, **kwargs):
         super(packagehistoryAdmin, self).__init__(*args, **kwargs)
-        #self.list_display_links = (None, )
         self.list_display_links = ()
+
+    def get_status(self, obj):
+        return mark_safe(obj.status.replace('\r', '').replace('\n', '<br>'))
+    get_status.short_description = _('packagehistory|status')
+    get_status.admin_order_field = 'status'
+
+    def get_command(self, obj):
+        return mark_safe(obj.command.replace('\r', '').replace('\n', '<br>'))
+    get_command.short_description = _('packagehistory|command')
+    get_command.admin_order_field = 'command'
+
+    def get_machine(self, obj):
+        if obj.machine is not None:
+          retval = '<a href="%s">%s</a>' % (reverse('admin:inventory_machine_change', args=[obj.machine.id]), obj.machine.name)
+          return mark_safe(retval)
+    get_machine.short_description = _('machine')
+    get_machine.admin_order_field = 'machine'
+
+    def get_package(self, obj):
+        if obj.package is not None:
+          retval = '<a href="%s">%s</a>' % (reverse('admin:deploy_package_change', args=[obj.package.id]), obj.package.name)
+          return mark_safe(retval)
+    get_package.short_description = _('package')
+    get_package.admin_order_field = 'package'
 
     def get_queryset(self, request):
         # Re-create queryset with entity list returned by list_entities_allowed
@@ -439,7 +563,7 @@ class packageconditionForm(ModelForm):
 
 
 class packageconditionAdmin(ueAdmin):
-    list_display = ('name','depends','softwarename','softwareversion','editor','exclusive_editor')
+    list_display = ('name','depends','softwarename','softwareversion','editor','exclusive_editor','get_condition_packages')
     filter_horizontal = ('entity',)
     list_filter = (conditionEntityFilter, myConditionsFilter)
     form = packageconditionForm
@@ -449,6 +573,30 @@ class packageconditionAdmin(ueAdmin):
                     'classes': ('grp-collapse grp-closed',),
                     'fields': ('entity','editor', 'exclusive_editor')}),
                 )
+    actions = ['duplicate']
+
+    def duplicate(modeladmin, request, queryset):
+        for obj in queryset:
+            obj_copy = copy.copy(obj)
+            obj_copy.id = None
+            obj_copy.editor = request.user
+            datenow = datetime.now().strftime("%Y%m%d_%H%M%S")
+            obj_copy.name = f'{obj.name} ({datenow})'
+            obj_copy.save()
+
+            # copy M2M relationship: entities
+            for entity in obj.entity.all():
+                obj_copy.entity.add(entity)
+
+            obj_copy.save()
+            obj_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_packagecondition_change', args=[obj.id]), obj.name)
+            obj_copy_link = '<a href="%s">%s</a>' % (
+                reverse('admin:deploy_packagecondition_change', args=[obj_copy.id]), obj_copy.name)
+            msg = _('The condition &ldquo; %s &rdquo; has been copied to &ldquo; %s &rdquo; successfully.') % (obj_link, obj_copy_link)
+            messages.success(request, mark_safe(msg))
+    duplicate.short_description = _('packagecondition|packages conditions duplicate')
+
     def changelist_view(self, request, extra_context=None):
         # Show a warning if user is not superuser
         if not request.user.is_superuser:

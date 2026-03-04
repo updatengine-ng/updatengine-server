@@ -33,12 +33,12 @@
         </ol>
     {% endif %}
     <div id='form'>
-        <form action="" method="post">
+        <form action="" method="post" id="export-form">
             {% csrf_token %}
             <table>
                 {{ adminform.form }}
             </table>
-            <input type="submit" name="apply" value="Export"/>
+            <input type="submit" name="apply" value="{% trans 'Export' %}"/>
         </form>
     </div>
 {% endblock %}

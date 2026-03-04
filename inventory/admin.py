@@ -2,6 +2,7 @@
 # UpdatEngine - Software Packages Deployment and Administration tool          #
 #                                                                             #
 # Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
+# Copyright (C) Noël Martinon - noel.martinon@gmail.com                       #
 #                                                                             #
 # This program is free software; you can redistribute it and/or               #
 # modify it under the terms of the GNU General Public License                 #
@@ -21,7 +22,7 @@
 from inventory.models import entity, machine, net, software, osdistribution
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from inventory.filters import enableFilter, as_or_notFilter, softwareFilter, versionFilter
 from inventory.filters import (
     entityFilter, domainFilter, usernameFilter, languageFilter, typemachineFilter,
@@ -138,7 +139,7 @@ class entityAdmin(ueAdmin):
 class machineAdmin(ueAdmin):
     select_related = True
     fields = ['name', 'comment', 'serial', 'uuid', 'domain', 'username', 'language', 'vendor', 'product', 'manualy_created', 'entity', 'typemachine', 'timeprofile', 'packageprofile', 'packages']
-    list_display = ('lastsave', 'entity', 'name', 'username', 'domain', 'operatingsystem', 'vendor', 'product', 'typemachine', 'packageprofile', 'timeprofile', 'comment')
+    list_display = ('name', 'username', 'domain', 'operatingsystem', 'vendor', 'product', 'typemachine', 'entity', 'packageprofile', 'timeprofile', 'comment', 'lastsave')
     list_editable = ('entity', 'packageprofile', 'timeprofile')
     list_filter = (('lastsave', DateFieldListFilter), entityFilter, domainFilter, usernameFilter, languageFilter, typemachineFilter, osarchFilter, osdistributionFilter, commentFilter, timeprofileFilter, packageprofileFilter, enableFilter, as_or_notFilter, softwareFilter, versionFilter)
     search_fields = ('name', 'serial', 'vendor', 'product', 'domain', 'username', 'language', 'comment')
@@ -150,10 +151,10 @@ class machineAdmin(ueAdmin):
     actions = ['force_contact', 'force_wakeup']
 
     def operatingsystem(self, instance):
-        # Inspired from https://groups.google.com/forum/#!topic/updatengine-fr/gx5YaUOXEv8 (thx jerome)
         os_name = osdistribution.objects.filter(host=instance.id).values_list('name', flat=True)
+        os_version = osdistribution.objects.filter(host=instance.id).values_list('version', flat=True)
         os_arch = osdistribution.objects.filter(host=instance.id).values_list('arch', flat=True)
-        return ('%s %s' % (''.join(os_name if os_name and os_name[0] else ''), ''.join(os_arch if os_arch and os_arch[0] else ''))).strip()
+        return ('%s %s %s' % (''.join(os_name if os_name and os_name[0] else ''), ''.join(os_version if os_version and os_version[0] else ''), ''.join(os_arch if os_arch and os_arch[0] else ''))).strip()
     operatingsystem.admin_order_field = 'osdistribution__name'
     operatingsystem.short_description = _('operating_system')
 

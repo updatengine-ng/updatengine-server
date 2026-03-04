@@ -1,13 +1,21 @@
 # UpdatEngine-server
 
+[![CI/CD Pipeline](https://github.com/Tronos83170/updatengine-server/actions/workflows/ci.yml/badge.svg)](https://github.com/Tronos83170/updatengine-server/actions/workflows/ci.yml)
+[![License: GPL-2.0](https://img.shields.io/badge/License-GPL--2.0-blue.svg)](https://github.com/Tronos83170/updatengine-server/blob/master/LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
+[![Django Version](https://img.shields.io/badge/django-5.2%20LTS-green.svg)](https://www.djangoproject.com/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://github.com/Tronos83170/updatengine-server/blob/master/Dockerfile)
+
+# UpdatEngine-server
+
 UpdatEngine Server is a web app allowing people to inventory computer and server, deploy software and create profile to apply on inventoried machines for Windows and Linux.
 
 * [History](#history)
 * [Project features](#project-features)
-* [Compatiblity](#Compatiblity)
-* [Install](#install-latest-stable)
-* [Update](#update)
-* [Migrate from previous Python 2.7 / UE-Server < 4.0.0](#migrate-from-previous-python-27--ue-server--400)
+* [Installation](#installation)
+  * [Python Virtual Environment](#in-a-python-virtual-environment)
+  * [Docker](#in-a-docker-container) 
+* [Upgrade](#upgrade)
 * [Examples](#examples-of-deployment-packages)
 * [Links](#links)
 * [License](#license)
@@ -18,128 +26,117 @@ UpdatEngine client and server was originally written by Yves Guimard. He had to 
 
 ## Project features
 
-* Python 3.7 / Django 2.2 LTS project
-* Tested with Debian 10, Ubuntu 18.04
+* Python 3.10+ / Django 4.2 LTS project
+* Tested with Debian 10/11/12, Ubuntu 18.04/20.04/22.04/24.04
 
-## Compatiblity
+## Installation
 
-The 'force contact' functionality is not compatible with clients version 3.x and below. Please install UE-Client from 4.0.0.
+UpdatEngine-server installation scripts for Debian/Ubuntu are located in the 'install' folder. 
 
-## Install latest stable
+### In a Python virtual environment
 
-See old **[2.1.1 installation documentation](https://updatengine-ng.com/)** for details
+1. Preparation of configuration files
 
-Quickly (for debian/ubuntu with mySQL and self-signed certificate):
+    If this preparation step is ignored, the step 2 installation will use default remote site settings 'debian/custom.dist/.env.default'.
 
-```
-export UE_VER=master
-export PY_VER=3.7
-export INST_DIR=/var/www/UE-environment
+    - Switch to the superuser account:
 
-sudo apt install apache2 python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 git-core mysql-server libmysqlclient-dev build-essential -y
-sudo python${PY_VER} -m venv ${INST_DIR}
-cd ${INST_DIR}
+          sudo su -
 
-sudo git clone https://github.com/updatengine-ng/updatengine-server
-cd updatengine-server
-sudo git checkout -b ${UE_VER} origin/${UE_VER}
+    - Create a directory to store your settings and move into it (here in 'home' directory):
 
-sudo ${INST_DIR}/bin/pip install --upgrade pip setuptools
-sudo ${INST_DIR}/bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
+          mkdir ~/ue-config && cd $_
 
-mysqladmin -u root -p create updatengine
-mysql -u root -p -e "GRANT ALL PRIVILEGES ON updatengine.* TO 'updatengineuser'@'localhost' IDENTIFIED by 'unmotdepasse' WITH GRANT OPTION;"
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
-# You may see some warnings such as below, but don't worry about this. This files are used by 'tzselect' linux command and are not timezone.
-# Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.
-# Warning: Unable to load '/usr/share/zoneinfo/leap-seconds.list' as time zone. Skipping it.
-# Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.
-# Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.
-sudo service mysql restart
+    - Create the 'custom' directory used by the installation script:
 
-sudo cp ${INST_DIR}/updatengine-server/updatengine/settings.py.model ${INST_DIR}/updatengine-server/updatengine/settings.py
-# and now modify settings.py
+        It must be placed at the some level than 'install.sh' from step 2
 
-sudo cp ${INST_DIR}/updatengine-server/requirements/apache-updatengine.conf /etc/apache2/sites-available/apache-updatengine.conf
-sudo a2ensite apache-updatengine
-sudo a2enmod wsgi
-sudo openssl req --new -newkey rsa:2048 -days 365 -nodes -x509 -keyout /etc/ssl/private/updatengine.key -out /etc/ssl/certs/updatengine.crt -subj "/C=FR/ST=Guadeloupe/L=Saint-Claude/O=UpdatEngine-NG/CN=updatengine-ng.com"
-sudo a2enmod ssl
-sudo systemctl restart apache2
+          mkdir custom
 
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py migrate
+    - Get default '.env' file and customize it:
 
-# Set utf8mb4 charset for all tables (all languages support):
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py runscript db_convert_utf8
+      Customize your settings in this file (Installation directories, URL, database, SMTP...).
 
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/configuration_initial_data.yaml
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py loaddata ${INST_DIR}/updatengine-server/initial_data/groups_initial_data.yaml
+          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/custom.dist/.env.default
+          nano ./custom/.env
 
-sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/static/
-sudo chown -R www-data:www-data ${INST_DIR}/updatengine-server/updatengine/media/
+    - Optionally, get example 'settings_local.py' to customize some features:
 
-sudo systemctl reload apache2
+      Customize additional settings in this file (LDAP, LOGGING...).
 
-sudo ${INST_DIR}/bin/python ${INST_DIR}/updatengine-server/manage.py createsuperuser
-```
-If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
+          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/custom.dist/settings_local.py.example
+          nano ./custom/settings_local.py
+
+2. Installation
+
+    - Get last installation script and run it:
+
+          cd ~/ue-config
+          wget -O install.sh https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/debian/install.sh
+          chmod +x install.sh
+          ./install.sh
 
 
-## Update
+    The script automaticaly update the python settings, the apache.conf and create auto-signed SSL certfificat.
 
-To update an existing version do :
+### In a docker container
 
-```
-export INST_DIR=/var/www/UE-environment
-cd ${INST_DIR}/updatengine-server/
-sudo git checkout --track origin/master
-sudo git pull
-sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate
-# In case of 'Table already exist' error then run this before retry 'migrate' :
-# sudo bin/python ${INST_DIR}/updatengine-server/manage.py migrate --fake deploy 0002_auto_20180605_1910
-sudo service apache2 restart
-```
+The distribution base image doesn't exist yet, so the container is built from source.
 
+1. Preparation of configuration files
 
-## Migrate from previous Python 2.7 / UE-Server < 4.0.0
+   If this preparation step is ignored, the step 2 installation will use default remote site settings 'docker/custom.dist/.env.default'.
 
-All UE-Server versions before 4.0.0 was written in Python 2.7. From 4.0.0, Python 3 is used. So a simple update is not enough and a migration is needed.
+   - Switch to the superuser account or to a user that is able to build and run docker:
 
-The commands includes the backup of the previous version and the copy of all packages files.
+          sudo su -
 
-Quickly (for debian/ubuntu):
+   - Create a directory to store your settings and move into it (here in 'home' directory):
 
-```
-export UE_VER=master
-export PY_VER=3.7
-export INST_DIR=/var/www/UE-environment
+          mkdir ~/ue-config && cd $_
 
-sudo apt install python${PY_VER} python${PY_VER}-dev python${PY_VER}-venv python${PY_VER}-distutils libapache2-mod-wsgi-py3 -y
+    - Create the 'custom' directory used by the installation script:
 
-sudo mv ${INST_DIR} ${INST_DIR}_py2.7
+        It must be placed at the some level than 'install-ue-docker.sh' from step 2
 
-sudo python${PY_VER} -m venv ${INST_DIR}
-cd ${INST_DIR}
+          mkdir custom
 
-sudo git clone https://github.com/updatengine-ng/updatengine-server
-cd updatengine-server
-sudo git checkout -b ${UE_VER} origin/${UE_VER}
+    - Get default '.env' file and customize it:
 
-sudo ${INST_DIR}/bin/pip install --upgrade pip setuptools
-sudo ${INST_DIR}/bin/pip install -r ${INST_DIR}/updatengine-server/requirements/pip-packages.txt
+      Customize your settings in this file (Installation directories, URL, database, SMTP...).
 
-sudo cp ${INST_DIR}_py2.7/updatengine-server/updatengine/settings.py ${INST_DIR}/updatengine-server/updatengine/
-sudo sed -i -e "s/0644/0o644/g" ${INST_DIR}/updatengine-server/updatengine/settings.py
-sudo rsync -av ${INST_DIR}_py2.7/updatengine-server/updatengine/media/package-file/* ${INST_DIR}/updatengine-server/updatengine/media/package-file/
+          wget -O ./custom/.env https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/custom.dist/.env.default
+          nano ./custom/.env
 
-sudo systemctl reload apache2
+    - Optionally, get example 'settings_local.py' to customize some features:
 
-# Remove previous version:
-# sudo rm -rf ${INST_DIR}_py2.7
-```
+      Add additional settings in this file (LDAP, LOGGING...). All settings available for Django could be put in this file and the contains it is loading at the end of the 'settings.py', all values could be overridden 
 
-If you encounter some errors as 'Did you install mysqlclient?' then try with PY_VER=3.6.
+          wget -O ./custom/settings_local.py https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/custom.dist/settings_local.py.example
+          nano ./custom/settings_local.py
 
+2. Installation
+
+    - Get last docker deployment script, customize INST_DIR and run it:
+
+          cd ~/ue-config
+          wget https://raw.githubusercontent.com/updatengine-ng/updatengine-server/master/install/docker/deploy-ue-docker.sh
+          nano deploy-ue-docker.sh
+          chmod +x deploy-ue-docker.sh
+          ./deploy-ue-docker.sh
+
+## Upgrade
+
+> [!WARNING]
+Before any upgrade, it's always recommended to backup the updatengine-server database, the current updatengine-server directory and possibly the Python venv directory.
+
+### Before version 6.0.0:
+
+Proceed with the same steps as those of the installation above using your own values ​​entered in your previous 'debian_install_ue.sh' script or your current 'updatengine/settings.py' file. Then run step 2 of the installation which will upgrade your database and project files.
+
+### From version 6.0.0:
+
+Go to your directory containing 'install.sh' and 'custom' directory and just run step 2 of the installation.
 
 ## Examples of deployment packages
 
@@ -309,10 +306,8 @@ If cancelling then UpdatEngine-client will check and ask again on next inventory
 ## Links
 * Official site : https://updatengine-ng.com/
 * French Google discussion group : https://groups.google.com/forum/#!forum/updatengine-fr
-* Site archive : https://web.archive.org/web/20170318143615/http://www.updatengine.com:80/
 
 ## License
 
 GPL-2.0
-
 
