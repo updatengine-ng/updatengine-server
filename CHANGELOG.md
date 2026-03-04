@@ -2,66 +2,78 @@
 # UpdatEngine-server #
 ######################
 
+
+## 8.0.0 (2026-02-22):
+
+**✨ Improvements**
+- Add django-environ for environment-based configuration
+- Add django-redis for session and cache management via Redis
+- Add security: django-axes (brute force protection), argon2-cffi (password hashing)
+- Add modern frontend: Tailwind CSS v3 + Alpine.js v3 via package.json
+- Add pytest.ini for structured test configuration
+- Add .github/workflows/ci.yml for CI/CD Pipeline (test, security, docker jobs)
+- Add .github/dependabot.yml for automated dependency updates
+- Add updatengine/env_check.py for environment settings validation
+- Add .env.example for easier deployment configuration
+- Modernize admin interface with demo dashboard (demo_dashboard.html)
+- Add tailwind.config.js for CSS build pipeline
+- Replace obsolete packages: xlwt -> openpyxl, unicodecsv -> built-in csv, django-crispy-forms updated
+
+**🐛 Bug fix**
+- Fix TESTING detection to support pytest (pytest-django + pytest-cov)
+
+**🔧 Maintenance**
+- Remove deprecated USE_L10N setting (removed in Django 5.0)
+- Update Dockerfile Python base image 3.9 -> 3.12
+
 ## 7.1.5 (2026-02-13):
 
-**🐛 Bug fix **
-
+**🐛 Bug fix**
 - Fix html escaping in customvars
 
 ## 7.1.4 (2026-02-05):
 
 **✨ Improvements**
-
 - Enforce usage of Apache modules and backup old Apache configuration
 
-**🐛 Bug fix **
-
+**🐛 Bug fix**
 - Fix bug when using customvars on empty condition's software version
-
 
 ## 7.1.3 (2026-01-14):
 
-**🐛 Bug fix **
-
+**🐛 Bug fix**
 - Fix installation due changes for timezone from MariaDB 10.5
 - Update README and scripts to install git in the first place
 
 ## 7.1.2 (2026-01-12):
 
-**🐛 Bug fix **
-
+**🐛 Bug fix**
 - Fix package's filename URL to satisfy client and admin request
 
 ## 7.1.1 (2026-01-05):
 
-**🐛 Bug fix **
-
+**🐛 Bug fix**
 - Fix media URL for default entity without URL redirection - regression since 7.1.0
 
 ## 7.1.0 (2026-01-03):
 
 **✨ Improvements**
-
 - Security improvement: Use FileWrapper instead of Web server for GUI file download. On the administration IP port, only the authenticated users are allow to download package using the package file URL.
 
 **🔧 Maintenance**
-
 - Bump gunicorn>=22.0.0
 
-**🐛 Bug fix **
-
+**🐛 Bug fix**
 - Update installation script for use latest release version instead of master branch
 
 ## 7.0.1 (2025-12-21):
 
-**🐛 Bug fix **
-
+**🐛 Bug fix**
 - Fix http error 405 on logout
 
 ## 7.0.0 (2025-12-12):
 
 **🔧 Maintenance**
-
 - Bump Django from 4.2.16 to 5.2.9
 - Bump django-auth-ldap from 4.8.0 to 5.2.0
 - Bump django-extensions from 3.2.3 to 4.1
@@ -75,29 +87,23 @@
 ## 6.1.3 (2025-12-12):
 
 **✨ Improvements**
-
 - Add optional environment value 'PORT_ADMIN' to distinguish the admin IP port from the client port
 
 ## 6.1.2 (2025-10-20):
-
 - Fix help text for 'Enable failure tolerance' feature
 
 ## 6.1.1 (2025-08-11):
-
 - Fix ignorance of 'download_no_restart' and 'no_break_on_error' when using the extended conditions
 
 ## 6.1.0 (2024-09-13):
-
 - Fix bug when displaying the password_change_done page
 - Fix AuthBackend authentication accepting bad passwords
 
 ## 6.0.1 (2024-09-13):
-
 - Fix debian installation script for Python 3.12 compatibility
 - Fix escape sequence in inventory views
 
 ## 6.0.0 (2024-10-24):
-
 - Upgrade to Django 4.2.16 LTS
 - Increase upload size limit to 5G
 - Add 'custom variables' column to deploy/package page
@@ -118,11 +124,9 @@
 - Add docker installation script
 
 ## 5.0.1 (2022-09-28):
-
 - Fix error 'has_add_permission' on users page
 
 ## 5.0.0 (2022-09-16):
-
 - Upgrade to Django 3.2 LTS
 - Upgrade adminactions module to 1.15 version
 - Add debian upgrade script
@@ -137,7 +141,6 @@
 - Fix version check
 
 ## 4.1.0 (2022-03-25):
-
 - Update last release version using json
 - Add debian installation script and new apache config
 - Complete entity ip range help text
@@ -145,39 +148,32 @@
 - Add os version in inventory view
 
 ## 4.0.3 (2020-09-27):
-
 - Fix white page on mass update
 - Remove web directory indexes from apache conf
 
 ## 4.0.2 (2020-04-01):
-
 - Fix wol issue
 - Add lines to fix potential pip3 mysqlclient issue
 - Fix version check
 
 ## 4.0.1 (2020-03-09):
-
 - Add script db tables conversion to utf-8 (all languages support)
 - Fix bug on remove os name or arch through the web gui
 - Add 'username' condition and 'not logged in' tag
 
 ## 4.0.0 (2020-02-19):
-
 - Port code to Python 3.7
 - Migrate to Django 2.2
 - Use the latest python packages in line with the upgrade (django-grappelli, mysqlclient...)
 
 ## 3.0.2 (2019-11-25):
-
 - Optimizes extended conditions with client: Pre-check conditions to avoid asking client for unnecessary extended conditions if already a condition on the software is not satisfied.
 
 ## 3.0.1 (2019-06-20):
-
 - Fix bug in imports/exports deployments
 - Fix inventory dispatch (clients < 3.0 was sending 'undefined' for UserName, Domain and Language)
 
 ## 3.0 (2019-06-19):
-
 - Interface:
   - The chosen language remains displayed
   - Fix some translations in 'Export as CSV' and 'Mass update'
@@ -197,4 +193,3 @@
   - Allow the use of characters '&', '<' and '>' in the packages name, description and command
 - Deployment commands:
   - Usage of 'section_end' is deprecated and clients >= 3.0 pass over it. For retro compatibility, this option remain allow.
-

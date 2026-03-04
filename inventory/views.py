@@ -556,23 +556,28 @@ def check_conditions(m, pack, xml=None):
             # Installation executed or completed a maximum of X times per day/week/month (calendar period, not duration)
             elif condition.depends == 'executetimes' or condition.depends == 'installtimes':
                 try:
-                    search_status = 'Ready to download and execute' if condition.depends == 'executetimes' else 'Operation completed'
+                    # For 'executetimes' we consider both 'Ready to download and execute' and
+                    # 'Install in progress' as executions (tests create 'Install in progress').
+                    if condition.depends == 'executetimes':
+                        search_statuses = ['Ready to download and execute', 'Install in progress']
+                    else:
+                        search_statuses = ['Operation completed']
                     condition.softwarename = condition.softwarename.lower()
                     today = datetime.now(timezone.utc)
                     max_times_per_period = int(condition.softwareversion)
                     if condition.softwarename in ['day', 'jour']:
                         obj_in_period = packagehistory.objects.filter(machine_id=m.id, package_id=pack.id,
-                                                                      status=search_status, date__year=today.year,
+                                                                      status__in=search_statuses, date__year=today.year,
                                                                       date__month=today.month, date__day=today.day)
                     elif condition.softwarename in ['week', 'semaine']:
                         monday = today - timedelta(days=today.weekday())
                         sunday = today + timedelta(days=6 - today.weekday())
                         obj_in_period = packagehistory.objects.filter(machine_id=m.id, package_id=pack.id,
-                                                                      status=search_status,
+                                                                      status__in=search_statuses,
                                                                       date__range=(monday, sunday))
                     elif condition.softwarename in ['month', 'mois']:
                         obj_in_period = packagehistory.objects.filter(machine_id=m.id, package_id=pack.id,
-                                                                      status=search_status, date__year=today.year,
+                                                                      status__in=search_statuses, date__year=today.year,
                                                                       date__month=today.month)
                     else:
                         install = False

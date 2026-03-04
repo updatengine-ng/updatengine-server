@@ -1,29 +1,123 @@
+# =============================================================================
+# Nginx configuration — UpdatEngine Server
+# Upstream: Gunicorn on port 8000 (Docker service "web")
+# =============================================================================
+
 upstream updatengine {
     server web:8000;
+    keepalive 32;              # reuse connections to Gunicorn
 }
 
+# ---------------------------------------------------------------------------
+# Gzip compression
+# ---------------------------------------------------------------------------
+gzip              on;
+gzip_vary         on;
+gzip_proxied      any;
+gzip_comp_level   5;
+gzip_min_length   256;
+gzip_types
+    text/plain text/css text/xml text/javascript
+    application/json application/javascript application/xml+rss
+    application/atom+xml image/svg+xml;
+
+# ---------------------------------------------------------------------------
+# Rate limiting (anti-flood / brute-force)
+# ---------------------------------------------------------------------------
+limit_req_zone ${DOLLAR}binary_remote_addr zone=global:10m rate=20r/s;
+limit_req_zone ${DOLLAR}binary_remote_addr zone=login:10m  rate=5r/m;
+
+# ---------------------------------------------------------------------------
+# HTTPS server
+# ---------------------------------------------------------------------------
 server {
     listen 443 ssl;
     server_name ${SERVER_NAME};
     server_tokens off;
 
+    # ---- Upload size (match Gunicorn timeout + Apache LimitRequestBody) ----
     client_max_body_size 5G;
 
-    ssl_certificate /etc/ssl/certs/site.crt;
+    # ---- SSL ---------------------------------------------------------------
+    ssl_certificate     /etc/ssl/certs/site.crt;
     ssl_certificate_key /etc/ssl/private/site.key;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
 
-    location / {
-        proxy_pass http://updatengine;
-        proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
-        proxy_set_header Host ${DOLLAR}host;
-        proxy_redirect off;
-    }
+    # ---- Security headers --------------------------------------------------
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options    "nosniff"                              always;
+    add_header X-Frame-Options           "SAMEORIGIN"                           always;
+    add_header X-XSS-Protection          "1; mode=block"                        always;
+    add_header Referrer-Policy           "strict-origin-when-cross-origin"      always;
 
+    # ---- Logging -----------------------------------------------------------
+    access_log /var/log/nginx/updatengine.access.log combined;
+    error_log  /var/log/nginx/updatengine.error.log  warn;
+
+    # ---- Static files (served directly by Nginx — no Gunicorn hit) --------
     location /static/ {
         alias /app/updatengine/static/;
+        expires     30d;
+        add_header  Cache-Control "public, immutable";
+        access_log  off;
     }
 
+    # ---- Media files -------------------------------------------------------
     location /media/ {
         alias /app/updatengine/media/;
+        expires     7d;
+        add_header  Cache-Control "public";
+        access_log  off;
+    }
+
+    # ---- Favicon (avoid 404 noise in logs) ---------------------------------
+    location = /favicon.ico {
+        alias /app/updatengine/static/favicon.ico;
+        access_log off;
+        log_not_found off;
+    }
+
+    # ---- Application (proxy to Gunicorn) -----------------------------------
+    location / {
+        limit_req zone=global burst=40 nodelay;
+
+        proxy_pass          http://updatengine;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection        "";
+        proxy_set_header    Host              ${DOLLAR}host;
+        proxy_set_header    X-Real-IP         ${DOLLAR}remote_addr;
+        proxy_set_header    X-Forwarded-For   ${DOLLAR}proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto ${DOLLAR}scheme;
+        proxy_redirect      off;
+
+        # Timeouts (match Gunicorn graceful_timeout)
+        proxy_connect_timeout  10s;
+        proxy_send_timeout     120s;
+        proxy_read_timeout     120s;
+
+        # Buffer settings
+        proxy_buffering         on;
+        proxy_buffer_size       8k;
+        proxy_buffers           8 16k;
+        proxy_busy_buffers_size 32k;
+    }
+
+    # ---- Login rate-limit (extra protection against brute-force) -----------
+    location ~ ^/(accounts/login|admin/login) {
+        limit_req zone=login burst=10 nodelay;
+
+        proxy_pass          http://updatengine;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection        "";
+        proxy_set_header    Host              ${DOLLAR}host;
+        proxy_set_header    X-Real-IP         ${DOLLAR}remote_addr;
+        proxy_set_header    X-Forwarded-For   ${DOLLAR}proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto ${DOLLAR}scheme;
+        proxy_redirect      off;
     }
 }

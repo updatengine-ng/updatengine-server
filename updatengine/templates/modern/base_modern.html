@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr" x-data="{ sidebarOpen: true }">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}UpdateEngine{% endblock %}</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { 50:'#eff6ff', 100:'#dbeafe', 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8', 800:'#1e40af', 900:'#1e3a8a' },
+            sidebar: '#0f172a',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    [x-cloak] { display: none !important; }
+    .sidebar-item { @apply flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-200 cursor-pointer; }
+    .sidebar-item.active { @apply bg-primary-600 text-white; }
+    .stat-card { @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow; }
+    .online-dot { @apply inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse; }
+    .offline-dot { @apply inline-block w-2 h-2 rounded-full bg-red-400; }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans" hx-boost="true">
+
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- ====== SIDEBAR ====== -->
+    <aside
+      class="flex flex-col bg-slate-900 text-white transition-all duration-300 z-40 h-full"
+      :class="sidebarOpen ? 'w-64' : 'w-16'"
+    >
+      <!-- Logo -->
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-slate-700">
+        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-server text-white text-sm"></i>
+        </div>
+        <span x-show="sidebarOpen" x-cloak class="font-bold text-lg tracking-tight">UpdateEngine</span>
+      </div>
+
+      <!-- Nav items -->
+      <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+        <a href="/modern/dashboard/" class="sidebar-item {% block nav_dashboard %}{% endblock %}">
+          <i class="fas fa-th-large w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Dashboard</span>
+        </a>
+        <a href="/modern/inventory/" class="sidebar-item {% block nav_inventory %}{% endblock %}">
+          <i class="fas fa-desktop w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Parc machines</span>
+        </a>
+        <a href="/modern/deployments/" class="sidebar-item {% block nav_deploy %}{% endblock %}">
+          <i class="fas fa-rocket w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Déploiements</span>
+        </a>
+        <a href="/modern/software/" class="sidebar-item {% block nav_software %}{% endblock %}">
+          <i class="fas fa-box w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Logiciels</span>
+        </a>
+        <div class="border-t border-slate-700 my-3"></div>
+        <a href="/modern/alerts/" class="sidebar-item {% block nav_alerts %}{% endblock %}">
+          <i class="fas fa-bell w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Alertes</span>
+        </a>
+        <a href="/modern/reports/" class="sidebar-item {% block nav_reports %}{% endblock %}">
+          <i class="fas fa-chart-bar w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Rapports</span>
+        </a>
+        <a href="/admin/" class="sidebar-item">
+          <i class="fas fa-cog w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Administration</span>
+        </a>
+      </nav>
+
+      <!-- User / bottom -->
+      <div class="px-2 py-3 border-t border-slate-700">
+        <a href="/logout/" class="sidebar-item">
+          <i class="fas fa-sign-out-alt w-5 flex-shrink-0"></i>
+          <span x-show="sidebarOpen" x-cloak>Déconnexion</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Top bar -->
+      <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 shadow-sm">
+        <!-- Toggle sidebar -->
+        <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+
+        <!-- Global search -->
+        <div class="flex-1 max-w-lg relative">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input
+              type="text"
+              id="global-search"
+              placeholder="Rechercher une machine..."
+              class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50"
+              hx-get="/modern/api/search/"
+              hx-trigger="keyup changed delay:300ms"
+              hx-target="#search-results"
+              name="q"
+              autocomplete="off"
+            />
+          </div>
+          <div id="search-results" class="absolute top-full mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 z-50 hidden"></div>
+        </div>
+
+        <div class="ml-auto flex items-center gap-4">
+          <!-- Live refresh indicator -->
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <span class="online-dot"></span>
+            <span>Live</span>
+          </div>
+          <!-- User -->
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-bold">{{ request.user.username|slice:':1'|upper }}</span>
+            </div>
+            <span class="text-sm text-gray-700 font-medium">{{ request.user.username }}</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main class="flex-1 overflow-y-auto p-6" id="main-content">
+        <!-- Breadcrumb -->
+        {% block breadcrumb %}{% endblock %}
+
+        <!-- Flash messages -->
+        {% if messages %}
+        <div class="mb-4 space-y-2">
+          {% for message in messages %}
+          <div class="px-4 py-3 rounded-lg text-sm
+            {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <!-- HTMX search dropdown show/hide -->
+  <script>
+    document.addEventListener('htmx:afterSwap', function(e) {
+      if (e.detail.target.id === 'search-results') {
+        const el = document.getElementById('search-results');
+        el.classList.toggle('hidden', el.innerHTML.trim() === '');
+      }
+    });
+    document.addEventListener('click', function(e) {
+      const sr = document.getElementById('search-results');
+      if (!sr.contains(e.target) && e.target.id !== 'global-search') {
+        sr.classList.add('hidden');
+      }
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

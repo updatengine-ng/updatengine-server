@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UpdatEngine Modern - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <!-- Sidebar (NinjaOne Style) -->
+        <aside class="fixed inset-y-0 left-0 w-64 bg-[#1a1c1e] text-white hidden md:flex flex-col">
+            <div class="p-6 flex items-center space-x-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">UE Server</span>
+            </div>
+            
+            <nav class="flex-1 px-4 space-y-1 mt-4">
+                <a href="#" class="bg-blue-600/10 text-blue-400 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-chart-line w-6"></i> Dashboard
+                </a>
+                <a href="#" class="text-gray-400 hover:bg-gray-800 hover:text-white group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-desktop w-6"></i> Agents & Inventory
+                </a>
+                <a href="#" class="text-gray-400 hover:bg-gray-800 hover:text-white group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-box w-6"></i> App Deployments
+                </a>
+                <a href="#" class="text-gray-400 hover:bg-gray-800 hover:text-white group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-shield-halved w-6"></i> Profiles & Security
+                </a>
+                <a href="#" class="text-gray-400 hover:bg-gray-800 hover:text-white group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-terminal w-6"></i> Scripts (Remote)
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center space-x-3 text-sm text-gray-400">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Server Status: Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="md:pl-64 flex flex-col flex-1">
+            <!-- Topbar -->
+            <header class="h-16 bg-white border-b flex items-center justify-between px-8 sticky top-0 z-10">
+                <div class="flex-1 max-w-xl">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm" placeholder="Search devices, users or apps...">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-bell text-lg"></i>
+                    </button>
+                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold border">
+                        AD
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="p-8">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Infrastructure Overview</h1>
+                    <p class="text-sm text-gray-500 mt-1">Status report for Department Council of Var (CD83)</p>
+                </div>
+
+                <!-- Stats Cards (SCCM Style) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl border shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">+12%</span>
+                        </div>
+                        <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Agents</h3>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">1,245</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-circle-check"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-gray-400">Healthy</span>
+                        </div>
+                        <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Online Devices</h3>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">1,102</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border shadow-sm border-orange-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock-rotate-left"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">34 Pending</span>
+                        </div>
+                        <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Deployments</h3>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">98.2%</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border shadow-sm border-red-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 bg-red-50 text-red-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-triangle-exclamation"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">Urgent</span>
+                        </div>
+                        <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Security Alerts</h3>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">5</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">Recent Device Events</h2>
+                        <button class="text-blue-600 text-sm font-medium hover:underline">View all reports</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-medium">
+                                <tr>
+                                    <th class="px-6 py-3">Device Name</th>
+                                    <th class="px-6 py-3">Status</th>
+                                    <th class="px-6 py-3">Operating System</th>
+                                    <th class="px-6 py-3">Last Check-in</th>
+                                    <th class="px-6 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100">
+                                <tr>
+                                    <td class="px-6 py-4 font-medium text-gray-900">PC-VAR-082</td>
+                                    <td class="px-6 py-4"><span class="flex items-center"><div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div> Online</span></td>
+                                    <td class="px-6 py-4">Windows 11 Pro 23H2</td>
+                                    <td class="px-6 py-4 text-gray-500">2 mins ago</td>
+                                    <td class="px-6 py-4"><button class="text-gray-400 hover:text-blue-600"><i class="fas fa-ellipsis-v"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-medium text-gray-900">SRV-DC-01</td>
+                                    <td class="px-6 py-4"><span class="flex items-center"><div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div> Online</span></td>
+                                    <td class="px-6 py-4">Windows Server 2022</td>
+                                    <td class="px-6 py-4 text-gray-500">5 mins ago</td>
+                                    <td class="px-6 py-4"><button class="text-gray-400 hover:text-blue-600"><i class="fas fa-ellipsis-v"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-medium text-gray-900">PC-TECH-04</td>
+                                    <td class="px-6 py-4"><span class="flex items-center"><div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div> Offline</span></td>
+                                    <td class="px-6 py-4">Windows 10 Pro 22H2</td>
+                                    <td class="px-6 py-4 text-gray-500">3 days ago</td>
+                                    <td class="px-6 py-4"><button class="text-gray-400 hover:text-blue-600"><i class="fas fa-ellipsis-v"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

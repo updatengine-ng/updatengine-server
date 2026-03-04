@@ -1,114 +1,125 @@
 ###############################################################################
-# UpdatEngine - Software Packages Deployment and Administration tool          #
+# UpdatEngine - Software Packages Deployment and Administration tool         #
 #                                                                             #
-# Copyright (C) Yves Guimard - yves.guimard@gmail.com                         #
-# Copyright (C) Noël Martinon - noel.martinon@gmail.com                       #
+# Copyright (C) Yves Guimard - yves.guimard@gmail.com                        #
+# Copyright (C) Noël Martinon - noel.martinon@gmail.com                      #
 #                                                                             #
-# This program is free software; you can redistribute it and/or               #
-# modify it under the terms of the GNU General Public License                 #
-# as published by the Free Software Foundation; either version 2              #
-# of the License, or (at your option) any later version.                      #
+# This program is free software; you can redistribute it and/or              #
+# modify it under the terms of the GNU General Public License                #
+# as published by the Free Software Foundation; either version 2             #
+# of the License, or (at your option) any later version.                     #
 #                                                                             #
-# This program is distributed in the hope that it will be useful,             #
+# This program is distributed in the hope that it will be useful,            #
 # but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              #
+# GNU General Public License for more details.                               #
 #                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program; if not, write to the Free Software Foundation,     #
-# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         #
+# You should have received a copy of the GNU General Public License          #
+# along with this program; if not, write to the Free Software Foundation,    #
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.         #
 ###############################################################################
-
-from django.utils.translation import gettext_lazy as _
 import os
+import environ
+from django.utils.translation import gettext_lazy as _
+
+# Initialize environ
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False),
+    EMAIL_USE_TLS=(bool, False),
+    EMAIL_USE_SSL=(bool, False),
+    SHOW_PERM_CONFIG_AUTH=(bool, False),
+    DB_PORT=(int, 3306),
+    EMAIL_PORT=(int, 25),
+    CACHE_TIMEOUT=(int, 300),
+)
 
 # Project paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# PROJECT_URL is the default server used by UpdatEngine-client to download packages
-PROJECT_URL = 'https://${SERVER_NAME}:${PORT}'
+# Take environment variables from .env file (if it exists)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# List of host/domain names that this Django site can serve
-# Add your ip and/or domain else you will have a "Bad Request (400)" error
-ALLOWED_HOSTS = ['${SERVER_NAME}']
+# Configuration
+SERVER_NAME = env('SERVER_NAME', default='localhost')
+PORT = env('PORT', default='1979')
+PORT_ADMIN = env('PORT_ADMIN', default='443')
+PROJECT_URL = f'https://{SERVER_NAME}:{PORT}'
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[SERVER_NAME])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[PROJECT_URL])
 
-# List of trusted origins
-CSRF_TRUSTED_ORIGINS = ['https://${SERVER_NAME}:${PORT}','https://${SERVER_NAME}:${PORT_ADMIN}']
-
-# Interface language
+# Internationalization
+LANGUAGE_CODE = env('LANGUAGE_CODE', default='fr')
+TIME_ZONE = env('TZ', default='UTC')
+USE_I18N = True
+USE_TZ = True
 LANGUAGES = (
-    ('fr',_('french')),
-    ('en',_('english'))
+    ('fr', _('french')),
+    ('en', _('english'))
 )
-
 DEFAULT_LANGUAGE = 'fr'
 
-# Database (see https://docs.djangoproject.com/en/1.11/ref/settings/#databases)
-# MySql database
+# Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',     # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME' : '${DB_NAME}',
-        'USER': '${DB_USER}',         # Not used with sqlite3.
-        'PASSWORD': '${DB_PASSWORD}', # Not used with sqlite3.
-        'HOST': '${DB_HOST}',                             # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '${DB_PORT}',                             # Set to empty string for default. Not used with sqlite3.
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        # 'charset': 'utf8mb4'
-        }
-    }
+    'default': env.db('DATABASE_URL', default=f"mysql://{env('DB_USER', default='')}:{env('DB_PASSWORD', default='')}@{env('DB_HOST', default='localhost')}:{env('DB_PORT', default=3306)}/{env('DB_NAME', default='')}")
 }
+DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
 
 # TEST settings
 import sys
-TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+TESTING = 'pytest' in sys.modules or (len(sys.argv) > 1 and sys.argv[1] == 'test')
 if TESTING:
-    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+        DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3', 'NAME': ':memory:'}
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
-LANGUAGE_CODE = '${LANGUAGE_CODE}'
-TIME_ZONE = '${TZ}'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
+# Security
+DEBUG = env('DEBUG')
+SECRET_KEY = env('SECRET_KEY', default='${SECRET_KEY}')
 
-# UpdatEngine admin options
-# Set SHOW_PERM_CONFIG_AUTH to true to be able to add permissions to users
-# without including him to a group
-SHOW_PERM_CONFIG_AUTH = False
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = ${DEBUG}
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '${SECRET_KEY}'
-
-# EMAIL
-ADMINS = (${ADMINS})
+# Email settings
+ADMINS = env.list('ADMINS', default=[])
 MANAGERS = ADMINS
-DEFAULT_FROM_EMAIL = '${DEFAULT_FROM_EMAIL}'
-SERVER_EMAIL = '${SERVER_EMAIL}'
-# Optional SMTP authentication information:
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
+SERVER_EMAIL = env('SERVER_EMAIL', default='root@localhost')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '${EMAIL_HOST}'
-EMAIL_PORT = ${EMAIL_PORT}
-EMAIL_HOST_USER = '${EMAIL_HOST_USER}'
-EMAIL_HOST_PASSWORD = '${EMAIL_HOST_PASSWORD}'
-EMAIL_USE_TLS = ${EMAIL_USE_TLS}
-EMAIL_USE_SSL = ${EMAIL_USE_SSL}
+EMAIL_HOST = env('EMAIL_HOST', default='localhost')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 
-##############################################
-###      -- End UE server settings --      ###
-##############################################
+# UE specific
+SHOW_PERM_CONFIG_AUTH = env('SHOW_PERM_CONFIG_AUTH')
 
-# Grappelli definition
+# ---------------------------------------------------------------------------
+# Cache — Redis (django-redis)
+# ---------------------------------------------------------------------------
+_REDIS_URL = env('REDIS_URL', default='redis://redis:6379/0')
+_CACHE_TIMEOUT = env('CACHE_TIMEOUT')
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': _REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            # Ignore Redis connectivity errors in non-critical cache ops
+            'IGNORE_EXCEPTIONS': True,
+        },
+        'TIMEOUT': _CACHE_TIMEOUT,
+        'KEY_PREFIX': 'ue',
+    }
+}
+
+# Store Django sessions in Redis instead of the database
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Grappelli
 GRAPPELLI_ADMIN_TITLE = 'UpdatEngine'
 GRAPPELLI_INDEX_DASHBOARD = 'updatengine.dashboard.CustomIndexDashboard'
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -122,7 +133,7 @@ INSTALLED_APPS = [
     'deploy',
     'configuration',
     'adminactions',
-    'django_extensions', # needed for runscript only
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -141,9 +152,7 @@ ROOT_URLCONF = 'updatengine.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(PROJECT_DIR, 'templates'),
-        ],
+        'DIRS': [os.path.join(PROJECT_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -159,69 +168,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'updatengine.wsgi.application'
 
-# Password validation
-# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Translations
-ugettext = lambda s: s
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale/'),)
-
-# Absolute path to the directory static files should be collected to.
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-
-# URL prefix for static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-MEDIA_URL = '/media/'
-
-# Additional locations of static files
-STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_DIR, 'files'),
-    )
-
-# List of finder classes that know how to find static files in
-# various locations.
+MEDIA_URL = PROJECT_URL + '/media/'
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+STATICFILES_DIRS = (os.path.join(PROJECT_DIR, 'files'),)
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-# Set uploaded files permissions to "-rw-r--r--"
 FILE_UPLOAD_PERMISSIONS = 0o644
-
-# Disable default limit of 1000 fields per request.
-# Necessary for bulk modification of objects - e.g., when saving on a linux machine
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
-
-# Set default default type for primary keys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Import local settings if file 'settings_local.py' exists
+# Load local settings if they exist
 try:
     from .settings_local import *
 except ImportError:
     pass
-

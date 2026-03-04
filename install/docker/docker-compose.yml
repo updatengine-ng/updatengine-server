@@ -1,45 +1,63 @@
+# =============================================================================
+# Docker Compose — UpdatEngine Server
+# Stack: MariaDB 11 + Redis 7 + Gunicorn (web) + Nginx
+# =============================================================================
+
 services:
+
+  # ---------------------------------------------------------------------------
+  # Database — MariaDB 11 LTS (pinned, no more :latest)
+  # ---------------------------------------------------------------------------
   db:
-    image: mariadb:latest
+    image: mariadb:11.4
     container_name: 'updatengine-db'
     restart: always
-    ports:
-      - '3307:3306'
+    # Port NOT exposed on host — access via internal Docker network only
+    expose:
+      - 3306
     environment:
-      MYSQL_DATABASE: '$DB_NAME'
-      MYSQL_USER: '$DB_USER'
-      MYSQL_PASSWORD: '$DB_PASSWORD'
+      MYSQL_DATABASE:      '$DB_NAME'
+      MYSQL_USER:          '$DB_USER'
+      MYSQL_PASSWORD:      '$DB_PASSWORD'
       MYSQL_ROOT_PASSWORD: '$DB_ROOTPASSWORD'
     volumes:
       - 'db:/var/lib/mysql'
+    networks:
+      - backend
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
-      interval: 2s
-      timeout: 2s
+      interval: 5s
+      timeout: 5s
       retries: 30
+      start_period: 10s
 
+  # ---------------------------------------------------------------------------
+  # Cache — Redis 7 LTS (was 3.2.0 — EOL since 2019)
+  # ---------------------------------------------------------------------------
   redis:
-    image: 'redis:3.2.0'
+    image: 'redis:7.2-alpine'
     container_name: 'updatengine-redis'
     restart: always
-    ports:
-      - '6378:6379'
+    # Port NOT exposed on host — internal only
+    expose:
+      - 6379
     volumes:
       - 'redisdata:/data'
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
-  memcached:
-    image: 'memcached:latest'
-    container_name: 'updatengine-memcached'
-    restart: always
-    ports:
-      - "11212:11211"
-
+  # ---------------------------------------------------------------------------
+  # Application — Django + Gunicorn
+  # ---------------------------------------------------------------------------
   web:
     build: .
     container_name: 'updatengine-server'
     restart: always
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
     volumes:
       - static_volume:/app/updatengine/static
       - media_volume:/app/updatengine/media
@@ -50,31 +68,55 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+      - frontend
     healthcheck:
-      test: curl -XGET http://127.0.0.1:8000
-      interval: 2s
-      timeout: 2s
-      retries: 30
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
+  # ---------------------------------------------------------------------------
+  # Reverse proxy — Nginx (HTTPS termination, static files, rate limiting)
+  # ---------------------------------------------------------------------------
   nginx:
     build: ./install/docker/nginx
     container_name: 'updatengine-nginx'
     restart: always
     volumes:
-      - static_volume:/app/updatengine/static
-      - media_volume:/app/updatengine/media
+      - static_volume:/app/updatengine/static:ro
+      - media_volume:/app/updatengine/media:ro
       - ./install/docker/custom/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./install/docker/custom/ssl/site.crt:/etc/ssl/certs/site.crt
-      - ./install/docker/custom/ssl/site.key:/etc/ssl/private/site.key
+      - ./install/docker/custom/ssl/site.crt:/etc/ssl/certs/site.crt:ro
+      - ./install/docker/custom/ssl/site.key:/etc/ssl/private/site.key:ro
     ports:
       - $PORT:443
       - $PORT_ADMIN:1443
     depends_on:
       web:
         condition: service_healthy
+    networks:
+      - frontend
 
+# =============================================================================
+# Networks — isolated frontend / backend
+# =============================================================================
+networks:
+  backend:
+    driver: bridge
+    internal: true      # DB and Redis are NOT reachable from outside
+  frontend:
+    driver: bridge
+
+# =============================================================================
+# Named volumes
+# =============================================================================
 volumes:
-  redisdata:
   db:
+  redisdata:
   static_volume:
   media_volume:
