@@ -1,0 +1,63 @@
+
+{% block content %}
+    <!-- Fallback statique (remplacé par HTMX) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Total Machines -->
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div class="p-3 bg-blue-100 rounded-xl">
+            <i class="fas fa-desktop text-blue-600 text-xl"></i>
+          </div>
+          <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Total</span>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-500 uppercase">Machines</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ total_machines }}</p>
+        </div>
+      </div>
+
+      <!-- Online -->
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div class="p-3 bg-green-100 rounded-xl">
+            <i class="fas fa-circle-check text-green-500 text-xl"></i>
+          </div>
+          <span class="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">
+            <span class="online-dot mr-1"></span>Live
+          </span>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-500 uppercase">En ligne</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ online_machines }}</p>
+        </div>
+      </div>
+
+      <!-- Offline -->
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div class="p-3 bg-red-100 rounded-xl">
+            <i class="fas fa-clock-rotate-left text-red-400 text-xl"></i>
+          </div>
+          <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">Hors ligne</span>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-500 uppercase">Hors ligne</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ offline_count }}</p>
+        </div>
+      </div>
+
+      <!-- Déploiements récents -->
+      <div class="card border-orange-200">
+        <div class="flex items-center justify-between">
+          <div class="p-3 bg-purple-100 rounded-xl">
+            <i class="fas fa-rocket text-purple-600 text-xl"></i>
+          </div>
+          <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">7 jours</span>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-500 uppercase">Déploiements</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">{{ deploys_7d }}</p>
+        </div>
+      </div>
+{% endblock %}

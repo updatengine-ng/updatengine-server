@@ -19,14 +19,14 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-      <p class="text-sm text-gray-500 mt-1">Vue en temps réel du parc - CD83</p>
+      <p class="text-sm text-gray-500 mt-1">Vue en temps réel du parc</p>
     </div>
     <div class="flex items-center gap-3">
       <div class="text-xs text-gray-400">
         <i class="fas fa-sync-alt mr-1"></i>
         Refresh auto 30s
       </div>
-      <a href="/modern/inventory/" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+      <a href="/modern/inventory/" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
         <i class="fas fa-desktop mr-2"></i>Voir le parc
       </a>
     </div>
@@ -39,70 +39,6 @@
     hx-trigger="load, every 30s"
     hx-swap="innerHTML"
   >
-    <!-- Fallback statique (remplacé par HTMX) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-      <!-- Total Machines -->
-      <div class="stat-card">
-        <div class="flex items-center justify-between">
-          <div class="p-3 bg-blue-100 rounded-xl">
-            <i class="fas fa-desktop text-blue-600 text-xl"></i>
-          </div>
-          <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Total</span>
-        </div>
-        <div class="mt-4">
-          <p class="text-sm font-medium text-gray-500">Machines</p>
-          <p class="text-3xl font-bold text-gray-900 mt-1">{{ total_machines }}</p>
-        </div>
-      </div>
-
-      <!-- Online -->
-      <div class="stat-card">
-        <div class="flex items-center justify-between">
-          <div class="p-3 bg-green-100 rounded-xl">
-            <i class="fas fa-circle text-green-500 text-xl"></i>
-          </div>
-          <span class="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">
-            <span class="online-dot mr-1"></span>Live
-          </span>
-        </div>
-        <div class="mt-4">
-          <p class="text-sm font-medium text-gray-500">En ligne</p>
-          <p class="text-3xl font-bold text-gray-900 mt-1">{{ online_count }}</p>
-          <p class="text-xs text-gray-400 mt-1">
-            {% if total_machines %}{{ online_count|floatformat:0 }} / {{ total_machines }}{% endif %}
-          </p>
-        </div>
-      </div>
-
-      <!-- Offline -->
-      <div class="stat-card">
-        <div class="flex items-center justify-between">
-          <div class="p-3 bg-red-100 rounded-xl">
-            <i class="fas fa-circle text-red-400 text-xl"></i>
-          </div>
-          <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">Hors ligne</span>
-        </div>
-        <div class="mt-4">
-          <p class="text-sm font-medium text-gray-500">Hors ligne</p>
-          <p class="text-3xl font-bold text-gray-900 mt-1">{{ offline_count }}</p>
-        </div>
-      </div>
-
-      <!-- Déploiements récents -->
-      <div class="stat-card">
-        <div class="flex items-center justify-between">
-          <div class="p-3 bg-purple-100 rounded-xl">
-            <i class="fas fa-rocket text-purple-600 text-xl"></i>
-          </div>
-          <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">7 jours</span>
-        </div>
-        <div class="mt-4">
-          <p class="text-sm font-medium text-gray-500">Déploiements</p>
-          <p class="text-3xl font-bold text-gray-900 mt-1">{{ deploys_7d }}</p>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Main Grid -->
@@ -110,12 +46,12 @@
 
     <!-- Déploiements récents (2/3) -->
     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
-      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <h2 class="font-semibold text-gray-900">
-          <i class="fas fa-history text-primary-500 mr-2"></i>
+      <div class="card">
+        <h2 class="text-lg font-semibold text-gray-900">
+          <i class="fas fa-history text-blue-500 mr-2"></i>
           Déploiements récents
         </h2>
-        <a href="/modern/deployments/" class="text-sm text-primary-600 hover:underline">Voir tout</a>
+        <a href="/modern/deployments/" class="text-sm text-blue-600 hover:underline">Voir tout</a>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -131,7 +67,7 @@
             {% for entry in recent_history %}
             <tr class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-3">
-                <a href="/modern/machine/{{ entry.machine.id }}/" class="font-medium text-gray-900 hover:text-primary-600">
+                <a href="/modern/machine/{{ entry.machine.id }}/" class="font-medium text-gray-900 hover:text-blue-600">
                   {{ entry.machine.name }}
                 </a>
               </td>
@@ -170,18 +106,18 @@
     <div class="space-y-6">
 
       <!-- Répartition OS -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 class="font-semibold text-gray-900 mb-4">
-          <i class="fas fa-chart-pie text-primary-500 mr-2"></i>
+      <div class="card">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-chart-pie text-blue-500 mr-2"></i>
           Systèmes d&apos;exploitation
         </h3>
         <canvas id="osChart" height="180"></canvas>
       </div>
 
       <!-- Dernières machines vues -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 class="font-semibold text-gray-900 mb-4">
-          <i class="fas fa-clock text-primary-500 mr-2"></i>
+      <div class="card">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-clock text-blue-500 mr-2"></i>
           Dernières connexions
         </h3>
         <div class="space-y-3">
@@ -192,7 +128,7 @@
               <p class="text-sm font-medium text-gray-900 truncate">{{ m.name }}</p>
               <p class="text-xs text-gray-400">{{ m.last_contact_date|timesince }}</p>
             </div>
-            <a href="/modern/machine/{{ m.id }}/" class="text-xs text-primary-600 hover:underline flex-shrink-0">Détails</a>
+            <a href="/modern/machine/{{ m.id }}/" class="text-xs text-blue-600 hover:underline flex-shrink-0">Détails</a>
           </div>
           {% empty %}
           <p class="text-sm text-gray-400">Aucune machine</p>
@@ -207,7 +143,7 @@
 {% block extra_js %}
 <script>
 // OS Donut Chart
-const osData = {
+var osData = {
   labels: [{% for os in os_stats %}"{{ os.name }}",{% endfor %}],
   datasets: [{
     data: [{% for os in os_stats %}{{ os.count }},{% endfor %}],

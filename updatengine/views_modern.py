@@ -106,7 +106,7 @@ def htmx_dashboard_stats(request):
 # ---------------------------------------------------------------------------
 
 @login_required
-def inventory_view(request):
+def inventory(request):
     cutoff = _online_cutoff()
     qs = machine.objects.select_related('entity', 'typemachine').prefetch_related(
         'osdistribution_set', 'net_set'

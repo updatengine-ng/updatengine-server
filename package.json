@@ -1,19 +1,26 @@
 {
-  "name": "updatengine-server-modern",
-  "version": "7.0.0",
-  "description": "Modern UpdatEngine Server with NinjaOne-inspired interface",
+  "name": "updatengine-server",
+  "version": "8.0.0",
+  "description": "Modern UpdatEngine Server interface",
   "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
   "scripts": {
     "dev": "concurrently \"npm run watch:css\" \"npm run watch:js\"",
     "build": "npm run build:css && npm run build:js",
-    "build:css": "tailwindcss -i ./static_modern/src/input.css -o ./static_modern/dist/output.css --minify",
-    "watch:css": "tailwindcss -i ./static_modern/src/input.css -o ./static_modern/dist/output.css --watch",
-    "build:js": "esbuild ./static_modern/src/main.js --bundle --minify --sourcemap --outfile=./static_modern/dist/main.js",
-    "watch:js": "esbuild ./static_modern/src/main.js --bundle --sourcemap --watch --outfile=./static_modern/dist/main.js",
+    "build:css": "tailwindcss -i ./static_modern/src/input.css -o ./updatengine/files/modern-ui/modern-ui.css --minify",
+    "watch:css": "tailwindcss -i ./static_modern/src/input.css -o ./updatengine/files/modern-ui/modern-ui.css --watch",
+    "build:js": "esbuild ./static_modern/src/main.js --bundle --minify --sourcemap --outfile=./updatengine/files/modern-ui/modern-ui.js",
+    "watch:js": "esbuild ./static_modern/src/main.js --bundle --sourcemap --watch --outfile=./updatengine/files/modern-ui/modern-ui.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint static_modern/src",
     "format": "prettier --write \"static_modern/src/**/*.{js,css}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/updatengine-ng/updatengine-server.git"
   },
   "keywords": [
     "updatengine",
@@ -23,25 +30,21 @@
     "rmm",
     "modern-ui"
   ],
-  "author": "Tronos83170",
+  "author": "updatengine",
   "license": "GPL-2.0",
-  "dependencies": {
-    "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo": "^8.0.4",
-    "alpinejs": "^3.13.5",
-    "chart.js": "^4.4.1",
-    "htmx.org": "^1.9.10"
+  "bugs": {
+    "url": "https://github.com/updatengine-ng/updatengine-server/issues"
   },
+  "homepage": "https://github.com/updatengine-ng/updatengine-server#readme",
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.7",
-    "@tailwindcss/typography": "^0.5.10",
-    "autoprefixer": "^10.4.17",
-    "concurrently": "^8.2.2",
-    "esbuild": "^0.20.0",
-    "eslint": "^8.56.0",
-    "jest": "^29.7.0",
-    "postcss": "^8.4.33",
-    "prettier": "^3.2.4",
-    "tailwindcss": "^3.4.1"
+    "@tailwindcss/cli": "^4.3.3",
+    "alpinejs": "^3.15.12",
+    "chart.js": "^4.5.1",
+    "concurrently": "^10.0.4",
+    "esbuild": "^0.28.1",
+    "htmx.org": "^2.0.10",
+    "jest": "^30.4.2",
+    "tailwindcss": "^4.3.3"
   }
 }
+

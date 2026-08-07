@@ -3,12 +3,75 @@
    NinjaOne-inspired interface
    ========================================= */
 
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
 
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+@import "tailwindcss";
+@source "../../updatengine/templates/";
+
+@theme {
+  --color-ninja-50: #f0f9ff;
+  --color-ninja-100: #e0f2fe;
+  --color-ninja-200: #bae6fd;
+  --color-ninja-300: #7dd3fc;
+  --color-ninja-400: #38bdf8;
+  --color-ninja-500: #0ea5e9;
+  --color-ninja-600: #0284c7;
+  --color-ninja-700: #0369a1;
+  --color-ninja-800: #075985;
+  --color-ninja-900: #0c4a6e;
+  --color-ninja-950: #082f49;
+  --color-dark-50: #f8fafc;
+  --color-dark-100: #f1f5f9;
+  --color-dark-200: #e2e8f0;
+  --color-dark-300: #cbd5e1;
+  --color-dark-400: #94a3b8;
+  --color-dark-500: #64748b;
+  --color-dark-600: #475569;
+  --color-dark-700: #334155;
+  --color-dark-800: #1e293b;
+  --color-dark-900: #0f172a;
+  --color-dark-950: #020617;
+  --font-family-sans: "font", Inter, system-ui, -apple-system, sans-serif;
+  --shadow-ninja: 0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -1px rgba(14, 165, 233, 0.06);
+  --shadow-ninja-lg: 0 10px 15px -3px rgba(14, 165, 233, 0.1), 0 4px 6px -2px rgba(14, 165, 233, 0.05);
+/* https://pagedone.io/docs/animation */
+  --animate-fade-in: fade-in 0.3s ease-in-out;
+  --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-slide-in-left: slide-in-left 0.3s ease-out;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0%);
+    }
+  }
+
+  @keyframes slide-in-left {
+    0% {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0%);
+    }
+  }
+}
 
 /* =========================================
    BASE STYLES
@@ -57,22 +120,26 @@
   }
   
   .btn-primary {
-    @apply btn bg-ninja-500 text-white hover:bg-ninja-600;
+    @extend btn
+    @apply bg-ninja-500 text-white hover:bg-ninja-600;
     @apply focus:ring-ninja-500 shadow-ninja;
   }
   
   .btn-secondary {
-    @apply btn bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-200;
+    @extend btn
+    @apply bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-200;
     @apply hover:bg-gray-300 dark:hover:bg-dark-600;
   }
   
   .btn-danger {
-    @apply btn bg-red-500 text-white hover:bg-red-600;
+    @extend btn
+    @apply bg-red-500 text-white hover:bg-red-600;
     @apply focus:ring-red-500;
   }
   
   .btn-success {
-    @apply btn bg-green-500 text-white hover:bg-green-600;
+    @extend btn
+    @apply bg-green-500 text-white hover:bg-green-600;
     @apply focus:ring-green-500;
   }
   
@@ -97,7 +164,8 @@
   }
   
   .card-hover {
-    @apply card hover:shadow-xl hover:shadow-ninja/10;
+    @extend card
+    @apply hover:shadow-xl hover:shadow-ninja/10;
     @apply hover:-translate-y-1;
   }
   
@@ -153,8 +221,9 @@
     @apply transition-all duration-200;
   }
   
-  .sidebar-item-active {
-    @apply sidebar-item bg-ninja-50 dark:bg-ninja-900/20;
+  .sidebar-item.active {
+    @extend sidebar-item
+    @apply bg-ninja-50 dark:bg-ninja-900/20;
     @apply text-ninja-600 dark:text-ninja-400;
     @apply font-medium;
   }
@@ -177,19 +246,23 @@
   }
   
   .badge-success {
-    @apply badge bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+    @extend badge
+    @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
   }
   
   .badge-warning {
-    @apply badge bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300;
+    @extend badge
+    @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300;
   }
   
   .badge-danger {
-    @apply badge bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300;
+    @extend badge
+    @apply bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300;
   }
   
   .badge-info {
-    @apply badge bg-ninja-100 dark:bg-ninja-900/30 text-ninja-800 dark:text-ninja-300;
+    @extend badge
+    @apply bg-ninja-100 dark:bg-ninja-900/30 text-ninja-800 dark:text-ninja-300;
   }
 }
 
