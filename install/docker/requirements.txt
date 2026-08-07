@@ -1,4 +1,4 @@
-# Gunicorn WSGI server - upgraded from 21.2.0 to 23.0.0
+# Gunicorn WSGI server
 gunicorn==23.0.0
 # Redis cache backend
 django-redis==5.4.0

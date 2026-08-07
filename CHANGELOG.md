@@ -6,6 +6,7 @@
 ## 8.0.0 (2026-02-22):
 
 **✨ Improvements**
+
 - Add django-environ for environment-based configuration
 - Add django-redis for session and cache management via Redis
 - Add security: django-axes (brute force protection), argon2-cffi (password hashing)
@@ -25,6 +26,7 @@
 **🔧 Maintenance**
 - Remove deprecated USE_L10N setting (removed in Django 5.0)
 - Update Dockerfile Python base image 3.9 -> 3.12
+- Bump all python packages
 
 ## 7.1.5 (2026-02-13):
 
