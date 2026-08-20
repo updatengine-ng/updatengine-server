@@ -21,6 +21,7 @@
 import os
 import environ
 from django.utils.translation import gettext_lazy as _
+from email.utils import getaddresses
 
 # Initialize environ
 env = environ.Env(
@@ -77,7 +78,7 @@ DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY', default='${SECRET_KEY}')
 
 # Email settings
-ADMINS = env.list('ADMINS', default=[])
+ADMINS = env.list(getaddresses([env('ADMINS')]), default=[])
 MANAGERS = ADMINS
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
 SERVER_EMAIL = env('SERVER_EMAIL', default='root@localhost')
