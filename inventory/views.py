@@ -1093,7 +1093,7 @@ def inventory(xml):
                                 if m.entity is not None and m.entity.redistrib_url:
                                     packurl = str(m.entity.redistrib_url) + str(pack.filename)
                                 else:
-                                    packurl = f'{settings.MEDIA_URL}{pack.filename}'
+                                    packurl = f'{settings.PROJECT_URL}{settings.MEDIA_URL}{pack.filename}'
                             else:
                                 packurl = ''
                             pack.name = encodeXMLText(pack.name)
@@ -1196,7 +1196,7 @@ def inventory_extended(xml):
                             if m.entity is not None and m.entity.redistrib_url:
                                 packurl = str(m.entity.redistrib_url) + str(pack.filename)
                             else:
-                                packurl = f'{settings.MEDIA_URL}{pack.filename}'
+                                packurl = f'{settings.PROJECT_URL}{settings.MEDIA_URL}{pack.filename}'
                         else:
                             packurl = ''
                         pack.name = encodeXMLText(pack.name)
@@ -1230,7 +1230,7 @@ def public_soft_list(pack=None):
 
     for pack in slist:
         if pack.packagesum != 'nofile':
-            packurl = f'{settings.MEDIA_URL}{pack.filename}'
+            packurl = f'{settings.PROJECT_URL}{settings.MEDIA_URL}{pack.filename}'
         else:
             packurl = ''
         pack.name = encodeXMLText(pack.name)
